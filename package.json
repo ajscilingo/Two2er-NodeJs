@@ -1,0 +1,22 @@
+{
+  "name": "two2er-nodejs",
+  "version": "1.0.0",
+  "description": "Two2er Backend Module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajscilingo/two2er-nodejs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ajscilingo/two2er-nodejs/issues"
+  },
+  "homepage": "https://github.com/ajscilingo/two2er-nodejs#readme",
+  "dependencies": {
+    "mongodb": "^2.2.22"
+  }
+}
