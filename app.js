@@ -6,7 +6,19 @@ const mongoose = require('mongoose');
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 
 // Connect to MongoDB through mongoose
-mongoose.connect(url);
+// connection seems to timeout after sometime
+// going to add some attributes as noted here
+// http://stackoverflow.com/questions/40585705/connection-timeout-for-mongodb-using-mongoose
+// mongoose.connect(url)
+mongoose.connect(url, {
+    server : {
+        socketOptions : {
+            socketTimeoutMS: 0,
+            connectionTimeout: 0
+        }
+    }
+});
+
 
 // express module is needed for running as an http server
 const express = require('express');
