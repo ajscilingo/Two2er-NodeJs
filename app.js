@@ -30,9 +30,8 @@ const User = require('./user.js');
 const app = express();
 
 
-
-app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 // listen on port 8080 unless otherwise specified
 var port = process.env.PORT || 8080; 
@@ -57,16 +56,21 @@ router.route('/users')
 // add a new user (accessed via post http://localhost:8080/api/users)
 .post ( (req, res) => {
 
+    // JSON attribute order seems to be dictated here in reverse
+    // so if your attribute to appear first in your JSON object enter it last
+    // e.g if user.name is last it will appear first in the JSON 
+
     var user = new User();
-    user.Name = req.body.Name;
-    user.Age = req.body.Age;
-    user.Location = req.body.Location;
+    user.location = req.body.location;
+    user.age = req.body.age;
+    user.name = req.body.name;
+    
 
     user.save( (err) => {
         if(err) 
             req.send(err);
         
-        res.json({message: 'User created!'});
+        res.json({message: `User: ${user.name} has been created!`});
     });
 
 })
