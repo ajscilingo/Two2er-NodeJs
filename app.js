@@ -43,11 +43,13 @@ var router = express.Router();  //get an instance of the express Router
 router.use( (req, res, next) => {
 
     // do some logging 
-    console.log('Something is happening');
+    console.log(`${req.ip} has connected`);
     next(); // make sure we go to the next route and not stop here
 });
 
 router.get('/', (req, res) => {
+    // some logging 
+    console.log(`${req.ip} is doing a GET via /api`)
     res.json({message: 'Two2er API'});
 });
 
@@ -65,6 +67,8 @@ router.route('/users')
     user.age = req.body.age;
     user.name = req.body.name;
     
+    // some logging 
+    console.log(`${req.ip} is doing a POST via /users`)
 
     user.save( (err) => {
         if(err) 
@@ -78,6 +82,9 @@ router.route('/users')
 // get all the users (accessed via GET http://localhost:8080/api/users)
 .get( (req, res) => {
 
+    // some logging 
+    console.log(`${req.ip} is doing a GET via /users`)
+
     User.find( (err, users) => {
         if(err) 
             res.send(err);
@@ -88,10 +95,13 @@ router.route('/users')
 });
 
 router.route('/users/:user_name')
-
 // get user with name like user_name (accessed via GET http://localhost:8080/api/users/<username>)
 .get( (req,res) => {
-    User.findOne({ Name: req.params.user_name}, (err, user) => {
+    
+    // some logging 
+    console.log(`${req.ip} is doing a GET via /users/${req.params.user_name}`)
+    
+    User.findOne({ name: req.params.user_name}, (err, user) => {
         if(err) 
             res.send(err);
         res.json({message: user});
