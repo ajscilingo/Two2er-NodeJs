@@ -10,11 +10,13 @@ const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 // going to add some attributes as noted here
 // http://stackoverflow.com/questions/40585705/connection-timeout-for-mongodb-using-mongoose
 // mongoose.connect(url)
+// updated the socketOption connectionTimeout to connectTimeoutMS as stated here 
+// http://mongodb.github.io/node-mongodb-native/2.1/api/Server.html
 mongoose.connect(url, {
     server : {
         socketOptions : {
             socketTimeoutMS: 0,
-            connectionTimeout: 0
+            connectTimeoutMS: 30000
         }
     }
 });
