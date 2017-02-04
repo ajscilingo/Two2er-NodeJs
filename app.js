@@ -39,7 +39,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 // listen on port 8080 unless otherwise specified
-var port = process.env.PORT || 8080; 
+var port = process.env.PORT || 8081; 
 
 //Route our APIs
 var router = express.Router();  //get an instance of the express Router
@@ -112,6 +112,120 @@ router.route('/users/:user_name')
             res.send(err);
         res.json({message: user});
     });
+});
+
+router.route('/students')
+// add a new user (accessed via post http://localhost:8080/api/students)
+.post ( (req, res) => {
+    var student = new Student();
+    student.user_id = req.body.user_id;
+    student.school = req.body.school;
+
+    console.log(`${req.ip} is doing a POST via /students`)
+
+    student.save( (err) => {
+        if(err) 
+            req.send(err);
+        
+        res.json({message: `A student has been created!`});
+    });
+})
+// Get all students
+.get( (req, res) => {
+    console.log(`${req.ip} is doing a GET via /students`)
+
+    Student.find( (err, students) => {
+        if(err) 
+            res.send(err);
+        
+        res.json(students);
+    })
+});
+
+router.route('/tutors')
+// add a new user (accessed via post http://localhost:8080/api/tutors)
+.post ( (req, res) => {
+    var tutor = new Tutor();
+    tutor.subjects = req.body.subjects;
+    tutor.user_id = req.body.user_id;
+
+    console.log(`${req.ip} is doing a POST via /tutors`)
+
+    tutor.save( (err) => {
+        if(err) 
+            req.send(err);
+        
+        res.json({message: `A tutor has been created!`});
+    });
+})
+// Get all tutors
+.get( (req, res) => {
+    console.log(`${req.ip} is doing a GET via /tutors`)
+
+    Tutor.find( (err, tutors) => {
+        if(err) 
+            res.send(err);
+        
+        res.json(tutors);
+    })
+});
+
+router.route('/studentlocations')
+// add to student location (accessed via post http://localhost:8080/api/studentlocations)
+.post ( (req, res) => {
+    var date = new Date();
+    
+    var stuLocation = new StudentLocation();
+    stuLocation.user_id = req.body.user_id;
+    stuLocation.createdAt = date.getTime();
+    stuLocation.location = req.body.location;
+
+    stuLocation.save( (err) => {
+        if(err) 
+            req.send(err);
+        
+        res.json({message: `A student location has been created!`});
+    });
+})
+// Get all student locations
+.get( (req, res) => {
+    console.log(`${req.ip} is doing a GET via /studentlocations`)
+
+    StudentLocation.find( (err, locations) => {
+        if(err) 
+            res.send(err);
+        
+        res.json(locations);
+    })
+});
+
+router.route('/tutorlocations')
+// add to student location (accessed via post http://localhost:8080/api/tutorlocations)
+.post ( (req, res) => {
+    var date = new Date();
+    
+    var tutorLocation = new TutorLocation();
+    tutorLocation.user_id = req.body.user_id;
+    tutorLocation.createdAt = date.getTime();
+    tutorLocation.location = req.body.location;
+
+    tutorLocation.save( (err) => {
+        if(err) 
+            req.send(err);
+        
+        res.json({message: `A tutor location has been created!`});
+    });
+})
+// Get all tutor locations
+.get( (req, res) => {
+    console.log(`${req.ip} is doing a GET via /tutorlocations`)
+
+    TutorLocation.find( (err, locations) => {
+        if(err) 
+            res.send(err);
+        
+        res.json(locations);
+    })
 });
 
 app.use('/api', router);
