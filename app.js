@@ -34,6 +34,8 @@ const StudentLocation = require('./studentlocation.js');
 const TutorLocation = require('./tutorlocation.js');
 const app = express();
 
+// Miles in terms of Meters for geospatial queries
+const METERS_IN_MILES = 1609.34;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -226,6 +228,38 @@ router.route('/tutorlocations')
         
         res.json(locations);
     })
+});
+
+// do a spatial query given a distance in mile (:distance) and a longitude (:lon) and latitude (:lat) coordinate in decimal degrees
+router.route('/findUsersWithin/milesLonLat/:distance/:lon/:lat')
+
+.get( (req, res) => {
+    console.log(`${req.ip} is doing a POST via /findUsersWithin/milesLonLat/${req.params.distance}/${req.params.lon}/${req.params.lat}`)
+
+    // conversion to miles to meters 
+    var distance = req.params.distance * METERS_IN_MILES;
+
+    var geoSpatialQuery = User.find({
+        'location' : {
+            $nearSphere : {
+                $geometry : {
+                    type: "Point",
+                    coordinates : [req.params.lon, 
+                                   req.params.lat 
+                                ]
+                },
+                $maxDistance : distance
+            }
+        }   
+    });
+
+    geoSpatialQuery.exec( (err, users) => {
+        if(err) 
+            res.send(err);
+        
+        res.json(users);
+    });
+
 });
 
 app.use('/api', router);
