@@ -16,7 +16,28 @@ const LocationSchema = new Schema({
 const UserSchema = new Schema({
     name: {type: String, required: true},
     age: {type: Number, required: false},
+    userName: {type: String, required: true},       // adding userName filed
     location: LocationSchema
+});
+
+const StudentLocationSchema = new Schema({
+    user_id: {type: Objectid, required: true},      // foreign key to users collection
+    location: LocationSchema
+});
+
+const TutorLocationSchema = new Schema({
+    user_id: {type: Objectid, required: true},    // foreign key to users collection
+    location: LocationSchema
+});
+
+const StudentSchema = new Schema({
+    user_id: {type: Objectid, required: true},  // foreign key to users collection
+    school: {type: String, required: false}     // optional school field
+});
+
+const TutorSchema = new Schema({
+    user_id: {type: Objectid, required: true},  // foreign key to users collection
+    subjects: {type: [String], required: false} // list of subjects approved to tutor, for now making required false
 });
 
 // Make sure this attribute has a spatial index
