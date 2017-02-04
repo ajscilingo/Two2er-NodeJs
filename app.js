@@ -144,6 +144,21 @@ router.route('/students')
     })
 });
 
+// Get student by userName
+router.route('/students/:userName')
+.get( (req,res) => {
+    console.log(`${req.ip} is doing a GET via /students/${req.params.userName}`)
+
+    User.findOne({ userName: req.params.userName}, (err, user) => {
+        Student.findOne({ user_id: user._id }, (err, stu) => {
+            if (err)
+                res.send(err);
+            
+            res.json(stu);
+        }); 
+    });
+});
+
 router.route('/tutors')
 // add a new user (accessed via post http://localhost:8080/api/tutors)
 .post ( (req, res) => {
@@ -170,6 +185,21 @@ router.route('/tutors')
         
         res.json(tutors);
     })
+})
+
+// Get tutor by userName
+router.route('/tutors/:userName')
+.get( (req,res) => {
+    console.log(`${req.ip} is doing a GET via /tutors/${req.params.userName}`)
+
+    User.findOne({ userName: req.params.userName}, (err, user) => {
+        Tutor.findOne({ user_id: user._id }, (err, tutor) => {
+            if (err)
+                res.send(err);
+            
+            res.json(tutor);
+        }); 
+    });
 });
 
 router.route('/studentlocations')
@@ -201,6 +231,21 @@ router.route('/studentlocations')
     })
 });
 
+// Get student location by userName
+router.route('/studentlocations/:userName')
+.get( (req,res) => {
+    console.log(`${req.ip} is doing a GET via /studentlocations/${req.params.userName}`)
+
+    User.findOne({ userName: req.params.userName}, (err, user) => {
+        StudentLocation.findOne({ user_id: user._id }, (err, loc) => {
+            if (err)
+                res.send(err);
+            
+            res.json(loc);
+        }); 
+    });
+});
+
 router.route('/tutorlocations')
 // add to student location (accessed via post http://localhost:8080/api/tutorlocations)
 .post ( (req, res) => {
@@ -229,6 +274,7 @@ router.route('/tutorlocations')
         res.json(locations);
     })
 });
+
 
 // do a spatial query given a distance in mile (:distance) and a longitude (:lon) and latitude (:lat) coordinate in decimal degrees
 router.route('/findUsersWithin/milesLonLat/:distance/:lon/:lat')
@@ -259,7 +305,21 @@ router.route('/findUsersWithin/milesLonLat/:distance/:lon/:lat')
         
         res.json(users);
     });
+});
 
+// Get tutor location by userName
+router.route('/tutorlocations/:userName')
+.get( (req,res) => {
+    console.log(`${req.ip} is doing a GET via /tutorlocations/${req.params.userName}`)
+
+    User.findOne({ userName: req.params.userName}, (err, user) => {
+        TutorLocation.findOne({ user_id: user._id }, (err, loc) => {
+            if (err)
+                res.send(err);
+            
+            res.json(loc);
+        }); 
+    });
 });
 
 app.use('/api', router);
