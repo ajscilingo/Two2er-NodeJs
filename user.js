@@ -11,7 +11,7 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     name: {type: String, required: true},
     age: {type: Number, required: false},
-    userName: {type: String, required: true},       // adding userName filed
+    userName: {type: String, required: true},
     location: Location
 });
 

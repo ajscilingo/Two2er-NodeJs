@@ -40,7 +40,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 // listen on port 8080 unless otherwise specified
-var port = process.env.PORT || 8080; 
+var port = process.env.PORT || 8081; 
 
 //Route our APIs
 var router = express.Router();  //get an instance of the express Router
@@ -113,6 +113,58 @@ router.route('/users/:user_name')
         res.json({message: user});
     });
 });
+
+router.route('/students')
+// add a new user (accessed via post http://localhost:8080/api/students)
+.post ( (req, res) => {
+    var student = new Student();
+    student.school = req.body.school;
+
+    console.log(`${req.ip} is doing a POST via /students`)
+
+    student.save( (err) => {
+        if(err) 
+            req.send(err);
+        
+        res.json({message: `A student has been created!`});
+    });
+});
+
+// router.route('/tutors')
+// // add a new user (accessed via post http://localhost:8080/api/tutors)
+// .post ( (req, res) => {
+//     var tutor = new Tutor();
+//     tutor.subject = req.body.subject;
+
+//     console.log(`${req.ip} is doing a POST via /students`)
+
+//     tutor.save( (err) => {
+//         if(err) 
+//             req.send(err);
+        
+//         res.json({message: `A tutor has been created!`});
+//     });
+// });
+
+// router.route('/studentlocation')
+// // add a new user (accessed via post http://localhost:8080/api/studentlocation)
+// .post ( (req, res) => {
+    
+//     var studentUser;
+
+//     User.findOne({ name: req.body.user_name}, (err, user) => {
+//         if(err) 
+//             res.send(err);
+//         studentUser = user;
+//     });
+
+//     tutor.save( (err) => {
+//         if(err) 
+//             req.send(err);
+        
+//         res.json({message: `A tutor has been created!`});
+//     });
+// });
 
 app.use('/api', router);
 
