@@ -29,6 +29,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const User = require('./user.js');
+const Student = require('./student.js');
+const Tutor = require('./tutor.js');
+const StudentLocation = require('./studentlocation.js');
+const TutorLocation = require('./tutorlocation.js');
 const app = express();
 
 
