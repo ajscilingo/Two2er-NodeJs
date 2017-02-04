@@ -8,5 +8,5 @@ const StudentSchema = new Schema({
     school: {type: String, required: false}     // optional school field
 });
 
-StudentSchema.index(user_id);
-module.exports = mongoose("Student", StudentSchema);
+//StudentSchema.index(user_id);
+module.exports = mongoose.model("Student", StudentSchema);

@@ -9,4 +9,4 @@ const LocationSchema = new Schema({
     _id : {id: false}
 });
 
-module.exports = mongoose.model('Location', LocationSchema);
+module.exports = LocationSchema;

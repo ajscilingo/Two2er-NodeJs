@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Location = require('./location.js');
+const LocationSchema = require('./location.js');
 
 // use for creating schemas for our models
 const Schema = mongoose.Schema;
@@ -11,8 +11,8 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
     name: {type: String, required: true},
     age: {type: Number, required: false},
-    userName: {type: String, required: true},
-    location: Location
+    userName: {type: String, required: true},       // adding userName filed
+    location: LocationSchema
 });
 
 // Make sure this attribute has a spatial index
