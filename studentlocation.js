@@ -7,11 +7,8 @@ const Schema = mongoose.Schema;
 const StudentLocationSchema = new Schema({
     user_id: {type: Schema.Types.ObjectId, required: true},      // foreign key to users collection
     createdAt: {type: Date, expires: '10m', default: Date.now},
-<<<<<<< HEAD
-    location: Location
-=======
     location: LocationSchema
->>>>>>> local
+
 });
 
 // Make sure this attribute has a spatial index
