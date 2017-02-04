@@ -8,5 +8,5 @@ const TutorSchema = new Schema({
     subjects: {type: [String], required: false} // list of subjects approved to tutor, for now making required false
 });
 
-TutorSchema.index(user_id);
-module.exports = mongoose("Tutor", TutorSchema);
+//TutorSchema.index(user_id);
+module.exports = mongoose.model("Tutor", TutorSchema);
