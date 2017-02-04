@@ -71,6 +71,7 @@ router.route('/users')
     var user = new User();
     user.location = req.body.location;
     user.age = req.body.age;
+    user.userName = req.body.userName;
     user.name = req.body.name;
     
     // some logging 

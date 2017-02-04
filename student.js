@@ -4,9 +4,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const StudentSchema = new Schema({
-    user_id: {type: Objectid, required: true},  // foreign key to users collection
+    user_id: {type: Schema.Types.ObjectId, required: true},  // foreign key to users collection
     school: {type: String, required: false}     // optional school field
 });
 
-StudentSchema.index(user_id);
-module.exports = mongoose("Student", StudentSchema);
+//StudentSchema.index(user_id);
+module.exports = mongoose.model("Student", StudentSchema);
