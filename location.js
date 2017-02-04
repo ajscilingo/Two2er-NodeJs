@@ -9,4 +9,5 @@ const LocationSchema = new Schema({
     _id : {id: false}
 });
 
+// we need to export the schema here instead of the model.
 module.exports = LocationSchema;

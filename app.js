@@ -1,4 +1,3 @@
-
 // connect to our MongoDB through mongoose module
 const mongoose = require('mongoose');
 
