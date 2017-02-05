@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const LocationSchema = require('./location.js');
+const LocationSchema = require('./schemas/location.js');
 
 // use for creating schemas for our models
 const Schema = mongoose.Schema;

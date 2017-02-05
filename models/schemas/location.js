@@ -10,4 +10,6 @@ const LocationSchema = new Schema({
 });
 
 // we need to export the schema here instead of the model.
+// the schema will be used in our User, StudentLocation and TutorLocation 
+// schemas to create documents with a location document embedded in each.
 module.exports = LocationSchema;
