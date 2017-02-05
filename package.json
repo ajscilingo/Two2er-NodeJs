@@ -18,6 +18,7 @@
   "homepage": "https://github.com/ajscilingo/two2er-nodejs#readme",
   "dependencies": {
     "body-parser": "^1.16.0",
+    "dateformat": "^2.0.0",
     "express": "^4.14.0",
     "mongodb": "^2.2.22",
     "mongoose": "^4.7.9"
