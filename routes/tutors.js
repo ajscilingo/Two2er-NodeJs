@@ -14,7 +14,7 @@ router.post('/', (req, res) => {
     tutor.subjects = req.body.subjects;
     tutor.user_id = req.body.user_id;
 
-    console.log(`${req.ip} is doing a POST via /tutors`)
+    console.log(`${req.ip} is doing a POST via /tutors`);
 
     tutor.save( (err) => {
         if(err) 
@@ -26,7 +26,7 @@ router.post('/', (req, res) => {
 
 // Get all tutors
 router.get('/', (req, res) => {
-    console.log(`${req.ip} is doing a GET via /tutors`)
+    console.log(`${req.ip} is doing a GET via /tutors`);
 
     Tutor.find( (err, tutors) => {
         if(err) 
@@ -36,11 +36,11 @@ router.get('/', (req, res) => {
     })
 });
 
-// Get tutor by userName
-router.get('/:userName', (req,res) => {
-    console.log(`${req.ip} is doing a GET via /tutors/${req.params.userName}`)
+// Get tutor by email
+router.get('/:email', (req,res) => {
+    console.log(`${req.ip} is doing a GET via /tutors/${req.params.email}`)
 
-    User.findOne({ userName: req.params.userName}, (err, user) => {
+    User.findOne({ email: req.params.email}, (err, user) => {
         Tutor.findOne({ user_id: user._id }, (err, tutor) => {
             if (err)
                 res.status(404).send(err);

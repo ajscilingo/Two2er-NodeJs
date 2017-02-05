@@ -11,6 +11,7 @@ const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 // mongoose.connect(url)
 // updated the socketOption connectionTimeout to connectTimeoutMS as stated here 
 // http://mongodb.github.io/node-mongodb-native/2.1/api/Server.html
+
 mongoose.connect(url, {
     server : {
         socketOptions : {
@@ -49,6 +50,7 @@ app.use('/api/tutors', tutors);
 app.use('/api/students', students);
 app.use('/api/studentlocations', studentLocations);
 app.use('/api/tutorlocations', tutorLocations);
+
 
 
 // listen on port 8080 unless otherwise specified

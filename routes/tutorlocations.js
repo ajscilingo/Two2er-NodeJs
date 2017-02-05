@@ -38,15 +38,15 @@ router.get('/', (req, res) => {
 });
 
 // Get tutor location by userName
-router.get('/:userName', (req,res) => {
-    console.log(`${req.ip} is doing a GET via /tutorlocations/${req.params.userName}`)
+router.get('/:email', (req,res) => {
+    console.log(`${req.ip} is doing a GET via /tutorlocations/${req.params.email}`);
 
-    User.findOne({ userName: req.params.userName}, (err, user) => {
-        TutorLocation.findOne({ user_id: user._id }, (err, loc) => {
+    User.findOne({ email: req.params.email}, (err, user) => {
+        TutorLocation.findOne({ user_id: user._id }, (err, location) => {
             if (err)
                 res.status(404).send(err);
             
-            res.json(loc);
+            res.json(location);
         }); 
     });
 });
