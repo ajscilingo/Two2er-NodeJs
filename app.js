@@ -37,15 +37,19 @@ var students = require('./routes/students');
 var tutorLocations = require('./routes/tutorlocations');
 var studentLocations = require('./routes/studentlocations');
 
+// We have to load bodyparser before loading any routes 
+// otherwise the routes cannot access the body property on 
+// requests!
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+
 app.use('/api/users', users);
 app.use('/api/tutors', tutors);
 app.use('/api/students', students);
 app.use('/api/studentlocations', studentLocations);
 app.use('/api/tutorlocations', tutorLocations);
 
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
 
 // listen on port 8080 unless otherwise specified
 var port = process.env.PORT || 8080; 
