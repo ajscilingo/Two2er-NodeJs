@@ -18,7 +18,7 @@ router.post('/', (req, res) => {
 
     tutor.save( (err) => {
         if(err) 
-            req.status(404).send(err);
+            res.status(404).send(err);
         
         res.json({message: `A tutor has been created!`});
     });

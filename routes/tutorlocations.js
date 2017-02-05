@@ -19,7 +19,7 @@ router.post ('/', (req, res) => {
 
     tutorLocation.save( (err) => {
         if(err) 
-            req.status(404).send(err);
+            res.status(404).send(err);
         
         res.json({message: `A tutor location has been created!`});
     });

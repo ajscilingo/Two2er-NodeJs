@@ -18,7 +18,7 @@ router.post ('/', (req, res) => {
 
     student.save( (err) => {
         if(err) 
-            req.status(404).send(err);
+            res.status(404).send(err);
         
         res.json({message: `A student has been created!`});
     });

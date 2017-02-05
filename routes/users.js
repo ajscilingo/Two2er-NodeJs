@@ -27,7 +27,7 @@ router.post ( '/', function (req, res) {
 
     user.save( (err) => {
         if(err) 
-            req.status(404).send(err);
+            res.status(404).send(err);
         
         res.json({message: `User: ${user.name} has been created!`});
     });
