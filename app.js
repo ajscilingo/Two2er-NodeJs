@@ -1,6 +1,7 @@
 // connect to our MongoDB through mongoose module
 const mongoose = require('mongoose');
-
+// built in package for getting path data
+const path = require('path');
 // // Connection String for our Two2er Mongodb Database
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 
@@ -28,6 +29,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 
+// use pug view engine for rendering HTML
+app.set("view engine", "pug");
+// set the views directory
+app.set("views", path.join(__dirname, "views"));
+
 // Miles in terms of Meters for geospatial queries
 // Making Global (no var keyword) so All our Modules can access it
 METERS_IN_MILES = 1609.34;
@@ -37,6 +43,7 @@ var tutors = require('./routes/tutors');
 var students = require('./routes/students');
 var tutorLocations = require('./routes/tutorlocations');
 var studentLocations = require('./routes/studentlocations');
+var index = require('./routes/index');
 
 // We have to load bodyparser before loading any routes 
 // otherwise the routes cannot access the body property on 
@@ -50,7 +57,7 @@ app.use('/api/tutors', tutors);
 app.use('/api/students', students);
 app.use('/api/studentlocations', studentLocations);
 app.use('/api/tutorlocations', tutorLocations);
-
+app.use('/', index);
 
 
 // listen on port 8080 unless otherwise specified

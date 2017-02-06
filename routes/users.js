@@ -6,11 +6,6 @@ const mongoose = require('mongoose');
 // a middleware function with no mount path. This code is executed for every request to the router
 router.use( (req, res, next) => {
   console.log('Time:', dateFormat(Date.now(),'dd-mmm-yyyy HH:mm:ss'));
-  router.stack.forEach( (r) => {
-    if(r.route && r.route.path){
-        console.log(r.route.path);
-    }
-  });
   next();
 });
 

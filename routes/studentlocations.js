@@ -26,7 +26,7 @@ router.post ('/', (req, res) => {
 });
 
 // Get all student locations
-router.get( (req, res) => {
+router.get('/', (req, res) => {
     console.log(`${req.ip} is doing a GET via /studentlocations`);
 
     StudentLocation.find( (err, locations) => {
@@ -34,7 +34,7 @@ router.get( (req, res) => {
             res.status(404).send(err);
         
         res.json(locations);
-    })
+    });
 });
 
 // Get student location by userName

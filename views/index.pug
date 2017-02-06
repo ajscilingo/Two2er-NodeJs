@@ -1,0 +1,24 @@
+html
+    head
+        title Hi
+    body
+        h1 #{userSection}
+        ul
+            for userRoute in userRoutes
+                li= userRoute
+        h1 #{tutorSection}
+        ul
+            for tutorRoute in tutorRoutes
+                li= tutorRoute
+        h1 #{studentSection}
+        ul
+            for studentRoute in studentRoutes
+                li= studentRoute
+        h1 #{tutorLocationSection}
+        ul
+            for tutorLocationRoute in tutorLocationRoutes
+                li= tutorLocationRoute
+        h1 #{studentLocationSection}
+        ul
+            for studentLocationRoute in studentLocationRoutes
+                li= studentLocationRoute
