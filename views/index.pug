@@ -1,24 +1,37 @@
 html
     head
         title Hi
+        link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', integrity='sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u', crossorigin='anonymous')
+        script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', integrity='sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa', crossorigin='anonymous')
     body
-        h1 #{userSection}
-        ul
+        table(class='table table-striped')
+            caption #{captionSection}
+            thead
+                tr
+                    th method
+                    th endpoint
+            tbody
             for userRoute in userRoutes
-                li= userRoute
-        h1 #{tutorSection}
-        ul
+                tr
+                    for entry in userRoute
+                        td= entry
+                    
             for tutorRoute in tutorRoutes
-                li= tutorRoute
-        h1 #{studentSection}
-        ul
+                tr
+                    for entry in tutorRoute
+                        td= entry
+            
             for studentRoute in studentRoutes
-                li= studentRoute
-        h1 #{tutorLocationSection}
-        ul
+                tr
+                    for entry in studentRoute
+                        td= entry
+    
             for tutorLocationRoute in tutorLocationRoutes
-                li= tutorLocationRoute
-        h1 #{studentLocationSection}
-        ul
+                tr
+                    for entry in tutorLocationRoute
+                        td= entry
+
             for studentLocationRoute in studentLocationRoutes
-                li= studentLocationRoute
+                tr
+                    for entry in studentLocationRoute
+                        td= entry
