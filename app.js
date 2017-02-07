@@ -24,10 +24,21 @@ mongoose.connect(url, {
 
 // express module is needed for running as an http server
 const express = require('express');
+const stormpath = require('express-stormpath');
 
 // bodyparse is needed for letting us get data from post
 const bodyParser = require('body-parser');
 const app = express();
+
+app.use(stormpath.init(app, {
+  apiKey: {
+    id: '1CRUFRGX863CDWSZFBLB66JS9',
+    secret: '2HoQ5havQ7+tj24VwjfXKtAwPuoF/2W2NuOdSqwCMsU'
+  },
+  application: {
+    href: `https://api.stormpath.com/v1/applications/6yJKvDR268ysl0JYmZyJLp`
+  }
+}));
 
 // use pug view engine for rendering HTML
 app.set("view engine", "pug");
@@ -59,6 +70,7 @@ app.use('/api/studentlocations', studentLocations);
 app.use('/api/tutorlocations', tutorLocations);
 app.use('/', index);
 
+app.use('/apiauth/users', stormpath.authenticationRequired, users);
 
 // listen on port 8080 unless otherwise specified
 var port = process.env.PORT || 8080; 
@@ -66,3 +78,7 @@ var port = process.env.PORT || 8080;
 app.listen(port);
 console.log('Listening on port ' + port);
 
+// Stormpath will let you know when it's ready to start authenticating users.
+app.on('stormpath.ready', function () {
+  console.log('Stormpath Ready!');
+});
