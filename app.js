@@ -71,6 +71,11 @@ app.use('/api/tutorlocations', tutorLocations);
 app.use('/', index);
 
 app.use('/apiauth/users', stormpath.authenticationRequired, users);
+app.use('/apiauth/tutors', stormpath.authenticationRequired, tutors);
+app.use('/apiauth/students', stormpath.authenticationRequired, students);
+app.use('/apiauth/studentlocations', stormpath.authenticationRequired, studentLocations);
+app.use('/apiauth/tutorlocations', stormpath.authenticationRequired, tutorLocations);
+
 
 // listen on port 8080 unless otherwise specified
 var port = process.env.PORT || 8080; 
