@@ -1,5 +1,7 @@
 const router = require('express').Router();
 const User = require('../models/user.js');
+const Tutor = require('../models/tutor.js');
+const Student = require('../models/student.js');
 const dateFormat = require('dateformat');
 const mongoose = require('mongoose');
 
@@ -36,7 +38,7 @@ router.post ( '/', function (req, res) {
 });
 
 // get all the users (accessed via GET http://localhost:8080/api/users)
-router.get( '/', function (req, res) {
+router.get( '/', (req, res) => {
 
     // some logging 
     console.log(`${req.ip} is doing a GET via /users`);
@@ -50,7 +52,7 @@ router.get( '/', function (req, res) {
 });
 
 // get user with name like <name> (accessed via GET http://localhost:8080/api/users/<name>)
-router.get('/getUserByName/:name', function (req, res) {    
+router.get('/getUserByName/:name', (req, res) => {    
     // some logging 
     console.log(`${req.ip} is doing a GET via /users/getUserByName/${req.params.name}`);
     
@@ -62,7 +64,7 @@ router.get('/getUserByName/:name', function (req, res) {
 });
 
 // get user by email 
-router.get('/getUserByEmail/:email', function (req, res) {
+router.get('/getUserByEmail/:email', (req, res) => {
 
     console.log(`${req.ip} is doing a GET via /users/getUserByEmail/${req.params.email}`);
 
@@ -74,17 +76,68 @@ router.get('/getUserByEmail/:email', function (req, res) {
 });
 
 //get user by mongo _id field
-router.get('/getUserById/:id', function(req, res){
+router.get('/getUserById/:id', (req, res) => {
 
     console.log(`${req.ip} is doing a GET via /uses/getUserById/${req.params.id}`);
 
     var user_id = mongoose.Types.ObjectId(req.params.id);
-
+    
     User.findOne({ _id: user_id}, (err, user) => {
         if(err)
             res.status(404).send(err);
         res.json(user);
      });
+
+});
+
+// delete user from user collection by mongo _id field 
+// does not delete from student or tutor collections
+router.get('/deleteById/:id', (req, res) => {
+   
+    console.log(`${req.ip} is doing a GET via /users/deleteUserById/${req.params.id}`);
+
+    var user_id = mongoose.Types.ObjectId(req.params.id);
+
+    User.remove({_id : user_id}, (err, commandResult) => {
+        if(err)
+            res.status(404).send(err);
+        // commandResult is a command result, maybe investigate this further later
+        res.json({message: `User ${user_id} removed`});
+        console.log(`User ${user_id} removed`);
+    });
+});
+
+// deletes user by email, also deletes corresponding 
+// document in tutors and students collections
+router.get('/deleteByEmail/:email', (req, res) => {
+
+    console.log(`${req.ip} is doing a GET via /users/deleteUserByEmail/${req.params.email}`);
+
+    User.findOne({ email : req.params.email }, (err, user) => {
+        if(err)
+            res.status(404).send(err);
+        else{
+            Tutor.remove({ user_id: user._id}, (err, commandResult) => {
+                if(err)
+                    res.status(404).send(err);
+                else{
+                    Student.remove({ user_id: user._id}, (err, commandResult) => {
+                        if(err)
+                            res.status(404).send(err);
+                        else
+                            user.remove( (err, product) => {
+                                if(err)
+                                    res.status(404).send(err);
+                                else
+                                    res.json({message: `User ${user._id} removed`})
+                            });
+                    });
+                }
+            });
+        }
+        
+     });
+
 });
 
 //do a spatial query given a distance in mile (:distance) and a longitude (:lon) and latitude (:lat) coordinate in decimal degrees

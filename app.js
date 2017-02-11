@@ -63,6 +63,9 @@ var index = require('./routes/index');
 // otherwise the routes cannot access the body property on 
 // requests!
 
+// remove powered-by from headers
+app.disable('x-powered-by');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 

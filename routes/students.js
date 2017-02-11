@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Student = require('../models/student.js');
 const dateFormat = require('dateformat');
+const mongoose = require('mongoose');
 
 // a middleware function with no mount path. This code is executed for every request to the router
 router.use(function (req, res, next) {
@@ -47,6 +48,21 @@ router.get('/:email',(req,res) => {
             
             res.json(student);
         }); 
+    });
+});
+
+// delete student by user_id
+router.get('/deleteByUserId/:user_id', (req, res) => {
+    console.log(`${req.ip} is doing a GET via /students/deleteByUserId/${req.params.user_id}`);
+    
+    var user_id = mongoose.Types.ObjectId(req.params.user_id);
+
+    Student.remove({user_id: req.params.user_id}, (err, commandResult) => {
+        if(err)
+            res.status(404).send(err);
+        // commandResult is a command result, maybe investigate this further later
+        res.json({message: `Student ${req.params.user_id} removed`});
+        console.log(`Student ${req.params.user_id} removed`);
     });
 });
 

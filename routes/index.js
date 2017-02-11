@@ -79,6 +79,9 @@ function getRoute(rname, r) {
             else if(methods.post && methods.post == true){
                 route = ["POST", "/api/" + rname + r.route.path];
             }
+            else if(methods.delete && methods.delete == true){
+                route = ["DELETE", "/api/" + rname + r.route.path];
+            }
         }
         
     }

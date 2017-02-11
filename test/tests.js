@@ -60,6 +60,7 @@ describe('loading express', function () {
     it('responds to /', function testSlash(done) {
         request(server)
         .get('/')
+        .expect('Content-Type', 'text/html; charset=utf-8')
         .expect(200, done);
     });
 
