@@ -55,6 +55,9 @@ describe('loading express', function () {
         .expect(200, done);
     });
 
+    var userSchema = ["name", "email", "age", "location"];
+    var locationSchema = ["coordinates", "type"];
+
     it('responds to /api/users', function testPath(done) {
         request(server)
         .get('/api/users')
@@ -62,13 +65,13 @@ describe('loading express', function () {
         .expect(200, (err, res) => {
             var cnt = 0;
             res.body.forEach(function(elem) {
-                assert.notEqual(elem["_id"], undefined, "_id is undefined");
-                assert.notEqual(elem["name"], undefined, "name is undefined");
-                assert.notEqual(elem["email"], undefined, "email is undefined");
-                //assert.notEqual(elem["age"], undefined, "age is undefined");
-                //assert.notEqual(elem["location"], undefined, "location is undefined");
-                //assert.notEqual(elem.location["coordinates"], undefined);
-                //assert.notEqual(elem.location["type"], undefined);
+                userSchema.forEach(function(field) {
+                    assert.notEqual(elem[field], undefined, "Undefined field: " + field);
+                });
+                locationSchema.forEach(function(field) {
+                    var loc = elem["location"];
+                    assert.notEqual(loc[field], undefined, "Undefined field: location. " + field);
+                });
                 cnt++;
             });
 
