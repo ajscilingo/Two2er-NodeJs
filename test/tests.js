@@ -6,7 +6,7 @@ const request = require('supertest');
 // access the Mocha context.  More Info here: https://mochajs.org/#arrow-functions
 
 describe('loading express', function () {
-    
+    this.timeout(5000);
     // we need to create a new connection/instance 
     // and close the previous instance
     // of our server before each test so 
@@ -44,17 +44,17 @@ describe('loading express', function () {
     // is NOT closed - we need to pass
     // mocha's done callback to close
 
-    afterEach( (done) => {
+    afterEach( function (done) {
          server.close(done);
     });
 
-    it('responds to /', (done) => {
+    it('responds to /', function testSlash(done) {
         request(server)
         .get('/')
         .expect(200, done);
     });
 
-    it('responds to /api/users', (done) => {
+    it('responds to /api/users', function testPath(done) {
         request(server)
         .get('/api/users')
         .expect(200, done);
