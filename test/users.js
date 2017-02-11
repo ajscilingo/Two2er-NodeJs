@@ -72,10 +72,90 @@ describe('Running user tests\n', function() {
         });
     });
 
-    // it('Test post to /api/users', function test(done) {
+    it('Test POST to /api/users', function test(done) {
+        request(server)
+        .post('/api/users')
+        .send({
+            name: 'TestUserName',
+            email: 'test@gmail.com',
+            age: '100',
+            location: {
+                coordinates: [10,10],
+                type: 'Point'
+            }
+        })
+        .end(done);
+    });
+
+    it('Test GET /getUserByName/:name returns user by name', function test(done) {
+        request(server)
+        .get('/api/users/getUserByName/FindUserByNameTest')
+        .set('Accept', 'application/json')
+        .expect(200, function (err, res) {
+            if (err) return done(err);
+            var user = res.body;
+            var loc = user['location'];
+            assert.equal(user['name'], 'FindUserByNameTest');
+            assert.equal(user['email'], 'fubnt@gmail.com');
+            assert.equal(user['age'], '100');
+            assert.equal(loc['coordinates'][0], 10);
+            assert.equal(loc['coordinates'][1], 10);
+            assert.equal(loc['type'], 'Point');
+            done();
+        });
+    });
+
+    it('Test GET /getUserByEmail/:email returns user by email', function test(done) {
+        request(server)
+        .get('/api/users/getUserByEmail/fubnt@gmail.com')
+        .set('Accept', 'application/json')
+        .expect(200, function (err, res) {
+            if (err) return done(err);
+            var user = res.body;
+            var loc = user['location'];
+            assert.equal(user['name'], 'FindUserByNameTest');
+            assert.equal(user['email'], 'fubnt@gmail.com');
+            assert.equal(user['age'], '100');
+            assert.equal(loc['coordinates'][0], 10);
+            assert.equal(loc['coordinates'][1], 10);
+            assert.equal(loc['type'], 'Point');
+            done();
+        });
+    });
+
+    it('Test GET /getUserById/:id returns user by id', function test(done) {
+        request(server)
+        .get('/api/users/getUserById/589f949d50a58817f851b492')
+        .set('Accept', 'application/json')
+        .expect(200, function (err, res) {
+            if (err) return done(err);
+            var user = res.body;
+            var loc = user['location'];
+            assert.equal(user['name'], 'FindUserByNameTest');
+            assert.equal(user['email'], 'fubnt@gmail.com');
+            assert.equal(user['age'], '100');
+            assert.equal(loc['coordinates'][0], 10);
+            assert.equal(loc['coordinates'][1], 10);
+            assert.equal(loc['type'], 'Point');
+            done();
+        });
+    });
+
+    it('Test GET /deleteByEmail/:email deletes user by email', function test(done) {
+        request(server)
+        .get('/api/users/deleteByEmail/test@gmail.com')
+        .set('Accept', 'application/json')
+        .expect(200, function (err, res) {
+            if (err) return done(err);
+            done();
+        });
+    });
+
+    // it('Test GET /deleteById/:id deletes a user by id', function test(done) {
     //     request(server)
     //     .post('/api/users')
     //     .send({
+    //         _id: '589f98e894759b1d2eb00001',
     //         name: 'TestUserName',
     //         email: 'test@gmail.com',
     //         age: '100',
@@ -84,31 +164,10 @@ describe('Running user tests\n', function() {
     //             type: 'Point'
     //         }
     //     })
-    //     .end(done);
-    // });
-
-    // it('/getUserByName/:name returns user by name', function test(done) {
-    //     request(server).post('/').send({
-    //         name: 'TestUserName',
-    //         email: 'test@gmail.com',
-    //         age: '100',
-    //         location: {
-    //             coordinates: [10,10],
-    //             type: 'Point'
-    //         }
-    //     });
-    //     request(server)
-    //     .get('api/getUserByName/TestUserName')
+    //     .get('/api/users/deleteById/589f98e894759b1d2eb00001')
     //     .set('Accept', 'application/json')
     //     .expect(200, function (err, res) {
-                // if (err) return done(err);
-    //         var testUser = res.body[0];
-    //         var loc = testUser['location'];
-    //         assert.equal(testUser['name'], 'TestUserName');
-    //         assert.equal(testUser['email'], 'test@gmail.com');
-    //         assert.equal(testUser['age'], '100');
-    //         console.log(loc['coordinates']);
-    //         assert.equal(loc['type'], 'Point');
+    //         if (err) return done(err);
     //         done();
     //     });
     // });

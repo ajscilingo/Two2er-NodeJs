@@ -18,13 +18,13 @@ describe('Running Tests', function () {
     describe('Loading users tests', function() {
         require('./users.js');
     })
-    describe('Loading student tests', function() {
-        require('./students.js');
-    })
-    describe('Loading tutor tests', function() {
-        require('./tutors.js');
-    })
-    describe('Loading user location tests', function() {
-        require('./userlocations.js');
-    })
+    // describe('Loading student tests', function() {
+    //     require('./students.js');
+    // })
+    // describe('Loading tutor tests', function() {
+    //     require('./tutors.js');
+    // })
+    // describe('Loading user location tests', function() {
+    //     require('./userlocations.js');
+    // })
 });
