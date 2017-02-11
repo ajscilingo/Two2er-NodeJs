@@ -1,7 +1,11 @@
 // supertest - a SuperAgent driven library for testing HTTP Servers
 const request = require('supertest');
 
-describe('loading express', () => {
+// NOTE: Passing arrow functions (“lambdas”) to Mocha is discouraged. 
+// Due to the lexical binding of 'this', such functions are unable to 
+// access the Mocha context.  More Info here: https://mochajs.org/#arrow-functions
+
+describe('loading express', function () {
     
     // we need to create a new connection/instance 
     // and close the previous instance
@@ -15,7 +19,17 @@ describe('loading express', () => {
     // fails or passes.
     
     var server;
-    beforeEach( () => {
+    
+    beforeEach( function () {
+        
+        // each call to require caches the object and path internally
+        // in nodejs, so when we close the server object nodejs 
+        // this server object doesn't get recreated because 
+        // node already keeps track of the first creation of it
+        // therefore we need to force delete it from node's cache.
+        // so we can re-instantiate server.
+
+        delete require.cache[require.resolve('../app')];
         server = require('../app');
     });
     
@@ -40,7 +54,7 @@ describe('loading express', () => {
         .expect(200, done);
     });
 
-    it('responds to /api/users', (done) =>{
+    it('responds to /api/users', (done) => {
         request(server)
         .get('/api/users')
         .expect(200, done);

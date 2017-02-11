@@ -13,14 +13,17 @@ const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 // updated the socketOption connectionTimeout to connectTimeoutMS as stated here 
 // http://mongodb.github.io/node-mongodb-native/2.1/api/Server.html
 
-mongoose.connect(url, {
-    server : {
-        socketOptions : {
-            socketTimeoutMS: 0,
-            connectTimeoutMS: 30000
-        }
-    }
-});
+// if mongoose connection disconnected, connect to it.
+if(mongoose.connection.readyState == 0){
+  mongoose.connect(url, {
+      server : {
+          socketOptions : {
+              socketTimeoutMS: 0,
+              connectTimeoutMS: 30000
+          }
+      }
+  });
+}
 
 // express module is needed for running as an http server
 const express = require('express');
@@ -80,7 +83,10 @@ app.use('/apiauth/tutorlocations', stormpath.authenticationRequired, tutorLocati
 // listen on port 8080 unless otherwise specified
 var port = process.env.PORT || 8080; 
 
-app.listen(port);
+// make a reference to the http.Server object that
+// is returned by app.listen() that we'll want to 
+// export out for out test cases
+var server = app.listen(port);
 console.log(`Listening on port ${port}`);
 
 // Stormpath will let you know when it's ready to start authenticating users.
@@ -88,5 +94,16 @@ app.on('stormpath.ready', function () {
   console.log('Stormpath Ready!');
 });
 
-// exporting this module out so we can use it in our test cases
-module.exports = app;
+// if this process has been signaled to end
+// close the connection to mongodb
+process.on('SIGINT', () => {
+  mongoose.connection.close( () => {
+    console.log('Process ending, closing connection to mongodb');
+    process.exit(0);
+  });
+});
+
+
+// exporting http.Server from app.listen() out so we 
+// can use it in our test cases
+module.exports = server;
