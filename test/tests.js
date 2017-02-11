@@ -1,9 +1,15 @@
-// supertest - a SuperAgent driven library for testing HTTP Servers
-const request = require('supertest');
+// NOTE 1: Be mindful not to commit usages of test cases with it.only() or 
+// describe.only() to version control, unless you really mean it!
 
-// NOTE: Passing arrow functions (“lambdas”) to Mocha is discouraged. 
+// NOTE 2: Use it.skip or describe.skip instead of commenting test cases out
+// Don’t do nothing! A test should make an assertion or use this.skip().
+
+// NOTE 3: Passing arrow functions (“lambdas”) to Mocha is discouraged. 
 // Due to the lexical binding of 'this', such functions are unable to 
 // access the Mocha context.  More Info here: https://mochajs.org/#arrow-functions
+
+// supertest - a SuperAgent driven library for testing HTTP Servers
+const request = require('supertest');
 
 describe('loading express', function () {
     this.timeout(5000);
