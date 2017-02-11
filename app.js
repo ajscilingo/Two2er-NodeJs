@@ -81,9 +81,12 @@ app.use('/apiauth/tutorlocations', stormpath.authenticationRequired, tutorLocati
 var port = process.env.PORT || 8080; 
 
 app.listen(port);
-console.log('Listening on port ' + port);
+console.log(`Listening on port ${port}`);
 
 // Stormpath will let you know when it's ready to start authenticating users.
 app.on('stormpath.ready', function () {
   console.log('Stormpath Ready!');
 });
+
+// exporting this module out so we can use it in our test cases
+module.exports = app;
