@@ -105,6 +105,17 @@ describe('Running user tests\n', function() {
         });
     });
 
+    it('Test GET /getUserByName/:name for non-existant user', function test(done) {
+        request(server)
+        .get('/api/users/getUserByName/asdf')
+        .set('Accept', 'application/json')
+        .expect(200, function (err, res) {
+            if (err) return done(err);
+            assert.equal(res.body, null);
+            done();
+        });
+    });
+
     it('Test GET /getUserByEmail/:email returns user by email', function test(done) {
         request(server)
         .get('/api/users/getUserByEmail/fubnt@gmail.com')
@@ -123,6 +134,17 @@ describe('Running user tests\n', function() {
         });
     });
 
+    it('Test GET /getUserByEmail/:email for non-existant user', function test(done) {
+        request(server)
+        .get('/api/users/getUserByEmail/asdf@gmail.com')
+        .set('Accept', 'application/json')
+        .expect(200, function (err, res) {
+            if (err) return done(err);
+            assert.equal(res.body, null);
+            done();
+        });
+    });
+
     it('Test GET /getUserById/:id returns user by id', function test(done) {
         request(server)
         .get('/api/users/getUserById/589f949d50a58817f851b492')
@@ -137,6 +159,17 @@ describe('Running user tests\n', function() {
             assert.equal(loc['coordinates'][0], 10);
             assert.equal(loc['coordinates'][1], 10);
             assert.equal(loc['type'], 'Point');
+            done();
+        });
+    });
+
+    it('Test GET /getUserById/:id returns user by id', function test(done) {
+        request(server)
+        .get('/api/users/getUserById/asdf')
+        .set('Accept', 'application/json')
+        .expect(200, function (err, res) {
+            if (err) return done(err);
+            assert.equal(res.body, null);
             done();
         });
     });

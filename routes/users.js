@@ -77,17 +77,22 @@ router.get('/getUserByEmail/:email', (req, res) => {
 
 //get user by mongo _id field
 router.get('/getUserById/:id', (req, res) => {
-
     console.log(`${req.ip} is doing a GET via /uses/getUserById/${req.params.id}`);
 
-    var user_id = mongoose.Types.ObjectId(req.params.id);
-    
-    User.findOne({ _id: user_id}, (err, user) => {
-        if(err)
-            res.status(404).send(err);
-        res.json(user);
-     });
-
+    try
+    {
+        var user_id = mongoose.Types.ObjectId(req.params.id);
+        User.findOne({ _id: user_id}, (err, user) => {
+            if(err)
+                res.status(404).send(err);
+            res.json(user);
+        });
+    }
+    catch (ex)
+    {
+        //console.log(ex);
+        res.json(null);
+    }
 });
 
 // delete user from user collection by mongo _id field 
