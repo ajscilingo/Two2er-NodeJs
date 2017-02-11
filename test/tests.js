@@ -1,12 +1,13 @@
 // supertest - a SuperAgent driven library for testing HTTP Servers
 const request = require('supertest');
+const assert = require('assert');
 
 // NOTE: Passing arrow functions (“lambdas”) to Mocha is discouraged. 
 // Due to the lexical binding of 'this', such functions are unable to 
 // access the Mocha context.  More Info here: https://mochajs.org/#arrow-functions
 
 describe('loading express', function () {
-    this.timeout(5000);
+    this.timeout(10000);
     // we need to create a new connection/instance 
     // and close the previous instance
     // of our server before each test so 
@@ -57,6 +58,23 @@ describe('loading express', function () {
     it('responds to /api/users', function testPath(done) {
         request(server)
         .get('/api/users')
-        .expect(200, done);
+        .set('Accept', 'application/json')
+        .expect(200, (err, res) => {
+            var cnt = 0;
+            res.body.forEach(function(elem) {
+                assert.notEqual(elem["_id"], undefined, "_id is undefined");
+                assert.notEqual(elem["name"], undefined, "name is undefined");
+                assert.notEqual(elem["email"], undefined, "email is undefined");
+                //assert.notEqual(elem["age"], undefined, "age is undefined");
+                //assert.notEqual(elem["location"], undefined, "location is undefined");
+                //assert.notEqual(elem.location["coordinates"], undefined);
+                //assert.notEqual(elem.location["type"], undefined);
+                cnt++;
+            });
+
+            assert.notEqual(cnt, 0);
+
+            done();
+        });
     });
 });
