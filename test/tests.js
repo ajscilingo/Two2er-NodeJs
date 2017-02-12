@@ -8,16 +8,22 @@
 // Due to the lexical binding of 'this', such functions are unable to 
 // access the Mocha context.  More Info here: https://mochajs.org/#arrow-functions
 
-// supertest - a SuperAgent driven library for testing HTTP Servers
-const request = require('supertest');
-
 describe('Running Tests', function () {
+    
+    describe('Loading Mongo tests', function () {
+        require('./mongoConnectTest.js');
+    });
+
+    describe('Loading Mongo Model tests', function () {
+        require('./mongoUserModelTest.js');
+    });
+
     describe('Loading root test', function() {
         require('./root.js');
-    })
+    });
     describe('Loading users tests', function() {
         require('./users.js');
-    })
+    });
     // describe('Loading student tests', function() {
     //     require('./students.js');
     // })

@@ -1,5 +1,9 @@
+// supertest - a SuperAgent driven library for testing HTTP Servers
 const request = require('supertest');
+
+// using nodejs's built-in assert
 const assert = require('assert');
+
 const schemas = require('./schemadefinitions.js');
 
 describe('Running students tests\n', function() {
