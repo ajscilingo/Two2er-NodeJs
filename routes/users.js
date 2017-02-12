@@ -20,8 +20,10 @@ router.post ( '/', function (req, res) {
     // e.g if user.name is last it will appear first in the JSON 
 
     var user = new User();
-    user.location = req.body.location;
-    user.age = req.body.age;
+    // if no location is provided create default location 
+    user.location = (req.body.location ? req.body.location : {type: "Point", coordinates: [-87.625475, 41.878294]});
+    // if no age provided default to 0
+    user.age = (req.body.age ? req.body.age : 0);
     user.email = req.body.email;        
     user.name = req.body.name;
     
