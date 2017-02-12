@@ -14,8 +14,16 @@ describe('Running Tests', function () {
         require('./mongoConnectTest.js');
     });
 
-    describe('Loading Mongo Model tests', function () {
+    describe('Loading Mongo User Model tests', function () {
         require('./mongoUserModelTest.js');
+    });
+
+    describe('Loading Mongo Student Model tests', function () {
+        require('./mongoStudentModelTest.js')
+    });
+
+    describe('Loading Mongo Tutor Model tests', function () {
+        require('./mongoTutorModelTest.js')
     });
 
     describe('Loading root test', function() {

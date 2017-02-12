@@ -85,8 +85,12 @@ describe("MongoDB User Model Test", function () {
         user.save( (err, product, numAffected) => {
             if(err)
                 done(err);
+            // assert that new document exists
             assert.notEqual(product, undefined);
+            // assert only 1 document affected
             assert.equal(numAffected, 1);
+            // assert properties of document as specified 
+            // above
             assert.equal(product.age, 25);
             assert.equal(product.email, "testUser1234@two2er.com");
             assert.equal(product.name, "Test User 1234");
