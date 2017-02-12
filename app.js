@@ -5,6 +5,10 @@ const path = require('path');
 // // Connection String for our Two2er Mongodb Database
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 
+// fix for event emitters / memory leak error
+// https://github.com/npm/npm/issues/13806
+require('events').EventEmitter.defaultMaxListeners = Infinity;
+
 // Connect to MongoDB through mongoose
 // connection seems to timeout after sometime
 // going to add some attributes as noted here
@@ -12,6 +16,11 @@ const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 // mongoose.connect(url)
 // updated the socketOption connectionTimeout to connectTimeoutMS as stated here 
 // http://mongodb.github.io/node-mongodb-native/2.1/api/Server.html
+
+// change mongoose to use NodeJS global promises to supress promise deprication warning.
+// and to use NodeJS's Promises.
+// https://github.com/Automattic/mongoose/issues/4291
+mongoose.Promise = global.Promise;
 
 // if mongoose connection disconnected, connect to it.
 if(mongoose.connection.readyState == 0){

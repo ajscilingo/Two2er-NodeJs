@@ -12,6 +12,10 @@ const assert = require('assert');
 // Connection String for our Two2er Mongodb Database
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 
+// change mongoose to use NodeJS global promises to supress promise deprication warning.
+// https://github.com/Automattic/mongoose/issues/4291
+mongoose.Promise = global.Promise;
+
 describe('MongoDB Connection Test', function () {
 
     before(function () {
