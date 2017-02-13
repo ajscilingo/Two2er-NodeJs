@@ -220,7 +220,7 @@ describe('Running user tests\n', function() {
     it('Test Get /exportToKML', function test(done) {
         request(server)
         .get('/api/users/exportToKML')
-        .expect('Content-Type', /xml/)
+        .expect('Content-Type', 'application/vnd.google-earth.kml+xml; charset=utf-8')
         .expect(200, function (err, res) {
             if(err) return done(err);
             done();

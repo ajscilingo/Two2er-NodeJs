@@ -198,7 +198,7 @@ router.get('/exportToKML', (req, res) => {
         });
 
         // render as xml not html
-        res.set('Content-Type', 'text/xml').send(kmlDocument);
+        res.set('Content-Type', 'application/vnd.google-earth.kml+xml').send(kmlDocument);
     });
 });
 
