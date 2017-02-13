@@ -197,7 +197,8 @@ router.get('/exportToKML', (req, res) => {
             documentDescription: 'Locations of all our users'
         });
 
-        res.send(kmlDocument);
+        // render as xml not html
+        res.set('Content-Type', 'text/xml').send(kmlDocument);
     });
 });
 
