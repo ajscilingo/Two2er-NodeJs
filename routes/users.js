@@ -4,6 +4,7 @@ const Tutor = require('../models/tutor.js');
 const Student = require('../models/student.js');
 const dateFormat = require('dateformat');
 const mongoose = require('mongoose');
+const kml = require('tokml');
 
 // a middleware function with no mount path. This code is executed for every request to the router
 router.use( (req, res, next) => {
@@ -50,7 +51,7 @@ router.get( '/', (req, res) => {
             res.status(404).send(err);
         
         res.json(users);
-    })
+    });
 });
 
 // get user with name like <name> (accessed via GET http://localhost:8080/api/users/<name>)
@@ -176,5 +177,28 @@ router.get('/findWithin/milesLonLat/:distance/:lon/:lat', (req, res) => {
     });
 });
 
+router.get('/exportToKML', (req, res) => {
+     console.log(`${req.ip} is doing a GET via /exportToKML`);
+     
+     // locations as KML
+     var locations = {type : "FeatureCollection", features : []};
+
+     User.find( (err, users) => {
+        if(err) 
+            res.status(404).send(err);
+
+        users.forEach( (user) => {
+            locations.features.push({type: "Feature", geometry: user.location, properties: {name: user.name, age: user.age, email: user.email}});
+        });
+        
+        var kmlDocument = kml(locations, {
+            name: 'name',
+            documentName: 'User Locations',
+            documentDescription: 'Locations of all our users'
+        });
+
+        res.send(kmlDocument);
+    });
+});
 
 module.exports = router;

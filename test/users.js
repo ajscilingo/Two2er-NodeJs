@@ -98,8 +98,8 @@ describe('Running user tests\n', function() {
             assert.equal(user['name'], 'FindUserByNameTest');
             assert.equal(user['email'], 'fubnt@gmail.com');
             assert.equal(user['age'], '100');
-            assert.equal(loc['coordinates'][0], 10);
-            assert.equal(loc['coordinates'][1], 10);
+            assert.equal(loc['coordinates'][0], -87.603545);
+            assert.equal(loc['coordinates'][1], 41.891667);
             assert.equal(loc['type'], 'Point');
             done();
         });
@@ -127,8 +127,8 @@ describe('Running user tests\n', function() {
             assert.equal(user['name'], 'FindUserByNameTest');
             assert.equal(user['email'], 'fubnt@gmail.com');
             assert.equal(user['age'], '100');
-            assert.equal(loc['coordinates'][0], 10);
-            assert.equal(loc['coordinates'][1], 10);
+            assert.equal(loc['coordinates'][0], -87.603545);
+            assert.equal(loc['coordinates'][1], 41.891667);
             assert.equal(loc['type'], 'Point');
             done();
         });
@@ -156,8 +156,8 @@ describe('Running user tests\n', function() {
             assert.equal(user['name'], 'FindUserByNameTest');
             assert.equal(user['email'], 'fubnt@gmail.com');
             assert.equal(user['age'], '100');
-            assert.equal(loc['coordinates'][0], 10);
-            assert.equal(loc['coordinates'][1], 10);
+            assert.equal(loc['coordinates'][0], -87.603545);
+            assert.equal(loc['coordinates'][1], 41.891667);
             assert.equal(loc['type'], 'Point');
             done();
         });
