@@ -58,7 +58,7 @@ app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
 // Miles in terms of Meters for geospatial queries
-// Making Global (no var keyword) so All our Modules can access it
+// Making global (no var keyword) so all our modules can access it
 METERS_IN_MILES = 1609.34;
 
 var users = require('./routes/users');

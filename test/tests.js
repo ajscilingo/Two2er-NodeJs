@@ -8,6 +8,10 @@
 // Due to the lexical binding of 'this', such functions are unable to 
 // access the Mocha context.  More Info here: https://mochajs.org/#arrow-functions
 
+// Miles in terms of Meters for geospatial queries
+// Making global (no var keyword) so all our test modules can access it
+METERS_IN_MILES = 1609.34;
+
 describe('Running Tests', function () {
     
     describe('Loading Mongo tests', function () {

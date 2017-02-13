@@ -184,6 +184,38 @@ describe('Running user tests\n', function() {
         });
     });
 
+    it('Test GET /findWithin/milesLonLat/1/-87.6663/41.935314', function test(done) {
+        request(server)
+        .get('/api/users/findWithin/milesLonLat/1/-87.6663/41.935314')
+        .set('Accept', 'application/json')
+        .expect(200, function (err, res) {
+            if(err) return done(err);
+            assert.equal(res.body.length, 3);
+            done();   
+        });
+    });
+
+    it('Test GET /findWithin/milesLonLat/2/-87.6663/41.935314', function test(done) {
+        request(server)
+        .get('/api/users/findWithin/milesLonLat/2/-87.6663/41.935314')
+        .set('Accept', 'application/json')
+        .expect(200, function (err, res) {
+            if(err) return done(err);
+            assert.equal(res.body.length, 4);
+            done();   
+        });
+    });
+
+    it('Test GET /findWithin/milesLonLat/4/-87.6663/41.935314', function test(done) {
+        request(server)
+        .get('/api/users/findWithin/milesLonLat/4/-87.6663/41.935314')
+        .set('Accept', 'application/json')
+        .expect(200, function (err, res) {
+            if(err) return done(err);
+            assert.equal(res.body.length, 5);
+            done();   
+        });
+    });
     // it('Test GET /deleteById/:id deletes a user by id', function test(done) {
     //     request(server)
     //     .post('/api/users')

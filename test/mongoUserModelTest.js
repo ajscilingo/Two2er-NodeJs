@@ -128,4 +128,98 @@ describe("MongoDB User Model Test", function () {
             }
         });
     });
+
+  it("Geospatial Search - 1 Mile", function searchByLocation(done) {
+    
+    // search 1 mile in distance
+    var distance = 1 * METERS_IN_MILES;
+
+    var geoSpatialQuery = User.find({
+        'location' : {
+            $nearSphere : {
+                $geometry : {
+                    type: "Point",
+                    coordinates : [ -87.6663, 
+                                   41.935314
+                                ]
+                },
+                $maxDistance : distance
+            }
+        }   
+    });
+
+    geoSpatialQuery.exec( (err, users) => {
+        if(err) 
+            done(err);
+        else{
+            // assert that there are three users in this 1 mile search
+            assert.equal(users.length, 3);
+            done();
+        }
+    });
+
+  });
+
+  it("Geospatial Search - 2 Mile", function searchByLocation(done) {
+    
+    // search 2 miles in distance
+    var distance = 2 * METERS_IN_MILES;
+
+    var geoSpatialQuery = User.find({
+        'location' : {
+            $nearSphere : {
+                $geometry : {
+                    type: "Point",
+                    coordinates : [ -87.6663, 
+                                   41.935314
+                                ]
+                },
+                $maxDistance : distance
+            }
+        }   
+    });
+
+    geoSpatialQuery.exec( (err, users) => {
+        if(err) 
+            done(err);
+        else{
+            // assert that there are 4 users in this 2 mile search
+            assert.equal(users.length, 4);
+            done();
+        }
+    });
+
+  });
+
+  it("Geospatial Search - 4 Mile", function searchByLocation(done) {
+    
+    // search 4 miles in distance
+    var distance = 4 * METERS_IN_MILES;
+
+    var geoSpatialQuery = User.find({
+        'location' : {
+            $nearSphere : {
+                $geometry : {
+                    type: "Point",
+                    coordinates : [ -87.6663, 
+                                   41.935314
+                                ]
+                },
+                $maxDistance : distance
+            }
+        }   
+    });
+
+    geoSpatialQuery.exec( (err, users) => {
+        if(err) 
+            done(err);
+        else{
+            // assert that there are 5 users in this 4 mile search
+            assert.equal(users.length, 5);
+            done();
+        }
+    });
+
+  });    
+
 });
