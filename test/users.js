@@ -216,6 +216,16 @@ describe('Running user tests\n', function() {
             done();   
         });
     });
+
+    it('Test Get /exportToKML', function test(done) {
+        request(server)
+        .get('/api/users/exportToKML')
+        .expect('Content-Type', /xml/)
+        .expect(200, function (err, res) {
+            if(err) return done(err);
+            done();
+        });
+    });
     // it('Test GET /deleteById/:id deletes a user by id', function test(done) {
     //     request(server)
     //     .post('/api/users')

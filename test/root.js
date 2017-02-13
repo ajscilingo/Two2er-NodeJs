@@ -17,6 +17,7 @@ describe('Running root server tests\n', function() {
     it('responds to /', function testSlash(done) {
         request(server)
         .get('/')
+        .expect('Content-Type', /html/)
         .expect(200, done);
     });
 });
