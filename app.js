@@ -1,3 +1,5 @@
+// making a comment
+
 // connect to our MongoDB through mongoose module
 const mongoose = require('mongoose');
 // built in package for getting path data

@@ -202,4 +202,8 @@ router.get('/exportToKML', (req, res) => {
     });
 });
 
+router.get('/TestUpdate', (req, res) => {
+    
+});
+
 module.exports = router;
