@@ -57,15 +57,11 @@ router.use(function (req, res, next) {
 
 router.get('/', (req, res) =>{
     res.render("index", {
-        userSection: "User Endpoints",
+        captionSection: "Routes",
         userRoutes : userRoutes,
-        tutorSection: "Tutor Endpoints",
         tutorRoutes: tutorRoutes,
-        studentSection: "Student Endpoints",
         studentRoutes: studentRoutes,
-        tutorLocationSection: "Tutor Location Endpoints",
         tutorLocationRoutes: tutorLocationRoutes,
-        studentLocationSection: "Student Location Endpoints:",
         studentLocationRoutes: studentLocationRoutes   
     });
 });
@@ -78,10 +74,13 @@ function getRoute(rname, r) {
         if(r.route.methods){
             var methods = r.route.methods;
             if(methods.get && methods.get == true){
-               route = "GET /api/" + rname + r.route.path;
+               route = ["GET", "/api/" + rname + r.route.path];
             }
             else if(methods.post && methods.post == true){
-                route = "POST /api/" + rname + r.route.path;
+                route = ["POST", "/api/" + rname + r.route.path];
+            }
+            else if(methods.delete && methods.delete == true){
+                route = ["DELETE", "/api/" + rname + r.route.path];
             }
         }
         

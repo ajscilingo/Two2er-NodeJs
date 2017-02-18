@@ -5,6 +5,10 @@ const path = require('path');
 // // Connection String for our Two2er Mongodb Database
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 
+// fix for event emitters / memory leak error
+// https://github.com/npm/npm/issues/13806
+require('events').EventEmitter.defaultMaxListeners = Infinity;
+
 // Connect to MongoDB through mongoose
 // connection seems to timeout after sometime
 // going to add some attributes as noted here
@@ -13,14 +17,22 @@ const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 // updated the socketOption connectionTimeout to connectTimeoutMS as stated here 
 // http://mongodb.github.io/node-mongodb-native/2.1/api/Server.html
 
-mongoose.connect(url, {
-    server : {
-        socketOptions : {
-            socketTimeoutMS: 0,
-            connectTimeoutMS: 30000
-        }
-    }
-});
+// change mongoose to use NodeJS global promises to supress promise deprication warning.
+// and to use NodeJS's Promises.
+// https://github.com/Automattic/mongoose/issues/4291
+mongoose.Promise = global.Promise;
+
+// if mongoose connection disconnected, connect to it.
+if(mongoose.connection.readyState == 0){
+  mongoose.connect(url, {
+      server : {
+          socketOptions : {
+              socketTimeoutMS: 0,
+              connectTimeoutMS: 30000
+          }
+      }
+  });
+}
 
 // express module is needed for running as an http server
 const express = require('express');
@@ -46,7 +58,7 @@ app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
 // Miles in terms of Meters for geospatial queries
-// Making Global (no var keyword) so All our Modules can access it
+// Making global (no var keyword) so all our modules can access it
 METERS_IN_MILES = 1609.34;
 
 var users = require('./routes/users');
@@ -60,6 +72,9 @@ var index = require('./routes/index');
 // otherwise the routes cannot access the body property on 
 // requests!
 
+// remove powered-by from headers
+app.disable('x-powered-by');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -71,14 +86,36 @@ app.use('/api/tutorlocations', tutorLocations);
 app.use('/', index);
 
 app.use('/apiauth/users', stormpath.authenticationRequired, users);
+app.use('/apiauth/tutors', stormpath.authenticationRequired, tutors);
+app.use('/apiauth/students', stormpath.authenticationRequired, students);
+app.use('/apiauth/studentlocations', stormpath.authenticationRequired, studentLocations);
+app.use('/apiauth/tutorlocations', stormpath.authenticationRequired, tutorLocations);
+
 
 // listen on port 8080 unless otherwise specified
-var port = process.env.PORT || 8080; 
+var port = process.env.PORT || 8081; 
 
-app.listen(port);
-console.log('Listening on port ' + port);
+// make a reference to the http.Server object that
+// is returned by app.listen() that we'll want to 
+// export out for out test cases
+var server = app.listen(port);
+console.log(`Listening on port ${port}`);
 
 // Stormpath will let you know when it's ready to start authenticating users.
 app.on('stormpath.ready', function () {
   console.log('Stormpath Ready!');
 });
+
+// if this process has been signaled to end
+// close the connection to mongodb
+process.on('SIGINT', () => {
+  mongoose.connection.close( () => {
+    console.log('Process ending, closing connection to mongodb');
+    process.exit(0);
+  });
+});
+
+
+// exporting http.Server from app.listen() out so we 
+// can use it in our test cases
+module.exports = server;
