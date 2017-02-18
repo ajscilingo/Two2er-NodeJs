@@ -12,7 +12,14 @@ const UserSchema = new Schema({
     name: {type: String, required: true},
     age: {type: Number, required: false},
     email: {type: String, required: true},       // adding userName filed
-    location: LocationSchema
+    location: LocationSchema,
+    school :[String],
+    admin : Boolean,
+    isstudent : Boolean,
+    istutor : Boolean,
+    about : String,
+    creationdate : Date,
+    defaultlocation : LocationSchema
 });
 
 // Make sure this attribute has a spatial index

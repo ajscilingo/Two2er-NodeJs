@@ -37,12 +37,10 @@ router.post ( '/', function (req, res) {
         
         res.json({message: `User: ${user.name} has been created!`});
     });
-
 });
 
 // get all the users (accessed via GET http://localhost:8080/api/users)
 router.get( '/', (req, res) => {
-
     // some logging 
     console.log(`${req.ip} is doing a GET via /users`);
 
