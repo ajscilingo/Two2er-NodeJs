@@ -92,8 +92,8 @@ app.use('/apiauth/studentlocations', stormpath.authenticationRequired, studentLo
 app.use('/apiauth/tutorlocations', stormpath.authenticationRequired, tutorLocations);
 
 
-// listen on port 8080 unless otherwise specified
-var port = process.env.PORT || 8081; 
+// listen on port 80 unless otherwise specified
+var port = process.env.PORT || 80; 
 
 // make a reference to the http.Server object that
 // is returned by app.listen() that we'll want to 
