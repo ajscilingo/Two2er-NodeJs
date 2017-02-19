@@ -34,7 +34,33 @@ router.post ( '/', function (req, res) {
     user.save( (err) => {
         if(err) 
             res.status(404).send(err);     
-        res.json({message: `User: ${user.name} has been created!`});
+       
+        else{
+            
+            // update StormPath to include user model id 
+            // if route reached by StormPath
+            // authenticated endpoint.
+            // doing this for faster access to look ups in student
+            // and tutor and locations collections
+            
+            if(req.user){
+                req.user.customData.user_id = user._id;
+                req.user.customData.save( (err) => {
+                    if (err) {
+                        res.status(400).send(`Oops! There was an error: ${err.userMessage}`);
+                    }
+                    else
+                        console.log(`_id: ${user._id}`)
+                        res.json({message: `StormPath Authenticated User: ${user.name} has been created!`});
+                });
+            }
+            // otherwise ignore stormpath if not 
+            // authenticated.
+            else{
+               console.log(`_id: ${user._id}`)
+        	   res.json({message: `User: ${user.name} has been created!`});
+            }
+	    }
     });
 });
 
