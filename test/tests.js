@@ -12,6 +12,10 @@
 // Making global (no var keyword) so all our test modules can access it
 METERS_IN_MILES = 1609.34;
 
+// Set Port to 8080 for Tests as it won't run on Port 80
+// on Dev machines
+process.env.PORT = 8080;
+
 describe('Running Tests', function () {
     
     describe('Loading Mongo tests', function () {
