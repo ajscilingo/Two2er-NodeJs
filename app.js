@@ -51,6 +51,9 @@ app.use(stormpath.init(app, {
   },
   application: {
     href: `https://api.stormpath.com/v1/applications/6yJKvDR268ysl0JYmZyJLp`
+  },
+  expand: {
+    customData: true
   }
 }));
 
