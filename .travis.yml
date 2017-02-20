@@ -1,4 +1,16 @@
 language: node_js
 node_js:
- - "stable"
+- stable
 script: npm test
+deploy:
+  provider: s3
+  access_key_id: AKIAIQI5PG7PW7ZEOQ7A
+  secret_access_key:
+    secure: owBM1JnDwgON7M7jniLs97tmtG6bU9z0Fg5ns4ZIi6vrYilTjz2P8wGfSGUp1D5cLokO5/DdFCezDJ2VR2805eyDwLfE3BgdJi7bwUM9iUmJ9MXzu2fGZjTNkcWGAckeVOKgJhaREM/0C/gIDGCFM0GoPWI/O4Gmi3bOs9BRWZmD3MsZ5Xrt6ODrnU2uzIbtVGCpXWZ26GshV6VIFvTAeZJafRXeHXoQF41m0fLNzjxJ0PhDsF+88y2RYL5AbgOHPSrw2DTVWIaAhRY+lBGMzIykALA3Muo3C4nXcMvMpkMIvvfnhIT1vSmc32/2qQc1sdBFu3OsN/S3Wj/APu3+Wn+Smx6uJwTl8bpVRO6R1M32ox+BUozWPfhdRKoHYMK229twW728JgC2eYT5FTWlkEoE6gIYE5mgGgcPJ2y+IPR07O/+xflY+RXSB/1KA9NzGTeGSeSH0UIWyl8wDBVVb/Vmqsk0dtR0oBD0GscCoeh6CDXOCgVBtcR8pPB1G9H5q4tdAgFdDRW7xyzQWDoE7tbpxiXDw9iP/XPZA3eF1lCjd/ULvFBErcIFMqIcBP1SSXo+CkRg62FbNjST1KTjOSDUHTzphfPACpCDmcf24hJXcrT9yWHsWEetCS8eVTUpjkCgP4gazygg6dIBdKgVMtQmYQlKUfFZemaYXe4Tsr8=
+  bucket: two2er
+  region: us-east-2
+  skip_cleanup: true
+  acl: bucket_owner_full_control
+  on:
+    repo: ajscilingo/two2er-nodejs
+    branch: dev
