@@ -51,6 +51,9 @@ app.use(stormpath.init(app, {
   },
   application: {
     href: `https://api.stormpath.com/v1/applications/6yJKvDR268ysl0JYmZyJLp`
+  },
+  expand: {
+    customData: true
   }
 }));
 
@@ -92,6 +95,17 @@ app.use('/apiauth/tutors', stormpath.authenticationRequired, tutors);
 app.use('/apiauth/students', stormpath.authenticationRequired, students);
 app.use('/apiauth/studentlocations', stormpath.authenticationRequired, studentLocations);
 app.use('/apiauth/tutorlocations', stormpath.authenticationRequired, tutorLocations);
+
+// used to catch errors
+app.use(errorHandler);
+
+// catches errors 
+function errorHandler (err, req, res, next) {
+  res.status(err.status).render("error", {
+       status: err.status,
+       message: err.message 
+    });
+}
 
 
 // listen on port 80 unless otherwise specified

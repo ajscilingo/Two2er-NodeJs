@@ -33,11 +33,35 @@ router.post ( '/', function (req, res) {
 
     user.save( (err) => {
         if(err) 
-            res.status(404).send(err);
-        
-        res.json({message: `User: ${user.name} has been created!`});
+            res.status(404).send(err);     
+       
+        else{
+            
+            // update StormPath to include user model id 
+            // if route reached by StormPath
+            // authenticated endpoint.
+            // doing this for faster access to look ups in student
+            // and tutor and locations collections
+            
+            if(req.user){
+                req.user.customData.user_id = user._id;
+                req.user.customData.save( (err) => {
+                    if (err) {
+                        res.status(400).send(`Oops! There was an error: ${err.userMessage}`);
+                    }
+                    else
+                        console.log(`_id: ${user._id}`)
+                        res.json({message: `StormPath Authenticated User: ${user.name} has been created!`});
+                });
+            }
+            // otherwise ignore stormpath if not 
+            // authenticated.
+            else{
+               console.log(`_id: ${user._id}`)
+        	   res.json({message: `User: ${user.name} has been created!`});
+            }
+	    }
     });
-
 });
 
 // get all the users (accessed via GET http://localhost:8080/api/users)
@@ -55,11 +79,14 @@ router.get( '/', (req, res) => {
 });
 
 // get user with name like <name> (accessed via GET http://localhost:8080/api/users/<name>)
-router.get('/getUserByName/:name', (req, res) => {    
+router.get('/getUserByName/:name?', (req, res) => {    
+    
+    var fullname = req.params.name ? req.params.name : (req.user ? req.user.fullName : 'FindUserByNameTest');
+
     // some logging 
     console.log(`${req.ip} is doing a GET via /users/getUserByName/${req.params.name}`);
     
-    User.findOne({ name: req.params.name}, (err, user) => {
+    User.findOne({ name: fullname}, (err, user) => {
         if(err) 
             res.status(404).send(err);
         res.json(user);
@@ -67,11 +94,13 @@ router.get('/getUserByName/:name', (req, res) => {
 });
 
 // get user by email 
-router.get('/getUserByEmail/:email', (req, res) => {
+router.get('/getUserByEmail/:email?', (req, res) => {
+
+    var email = req.params.email ? req.params.email : (req.user ? req.user.email : 'fubnt@gmail.com');
 
     console.log(`${req.ip} is doing a GET via /users/getUserByEmail/${req.params.email}`);
 
-    User.findOne({ email: req.params.email}, (err, user) => {
+    User.findOne({ email: email}, (err, user) => {
         if(err)
             res.status(404).send(err);
         res.json(user);
@@ -79,7 +108,8 @@ router.get('/getUserByEmail/:email', (req, res) => {
 });
 
 //get user by mongo _id field
-router.get('/getUserById/:id', (req, res) => {
+router.get('/getUserById/:id?', (req, res) => {
+
     console.log(`${req.ip} is doing a GET via /uses/getUserById/${req.params.id}`);
     
     try

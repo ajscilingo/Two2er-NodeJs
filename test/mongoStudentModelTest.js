@@ -72,6 +72,9 @@ describe("MongoDB Student Model Test", function () {
         user.email = "studentUser1234@two2er.com";
         user.name = "Student User 1234";
         user.location = {coordinates: [-87.6563, 41.935314], type: 'Point'};
+        user.isstudent = true;
+        user.istutor = false;
+        user.admin = false;
         
         user.save( (err, product, numAffected) => {
             if(err)
@@ -88,12 +91,16 @@ describe("MongoDB Student Model Test", function () {
             assert.equal(product.location.type, "Point");
             assert.equal(product.location.coordinates[0], -87.6563);
             assert.equal(product.location.coordinates[1], 41.935314);
+            assert.equal(product.isstudent, true);
+            assert.equal(product.istutor, false);
+            assert.equal(product.admin, false);
 
             var student = new Student();
             assert.notEqual(student, undefined);
 
             student.user_id = user._id;
             student.school = "DePaul University";
+            student.courses = ["Math", "English", "Science", "History"]
 
             student.save( (err, product, numAffected) => {
                 if(err)
@@ -106,6 +113,12 @@ describe("MongoDB Student Model Test", function () {
                 // above
                 assert.equal(product.user_id, user._id);
                 assert.equal(product.school, "DePaul University");
+                assert.equal(product.courses.length, 4);
+                assert.equal(product.courses.includes("Math"), true);
+                assert.equal(product.courses.includes("English"), true);
+                assert.equal(product.courses.includes("Science"), true);
+                assert.equal(product.courses.includes("History"), true);
+                assert.equal(product.courses.includes("P.E."), false);
                 done();
             });
 
