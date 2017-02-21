@@ -5,6 +5,10 @@ const request = require('supertest');
 const assert = require('assert');
 const schemas = require('./schemadefinitions.js');
 
+// module for making authenticated calls
+// .set('Authorization', 'Bearer ' + getToken())
+require('../stormpathclient.js');
+
 describe('Running user tests\n', function() {
     this.timeout(10000);
     
@@ -45,6 +49,32 @@ describe('Running user tests\n', function() {
 
     afterEach( function (done) {
             server.close(done);
+    });
+
+    it('Test GET all users from /apiauth/users', function testPath(done) {
+        request(server)
+        .get('/apiauth/users')
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer ' + getToken())
+        .expect(200, (err, res) => {
+            if (err) return done(err);
+            
+            var cnt = 0;
+            res.body.forEach(function(elem) {
+                schemas.userSchema.forEach(function(field) {
+                    assert.notEqual(elem[field], undefined, 'Undefined field: ' + field);
+                });
+                schemas.locationSchema.forEach(function(field) {
+                    var loc = elem['location'];
+                    assert.notEqual(loc[field], undefined, 'Undefined field: location. ' + field);
+                });
+                cnt++;
+            });
+
+            assert.notEqual(cnt, 0);
+
+            done();
+        });
     });
 
     it('Test GET all users from /api/users', function testPath(done) {
