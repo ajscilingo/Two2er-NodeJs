@@ -139,6 +139,12 @@ router.get('/deleteById/:id', (req, res) => {
     User.remove({_id : user_id}, (err, commandResult) => {
         if(err)
             res.status(404).send(err);
+        
+        // If a Stormpath profile exists, delete Stormpath account
+        if(req.user){
+            req.user.delete();
+        }
+        
         // commandResult is a command result, maybe investigate this further later
         res.json({message: `User ${user_id} removed`});
         console.log(`User ${user_id} removed`);
