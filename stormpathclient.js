@@ -1,4 +1,6 @@
 var token = '';
+var username = "Ksilha@gmail.com";
+var password = "Password123";
 var sp = require('stormpath');
 
 var client = new sp.Client({
@@ -20,8 +22,8 @@ client.getApplications({ name: 'Two2er' }, function (err, applications) {
     authenticator.authenticate({
         body: {
             grant_type: 'password',
-            username: 'Ksilha@gmail.com',
-            password: 'Password123'
+            username: username,
+            password: password
         }
     }, 
     function(err, result){
@@ -31,4 +33,8 @@ client.getApplications({ name: 'Two2er' }, function (err, applications) {
 
 getToken = function () {
     return this.token;
+}
+
+getUsername = function () {
+    return this.username;
 }

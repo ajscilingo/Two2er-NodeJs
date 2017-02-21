@@ -166,14 +166,18 @@ router.get('/deleteByEmail/:email', (req, res) => {
                             user.remove( (err, product) => {
                                 if(err)
                                     res.status(404).send(err);
-                                else
-                                    res.json({message: `User ${user._id} removed`})
+                                else {
+                                    // If a Stormpath profile exists, delete Stormpath account
+                                    if(req.user){
+                                        req.user.delete();
+                                    }
+                                    res.json({message: `User ${user._id} removed`});
+                                }
                             });
                     });
                 }
             });
         }
-        
      });
 
 });
