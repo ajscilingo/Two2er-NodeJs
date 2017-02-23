@@ -18,36 +18,47 @@ var studentLocationRoutes = [];
 // populate userRoutes
 users.stack.forEach( (r) => {
     var route = getRoute("users", r) 
-    if(route != null)
-        userRoutes.push(route);
+    if(route != null){
+        userRoutes.push(route.api);
+        userRoutes.push(route.apiauth);
+    }
 });
 
 // populate tutorRoutes
 tutors.stack.forEach( (r) => {
     var route = getRoute("tutors", r) 
-    if(route != null)
-        tutorRoutes.push(route);
+    if(route != null){
+        tutorRoutes.push(route.api);
+        tutorRoutes.push(route.apiauth);
+    }
 });
 
 // populate studentRoutes
 students.stack.forEach( (r) => {
     var route = getRoute("students", r) 
-    if(route != null)
-        studentRoutes.push(route);
+    if(route != null){
+        studentRoutes.push(route.api);
+        studentRoutes.push(route.apiauth);
+    }
 });
 
 // populate tutorLocationRoutes
 tutorLocations.stack.forEach( (r) => {
     var route = getRoute("tutorlocations", r) 
-    if(route != null)
-        tutorLocationRoutes.push(route);
+    if(route != null){
+        tutorLocationRoutes.push(route.api);
+        tutorLocationRoutes.push(route.apiauth);
+    }
 });
 
 // populate studentLocationRoutes
 studentLocations.stack.forEach( (r) => {
     var route = getRoute("studentlocations", r) 
-    if(route != null)
-        studentLocationRoutes.push(route);
+    if(route != null){
+        studentLocationRoutes.push(route.api);
+        studentLocationRoutes.push(route.apiauth);
+    }
+        
 });
 
 router.use(function (req, res, next) {
@@ -74,13 +85,13 @@ function getRoute(rname, r) {
         if(r.route.methods){
             var methods = r.route.methods;
             if(methods.get && methods.get == true){
-               route = ["GET", "/api/" + rname + r.route.path];
+               route = {apiauth:["GET", "/apiauth/" + rname + r.route.path], api:["GET", "/api/" + rname + r.route.path]};
             }
             else if(methods.post && methods.post == true){
-                route = ["POST", "/api/" + rname + r.route.path];
+                route = {apiauth:["POST", "/apiauth/" + rname + r.route.path], api:["POST", "/api/" + rname + r.route.path]};
             }
             else if(methods.delete && methods.delete == true){
-                route = ["DELETE", "/api/" + rname + r.route.path];
+                route = {apiauth:["DELETE", "/apiauth/" + rname + r.route.path], api:["DELETE", "/api/" + rname + r.route.path]};
             }
         }
         
