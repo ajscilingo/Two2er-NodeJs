@@ -4,6 +4,7 @@ node_js:
 script: npm test
 deploy:
   provider: elacticbeanstalk
+  edge: true
   app: Two2er
   env: LowCost-env
   bucket_name: elasticbeanstalk-us-east-2-120103986746
