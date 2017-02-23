@@ -3,7 +3,7 @@ node_js:
 - stable
 script: npm test
 deploy:
-- provider: elacticbeanstalk
+- provider: elasticbeanstalk
   edge: true
   app: Two2er
   env: LowCost-env
