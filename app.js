@@ -71,6 +71,7 @@ var tutors = require('./routes/tutors');
 var students = require('./routes/students');
 var tutorLocations = require('./routes/tutorlocations');
 var studentLocations = require('./routes/studentlocations');
+var booking = require('./routes/booking');
 var index = require('./routes/index');
 
 // We have to load bodyparser before loading any routes 
@@ -88,6 +89,7 @@ app.use('/api/tutors', tutors);
 app.use('/api/students', students);
 app.use('/api/studentlocations', studentLocations);
 app.use('/api/tutorlocations', tutorLocations);
+app.use('/api/booking', booking);
 app.use('/', index);
 
 app.use('/apiauth/users', stormpath.authenticationRequired, users);
@@ -95,6 +97,7 @@ app.use('/apiauth/tutors', stormpath.authenticationRequired, tutors);
 app.use('/apiauth/students', stormpath.authenticationRequired, students);
 app.use('/apiauth/studentlocations', stormpath.authenticationRequired, studentLocations);
 app.use('/apiauth/tutorlocations', stormpath.authenticationRequired, tutorLocations);
+app.use('/apiauth/booking', stormpath.authenticationRequired, booking);
 
 // used to catch errors
 app.use(errorHandler);
