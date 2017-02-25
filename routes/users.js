@@ -65,12 +65,14 @@ router.post ( '/', function (req, res) {
     });
 });
 
-router.post( '/update', function (req, res) {
-    
+// update for the current user
+router.post('/update', function (req, res) {
+    console.log(`${req.ip} is doing a POST via /users/update`)
+
     if (req.body.userid != null)
         var userid = req.body.userid;
     else
-        var userid = mongoose.Types.ObjectId(req.user.user_id);
+        var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
     
     User.findOne({ _id : userid }, (err, user) => {
         if (req.body.name != null)
@@ -89,6 +91,8 @@ router.post( '/update', function (req, res) {
             user.istutor = req.body.istutor;
         if (req.body.about != null)
             user.about = req.body.about;
+        if (req.body.defaultlocation != null)
+            user.defaultlocation = req.body.defaultlocation;
 
         user.save( (err) => {
             if (err)
@@ -104,6 +108,7 @@ router.get( '/', (req, res) => {
 
     // some logging 
     console.log(`${req.ip} is doing a GET via /users`);
+    console.log(req.user.customData.user_id);
 
     User.find( (err, users) => {
         if(err) 

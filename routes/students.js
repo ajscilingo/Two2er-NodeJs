@@ -25,6 +25,22 @@ router.post ('/', (req, res) => {
     });
 });
 
+router.post('/update', (req, res) => {
+    var userid = req.user.customData.user_id;
+
+    Student.findOne({user_id, userid}, (err, stu) => {
+        if (req.body.courses != null)
+            stu.courses = req.body.courses;
+        if (req.body.school != null)
+            stu.school = req.body.school;
+        stu.save((err) => {
+            if (err)
+                console.log(err);
+        });
+        res.json(stu);
+    });
+});
+
 // Get all students
 router.get('/', (req, res) => {
     console.log(`${req.ip} is doing a GET via /students`);

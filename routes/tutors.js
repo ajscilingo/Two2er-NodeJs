@@ -25,6 +25,27 @@ router.post('/', (req, res) => {
     });
 });
 
+router.post('/update', (req, res) => {
+    var userid = req.user.customData.user_id;
+    Tutor.findOne({user_id : userid}, (err, tut) => {
+        if (req.body.subjects != null)
+            tut.subjects = req.body.subjects;
+        if (req.body.rating != null)
+            tut.rating = req.body.rating;
+        if (req.body.qualification != null)
+            tut.qualification = req.body.qualification;
+        if (req.body.score != null)
+            tut.score = req.body.score;
+        if (req.body.availabilitynow != null)
+            tut.availabilitynow = req.body.availabilitynow;
+        tut.save((err) => {
+            if (err)
+                console.log(err);
+        });
+        res.json(tut);
+    });
+});
+
 // Get all tutors
 router.get('/', (req, res) => {
     console.log(`${req.ip} is doing a GET via /tutors`);
