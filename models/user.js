@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const LocationSchema = require('./schemas/location.js');
-
+const EducationSchema = require('./schemas/education.js');
 // use for creating schemas for our models
 const Schema = mongoose.Schema;
 
@@ -13,7 +13,7 @@ const UserSchema = new Schema({
     age: {type: Number, required: false},
     email: {type: String, required: true},       // adding userName filed
     location: LocationSchema,
-    school :[String],
+    education :[EducationSchema],
     admin : Boolean,
     isstudent : Boolean,
     istutor : Boolean,

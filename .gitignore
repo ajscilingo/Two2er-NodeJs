@@ -1,3 +1,4 @@
 # exclude node_modules folder
 node_modules
 .vscode/
+npm-debug.log
