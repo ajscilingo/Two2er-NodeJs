@@ -108,7 +108,6 @@ router.get( '/', (req, res) => {
 
     // some logging 
     console.log(`${req.ip} is doing a GET via /users`);
-    console.log(req.user.customData.user_id);
 
     User.find( (err, users) => {
         if(err) 
