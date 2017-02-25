@@ -40,4 +40,19 @@ describe('Running students tests\n', function() {
             done();
         });
     });
+
+    it('Test POST to /students/update', function test(done) {
+        request(server)
+        .post('/api/students/update')
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer ' + getToken())
+        .send({
+            user_id: "58b203f17a1674544d639a9e",
+            school: 'School',
+            courses: ['course1', 'course2'],
+            badfield: 'bad'
+        })
+        .expect(200)
+        .end(done);
+    });
 });

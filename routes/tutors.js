@@ -26,7 +26,10 @@ router.post('/', (req, res) => {
 });
 
 router.post('/update', (req, res) => {
-    var userid = req.user.customData.user_id;
+    if (req.body.user_id != null)
+        var userid = req.body.user_id;
+    else
+        var userid = req.user.customData.user_id;
     Tutor.findOne({user_id : userid}, (err, tut) => {
         if (err)
             console.log(err);

@@ -39,4 +39,25 @@ describe('Running tutors tests\n', function() {
             done();
         });
     });
+
+    it('Test POST to /tutors/update', function test(done) {
+        request(server)
+        .post('/api/tutors/update')
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer ' + getToken())
+        .send({
+            user_id: "58b203f17a1674544d639a9e",
+            subjects: ["subjectA", "subjectB"],
+            rating: 100,
+            qualification: ["qualA", "qualB"],
+            score: {
+                name: "ScoreName",
+                score: 99
+            },
+            availabilitynow: "true",
+            badfield: "bad"
+        })
+        .expect(200)
+        .end(done);
+    });
 });

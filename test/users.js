@@ -256,6 +256,41 @@ describe('Running user tests\n', function() {
             done();
         });
     });
+
+    it('Test POST to /users/update', function test(done) {
+        request(server)
+        .post('/api/users/update')
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer ' + getToken())
+        .send({
+            user_id: "58b2132c806176677fb29a82",
+            name: 'TestUserName',
+            email: 'test@gmail.com',
+            age: '100',
+            location: {
+                coordinates: [10,10],
+                type: 'Point'
+            },
+            education: {
+                school: "School",
+                frield: "Field",
+                degree: 1,
+                year: 2000,
+                inProgress: "true"
+            },
+            admin: "false",
+            isstudent: "true",
+            istutor: "false",
+            about: "about info",
+            defaultLocation: {
+                type: "Point",
+                coordinates: [10, 10]
+            },
+            badfield: 'bad'
+        })
+        .expect(200)
+        .end(done);
+    })
     // it('Test GET /deleteById/:id deletes a user by id', function test(done) {
     //     request(server)
     //     .post('/api/users')
