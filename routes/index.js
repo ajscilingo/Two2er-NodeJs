@@ -77,6 +77,7 @@ router.get('/', (req, res) =>{
     });
 });
 
+
 // helper function to populate route arrays with method (e.g. GET, POST) and http endpoint
 // takes in the route name definited in app.js as well as the actual router r definied by the separate routes
 function getRoute(rname, r) {

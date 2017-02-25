@@ -64,6 +64,14 @@ router.post ( '/', function (req, res) {
     });
 });
 
+router.post( '/update', function (req, res) {
+    var userid = mongoose.Types.ObjectId(req.user.user_id);
+    User.findOne({ _id : userid }, (err, user) => {
+        console.log(userid);
+        console.log(user);
+    });
+});
+
 // get all the users (accessed via GET http://localhost:8080/api/users)
 router.get( '/', (req, res) => {
 
