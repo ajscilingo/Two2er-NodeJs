@@ -28,6 +28,8 @@ router.post('/', (req, res) => {
 router.post('/update', (req, res) => {
     var userid = req.user.customData.user_id;
     Tutor.findOne({user_id : userid}, (err, tut) => {
+        if (err)
+            console.log(err);
         if (req.body.subjects != null)
             tut.subjects = req.body.subjects;
         if (req.body.rating != null)
