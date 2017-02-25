@@ -17,19 +17,20 @@ router.use(function (req, res, next) {
 // student has to be logged in and authenticated
 // through stormpath for this to work.
 // the student_user_id is obtained this way
+// remember to put date in epoch-time for storage
 
 router.post ('/request', (req, res) => {
 
-    console.log(`${req.ip} is doing a POST via /booking/request`)
+    console.log(`${req.ip} is doing a POST via /booking/request`);
 
     if(req.user){ 
 
         var booking = new Booking();
-
+        
+        booking.bookingcreationdate = Date.now();
+        booking.scheduledmeetingdate = req.body.scheduledmeetingdate;
+        booking.tutor_user_id = req.body.tutor_user_id;
         booking.student_user_id = req.user.customData.user_id;
-        tutor_user_id = req.body.tutor_user_id
-        scheduledmeetingdate = req.body.scheduledmeetingdate;
-        bookingcreationdate = Date.now();
 
         booking.save( (err) => {
             if(err) 
@@ -43,6 +44,69 @@ router.post ('/request', (req, res) => {
     else{
         res.json({student_user_id: 0});
     }
+});
+
+// Route for tutor to reject booking
+// Also used later if tutor needs to cancel
+router.post('/reject', (req, res) => {
+
+     console.log(`${req.ip} is doing a POST via /booking/reject`);
+
+     if(req.user){ 
+        Booking.findByIdAndUpdate(req.body.booking_id, {rejected: true}, (err, booking) =>{
+            if(err)
+                re.status(404).send(err);
+            else{
+                console.log(`Booking ${booking._id} has been rejected by ${req.user.customData.user_id}`);
+                res.json({message: `Booking ${booking._id} has been rejected by ${req.user.customData.user_id}`});
+            }
+        });
+     }
+     else{
+        res.json({tutor_user_id: 0});
+    }
+
+});
+
+// Route for tutor to confirm booking
+router.post('/confirm', (req, res) => {
+
+    console.log(`${req.ip} is doing a POST via /booking/confirm`)
+
+    if(req.user){ 
+        Booking.findByIdAndUpdate(req.body.booking_id, {confirmed: true}, (err, booking) =>{
+            if(err)
+                re.status(404).send(err);
+            else{
+                console.log(`Booking ${booking._id} has been confirmed by ${req.user.customData.user_id}`);
+                res.json({message: `Booking ${booking._id} has been confirmed by ${req.user.customData.user_id}`});
+            }
+        });
+     }
+     else{
+        res.json({tutor_user_id: 0});
+    }
+});
+
+// Route for student to cancel booking
+router.post('/cancel', (req, res) => {
+
+     console.log(`${req.ip} is doing a POST via /booking/cancel`)
+
+    if(req.user){ 
+        Booking.findByIdAndUpdate(req.body.booking_id, {cancelled: true}, (err, booking) => {
+            if(err)
+                re.status(404).send(err);
+            else{
+                console.log(`Booking ${booking._id} has been cancelled by ${req.user.customData.user_id}`);
+                res.json({message: `Booking ${booking._id} has been cancelled by ${req.user.customData.user_id}`});
+            }
+        });
+     }
+     else{
+        res.json({student_user_id: 0});
+    }
+
 });
 
 module.exports = router;

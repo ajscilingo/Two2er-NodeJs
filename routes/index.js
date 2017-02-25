@@ -7,6 +7,7 @@ const tutors = require('./tutors.js');
 const students = require('./students.js');
 const tutorLocations = require('./tutorlocations.js');
 const studentLocations = require('./studentlocations.js');
+const bookings =  require('./booking.js');
 
 // using arrays to store the route method (e.g. GET,POST) and http endpoint
 var userRoutes = [];
@@ -14,6 +15,7 @@ var tutorRoutes = [];
 var studentRoutes = [];
 var tutorLocationRoutes = [];
 var studentLocationRoutes = [];
+var bookingRoutes = [];
 
 // populate userRoutes
 users.stack.forEach( (r) => {
@@ -61,6 +63,16 @@ studentLocations.stack.forEach( (r) => {
         
 });
 
+// populate bookingRoutes
+bookings.stack.forEach( (r) => {
+    var route = getRoute("booking", r) 
+    if(route != null){
+        bookingRoutes.push(route.api);
+        bookingRoutes.push(route.apiauth);
+    }
+
+});
+
 router.use(function (req, res, next) {
   console.log('Time:', dateFormat(Date.now(),'dd-mmm-yyyy HH:mm:ss'));
   next();
@@ -73,7 +85,8 @@ router.get('/', (req, res) =>{
         tutorRoutes: tutorRoutes,
         studentRoutes: studentRoutes,
         tutorLocationRoutes: tutorLocationRoutes,
-        studentLocationRoutes: studentLocationRoutes   
+        studentLocationRoutes: studentLocationRoutes,
+        bookingRoutes: bookingRoutes   
     });
 });
 

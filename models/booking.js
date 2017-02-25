@@ -11,10 +11,11 @@ const Schema = mongoose.Schema;
 const BookingSchema = new Schema ({
     student_user_id: {type: Schema.Types.ObjectId, required: true, ref: User},  
     tutor_user_id: {type: Schema.Types.ObjectId, required: true, ref: User},   
-    schedulemeetingdate : Date,
+    scheduledmeetingdate : Date,
     confirmed : Boolean,
     bookingcreationdate : Date,
-    rejected: Boolean
+    rejected: Boolean,
+    cancelled: Boolean
 });
 
 module.exports = mongoose.model("Booking", BookingSchema);
