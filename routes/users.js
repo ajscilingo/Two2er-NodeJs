@@ -44,6 +44,7 @@ router.post ( '/', function (req, res) {
             // and tutor and locations collections
             
             if(req.user){
+                console.log(user._id);
                 req.user.customData.user_id = user._id;
                 req.user.customData.save( (err) => {
                     if (err) {
@@ -65,10 +66,36 @@ router.post ( '/', function (req, res) {
 });
 
 router.post( '/update', function (req, res) {
-    var userid = mongoose.Types.ObjectId(req.user.user_id);
+    
+    if (req.body.userid != null)
+        var userid = req.body.userid;
+    else
+        var userid = mongoose.Types.ObjectId(req.user.user_id);
+    
     User.findOne({ _id : userid }, (err, user) => {
-        console.log(userid);
-        console.log(user);
+        if (req.body.name != null)
+            user.name = req.body.name;
+        if (req.body.age != null)
+            user.age = req.body.age;
+        if (req.body.email != null)
+            user.email = req.body.email;
+        if (req.body.education != null)
+            user.education = req.body.education;
+        if (req.body.location != null)
+            user.location = req.body.location;
+        if (req.body.isstudent != null)
+            user.isstudent = req.body.isstudent;
+        if (req.body.istutor != null)
+            user.istutor = req.body.istutor;
+        if (req.body.about != null)
+            user.about = req.body.about;
+
+        user.save( (err) => {
+            if (err)
+                console.log(err);
+        });
+        
+        res.json(user);
     });
 });
 
