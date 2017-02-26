@@ -15,6 +15,11 @@ const Tutor = require('../models/tutor.js');
 // Connection String for our Two2er Mongodb Database
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 
+// Enums used for Educational Degrees
+const Degree = require('../enums/degree.js');
+// Enums used for User UserType
+const UserType = require('../enums/usertype.js');
+
 // change mongoose to use NodeJS global promises to supress promise deprication warning.
 // https://github.com/Automattic/mongoose/issues/4291
 mongoose.Promise = global.Promise;
@@ -73,40 +78,53 @@ describe("MongoDB Tutor Model Test", function () {
         user.name = "Tutor User 1234";
         user.location = {coordinates: [-87.65263, 41.934214], type: 'Point'};
         
-        user.save( (err, product, numAffected) => {
+        // Education History
+        user.education.push({school: "UIC", field: "Computer Science", degree: "BS", year: 2004, inProgress: false});
+        user.education.push({school: "UIC", field: "Software Engineering", degree: "MS", year: 2008, inProgress: false});
+        user.education.push({school: "UIC", field: "Computer Science", degree: "PHD", year: 2011, inProgress: false});
+
+        // Add to Tutors User Group
+        user.usergroups.push('Tutor');
+
+        user.save( (err, user_product, numAffected) => {
             if(err)
                 done(err);
             // assert that new document exists
-            assert.notEqual(product, undefined);
+            assert.notEqual(user_product, undefined);
             // assert only 1 document affected
             assert.equal(numAffected, 1);
             // assert properties of document as specified 
             // above
-            assert.equal(product.age, 27);
-            assert.equal(product.email, "tutorUser1234@two2er.com");
-            assert.equal(product.name, "Tutor User 1234");
-            assert.equal(product.location.type, "Point");
-            assert.equal(product.location.coordinates[0], -87.65263);
-            assert.equal(product.location.coordinates[1], 41.934214);
+            assert.equal(user_product.age, 27);
+            assert.equal(user_product.email, "tutorUser1234@two2er.com");
+            assert.equal(user_product.name, "Tutor User 1234");
+            assert.equal(user_product.location.type, "Point");
+            assert.equal(user_product.location.coordinates[0], -87.65263);
+            assert.equal(user_product.location.coordinates[1], 41.934214);
 
             var tutor = new Tutor();
             assert.notEqual(tutor, undefined);
 
             tutor.user_id = user._id;
-            tutor.subjects = ["Math", "English"];
+            tutor.subjects = ["Math", "Physics"];
 
-            tutor.save( (err, product, numAffected) => {
+            tutor.save( (err, tutor_product, numAffected) => {
                 if(err)
                     done(err);
                 // assert that new document exists
-                assert.notEqual(product, undefined);
+                assert.notEqual(tutor_product, undefined);
                 // assert only 1 document affected
                 assert.equal(numAffected, 1);
                 // assert properties of document as specified 
                 // above
-                assert.equal(product.user_id, user._id);
-                assert.equal(product.subjects[0], "Math");
-                assert.equal(product.subjects[1], "English");
+                assert.equal(tutor_product.user_id, user._id);
+                assert.equal(tutor_product.subjects[0], "Math");
+                assert.equal(tutor_product.subjects[1], "Physics");
+                assert.equal(user_product.education.length, 3);
+                assert.equal(Degree.enumValueOf(user_product.education[0].degree), Degree.BS);
+                assert.equal(Degree.enumValueOf(user_product.education[1].degree), Degree.MS);
+                assert.equal(Degree.enumValueOf(user_product.education[2].degree), Degree.PHD);
+                assert.equal(UserType.enumValueOf(user_product.usergroups[0]).isTutor(), true);
                 done();
             });
 
@@ -129,7 +147,7 @@ describe("MongoDB Tutor Model Test", function () {
                     else{
                         //assert.equal(student.user_id, user._id);
                         assert.equal(tutor.subjects[0], "Math");
-                        assert.equal(tutor.subjects[1], "English");
+                        assert.equal(tutor.subjects[1], "Physics");
                         done();          
                     }
                 });

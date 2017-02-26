@@ -14,6 +14,10 @@ const User = require('../models/user.js');
 const Student = require('../models/student.js');
 // Connection String for our Two2er Mongodb Database
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
+// Enums used for Educational Degrees
+const Degree = require('../enums/degree.js');
+// Enums used for User UserType
+const UserType = require('../enums/usertype.js');
 
 // change mongoose to use NodeJS global promises to supress promise deprication warning.
 // https://github.com/Automattic/mongoose/issues/4291
@@ -72,53 +76,57 @@ describe("MongoDB Student Model Test", function () {
         user.email = "studentUser1234@two2er.com";
         user.name = "Student User 1234";
         user.location = {coordinates: [-87.6563, 41.935314], type: 'Point'};
-        user.isstudent = true;
-        user.istutor = false;
-        user.admin = false;
-        
-        user.save( (err, product, numAffected) => {
+
+        // Education History
+        user.education.push({school: "DePaul University", field: "History", degree: "BA", year: 2019, inProgress: true});
+        user.usergroups.push("Student");
+
+        user.save( (err, user_product, numAffected) => {
             if(err)
                 done(err);
             // assert that new document exists
-            assert.notEqual(product, undefined);
+            assert.notEqual(user_product, undefined);
             // assert only 1 document affected
             assert.equal(numAffected, 1);
             // assert properties of document as specified 
             // above
-            assert.equal(product.age, 19);
-            assert.equal(product.email, "studentUser1234@two2er.com");
-            assert.equal(product.name, "Student User 1234");
-            assert.equal(product.location.type, "Point");
-            assert.equal(product.location.coordinates[0], -87.6563);
-            assert.equal(product.location.coordinates[1], 41.935314);
-            assert.equal(product.isstudent, true);
-            assert.equal(product.istutor, false);
-            assert.equal(product.admin, false);
+            assert.equal(user_product.age, 19);
+            assert.equal(user_product.email, "studentUser1234@two2er.com");
+            assert.equal(user_product.name, "Student User 1234");
+            assert.equal(user_product.location.type, "Point");
+            assert.equal(user_product.location.coordinates[0], -87.6563);
+            assert.equal(user_product.location.coordinates[1], 41.935314);
+            assert.equal(user_product.education.length, 1);
+            assert.equal(user_product.education[0].school, "DePaul University");
+            assert.equal(user_product.education[0].field, "History");
+            assert.equal(Degree.enumValueOf(user_product.education[0].degree), Degree.BA);
+            assert.equal(user_product.education[0].year, 2019);
+            assert.equal(user_product.education[0].inProgress, true);
+            assert.equal(user_product.usergroups.length, 1);
+            assert.equal(UserType.enumValueOf(user_product.usergroups[0]).isStudent(), true);
 
             var student = new Student();
             assert.notEqual(student, undefined);
 
             student.user_id = user._id;
-            student.school = "DePaul University";
-            student.courses = ["Math", "English", "Science", "History"]
+            student.courses = ["MAT 101", "ENG 200", "SCI 200", "HIS 220"]
 
-            student.save( (err, product, numAffected) => {
+            student.save( (err, student_product, numAffected) => {
                 if(err)
                     done(err);
                 // assert that new document exists
-                assert.notEqual(product, undefined);
+                assert.notEqual(student_product, undefined);
                 // assert only 1 document affected
                 assert.equal(numAffected, 1);
                 // assert properties of document as specified 
                 // above
-                assert.equal(product.user_id, user._id);
-                assert.equal(product.school, "DePaul University");
-                assert.equal(product.courses.length, 4);
-                assert.equal(product.courses.includes("Math"), true);
-                assert.equal(product.courses.includes("English"), true);
-                assert.equal(product.courses.includes("Science"), true);
-                assert.equal(product.courses.includes("History"), true);
-                assert.equal(product.courses.includes("P.E."), false);
+                assert.equal(student_product.user_id, user._id);
+                assert.equal(student_product.courses.length, 4);
+                assert.equal(student_product.courses.includes("MAT 101"), true);
+                assert.equal(student_product.courses.includes("ENG 200"), true);
+                assert.equal(student_product.courses.includes("SCI 200"), true);
+                assert.equal(student_product.courses.includes("HIS 220"), true);
+                assert.equal(student_product.courses.includes("GEO 400"), false);
                 done();
             });
 
@@ -140,7 +148,7 @@ describe("MongoDB Student Model Test", function () {
                         done(err);
                     else{
                         //assert.equal(student.user_id, user._id);
-                        assert.equal(student.school, "DePaul University");
+                        assert.equal(user.email, "studentUser1234@two2er.com");
                         done();          
                     }
                 });

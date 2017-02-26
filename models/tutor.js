@@ -7,7 +7,7 @@ const Schema = mongoose.Schema;
 
 const TutorSchema = new Schema({
     user_id: {type: Schema.Types.ObjectId, required: true},  // foreign key to users collection
-    subjects: {type: [String], required: false, ref: User}, // list of subjects approved to tutor, for now making required false
+    subjects: {type: [String], required: false}, // list of subjects approved to tutor, for now making required false
     rating : Number,
     qualification : [String],
     score : [ScoreSchema],
