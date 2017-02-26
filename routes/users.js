@@ -297,4 +297,22 @@ router.get('/exportToKML', (req, res) => {
     });
 });
 
+// change password for the current user
+router.post('/changepassword', function (req, res) {
+    console.log(`${req.ip} is doing a POST via /users/changepassword`);
+
+    try{
+        if (req.user && req.body.password) {
+            req.user.password = req.body.password;
+            req.user.save();
+            console.log("password changed for " + req.user.email);
+            res.send("password changed for " + req.user.email);
+        }
+    }
+    catch(ex) {
+        console.log(ex);
+        throw ex;
+    }
+});
+
 module.exports = router;
