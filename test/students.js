@@ -6,6 +6,10 @@ const assert = require('assert');
 
 const schemas = require('./schemadefinitions.js');
 
+// module for making authenticated calls
+// .set('Authorization', 'Bearer ' + getToken())
+require('../stormpathclient.js');
+
 describe('Running students tests\n', function() {
     this.timeout(10000);
     var server;
@@ -21,7 +25,7 @@ describe('Running students tests\n', function() {
 
     var stuSchema = ['school'];
 
-    it('Test GET all students from /api/students', function test(done) {
+    /*it('Test GET all students from /api/students', function test(done) {
         request(server)
         .get('/api/students')
         .set('Accept', 'application/json')
@@ -39,5 +43,55 @@ describe('Running students tests\n', function() {
 
             done();
         });
+    });*/
+
+    it('Test GET all students from /apiauth/students', function test(done) {
+        request(server)
+        .get('/apiauth/students')
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer ' + getToken())
+        .expect(200, function (err, res) {
+            if (err) return done(err);
+            var cnt = 0;
+            res.body.forEach(function (elem) {
+                schemas.studentSchema.forEach(function (field) {
+                    assert.notEqual(elem[field], undefined, 'Field is undefined: ' + field);
+                });
+                cnt++;
+            });
+            
+            assert.notEqual(cnt, 0);
+
+            done();
+        });
+    });
+
+    /*it('Test POST to /api/students/update', function test(done) {
+        request(server)
+        .post('/api/students/update')
+        .set('Accept', 'application/json')
+        .send({
+            user_id: "58b203f17a1674544d639a9e",
+            school: 'School',
+            courses: ['course1', 'course2'],
+            badfield: 'bad'
+        })
+        .expect(200)
+        .end(done);
+    });**/
+
+    it('Test POST to /apiauth/students/update', function test(done) {
+        request(server)
+        .post('/apiauth/students/update')
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer ' + getToken())
+        .send({
+            user_id: "58b203f17a1674544d639a9e",
+            school: 'School',
+            courses: ['course1', 'course2'],
+            badfield: 'bad'
+        })
+        .expect(200)
+        .end(done);
     });
 });

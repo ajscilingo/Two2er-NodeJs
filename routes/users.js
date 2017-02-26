@@ -71,38 +71,48 @@ router.post ( '/', function (req, res) {
     });
 });
 
-router.post( '/update', function (req, res) {
-    
-    if (req.body.userid != null)
-        var userid = req.body.userid;
-    else
-        var userid = mongoose.Types.ObjectId(req.user.user_id);
-    
-    User.findOne({ _id : userid }, (err, user) => {
-        if (req.body.name != null)
-            user.name = req.body.name;
-        if (req.body.age != null)
-            user.age = req.body.age;
-        if (req.body.email != null)
-            user.email = req.body.email;
-        if (req.body.education != null)
-            user.education = req.body.education;
-        if (req.body.location != null)
-            user.location = req.body.location;
-        if (req.body.isstudent != null)
-            user.isstudent = req.body.isstudent;
-        if (req.body.istutor != null)
-            user.istutor = req.body.istutor;
-        if (req.body.about != null)
-            user.about = req.body.about;
+// update for the current user
+router.post('/update', function (req, res) {
+    console.log(`${req.ip} is doing a POST via /users/update`)
 
-        user.save( (err) => {
-            if (err)
-                console.log(err);
-        });
+    try{
+        if (req.body.user_id != null)
+            var userid = req.body.user_id;
+        else
+            var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
         
-        res.json(user);
-    });
+        User.findOne({ _id : userid }, (err, user) => {
+            if (req.body.name != null)
+                user.name = req.body.name;
+            if (req.body.age != null)
+                user.age = req.body.age;
+            if (req.body.email != null)
+                user.email = req.body.email;
+            if (req.body.education != null)
+                user.education = req.body.education;
+            if (req.body.location != null)
+                user.location = req.body.location;
+            if (req.body.isstudent != null)
+                user.isstudent = req.body.isstudent;
+            if (req.body.istutor != null)
+                user.istutor = req.body.istutor;
+            if (req.body.about != null)
+                user.about = req.body.about;
+            if (req.body.defaultlocation != null)
+                user.defaultlocation = req.body.defaultlocation;
+
+            user.save( (err) => {
+                if (err)
+                    console.log(err);
+            });
+            
+            res.json(user);
+        });
+    }
+    catch(ex) {
+        console.log(ex);
+        throw ex;
+    }
 });
 
 // get all the users (accessed via GET http://localhost:8080/api/users)
@@ -192,7 +202,7 @@ router.get('/deleteById/:id', (req, res) => {
             res.status(404).send(err);
         
         // If a Stormpath profile exists, delete Stormpath account
-        if(req.user){
+        if(req.user && req.user.username != "max@test.com"){
             req.user.delete();
         }
         
@@ -225,7 +235,7 @@ router.get('/deleteByEmail/:email', (req, res) => {
                                     res.status(404).send(err);
                                 else {
                                     // If a Stormpath profile exists, delete Stormpath account
-                                    if(req.user){
+                                    if(req.user && req.user.username != "max@test.com"){
                                         req.user.delete();
                                     }
                                     res.json({message: `User ${user._id} removed`});
