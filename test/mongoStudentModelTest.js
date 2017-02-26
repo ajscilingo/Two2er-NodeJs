@@ -15,9 +15,9 @@ const Student = require('../models/student.js');
 // Connection String for our Two2er Mongodb Database
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 // Enums used for Educational Degrees
-//const Degree = require('../enums/degree.js');
+const Degree = require('../enums/degree.js');
 // Enums used for User UserType
-//const UserType = require('../enums/usertype.js');
+const UserType = require('../enums/usertype.js');
 
 // change mongoose to use NodeJS global promises to supress promise deprication warning.
 // https://github.com/Automattic/mongoose/issues/4291
