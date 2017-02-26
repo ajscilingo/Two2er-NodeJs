@@ -1,3 +1,4 @@
+// 'enumify' has to be lowercase
 const Enumify = require('enumify');
 
 class Degree extends Enumify.Enum { }

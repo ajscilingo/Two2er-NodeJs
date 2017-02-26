@@ -16,9 +16,9 @@ const Tutor = require('../models/tutor.js');
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 
 // Enums used for Educational Degrees
-//const Degree = require('../enums/degree.js');
+const Degree = require('../enums/degree.js');
 // Enums used for User UserType
-//const UserType = require('../enums/usertype.js');
+const UserType = require('../enums/usertype.js');
 
 // change mongoose to use NodeJS global promises to supress promise deprication warning.
 // https://github.com/Automattic/mongoose/issues/4291
@@ -121,10 +121,10 @@ describe("MongoDB Tutor Model Test", function () {
                 assert.equal(tutor_product.subjects[0], "Math");
                 assert.equal(tutor_product.subjects[1], "Physics");
                 assert.equal(user_product.education.length, 3);
-                //assert.equal(Degree.enumValueOf(user_product.education[0].degree), Degree.BS);
-                //assert.equal(Degree.enumValueOf(user_product.education[1].degree), Degree.MS);
-                //assert.equal(Degree.enumValueOf(user_product.education[2].degree), Degree.PHD);
-                //assert.equal(UserType.enumValueOf(user_product.usergroups[0]).isTutor(), true);
+                assert.equal(Degree.enumValueOf(user_product.education[0].degree), Degree.BS);
+                assert.equal(Degree.enumValueOf(user_product.education[1].degree), Degree.MS);
+                assert.equal(Degree.enumValueOf(user_product.education[2].degree), Degree.PHD);
+                assert.equal(UserType.enumValueOf(user_product.usergroups[0]).isTutor(), true);
                 done();
             });
 

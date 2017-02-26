@@ -1,3 +1,4 @@
+// 'enumify' has to be lowercase
 const Enumify = require('enumify');
 
 class UserType extends Enumify.Enum { 
@@ -29,6 +30,6 @@ class UserType extends Enumify.Enum {
     }
 
 }
-UserType.initEnum(['Admin', 'Student', 'Tutor', 'StudentTutor']);
+UserType.initEnum(['Admin', 'Student', 'Tutor']);
 
 module.exports = UserType;

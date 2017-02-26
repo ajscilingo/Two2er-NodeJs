@@ -19,9 +19,9 @@ const geojsonRandom = require('geojson-random');
 
 // Commenting Out Enums For Now
 // Enums used for Educational Degrees
-//const Degree = require('../enums/degree.js');
+const Degree = require('../enums/degree.js');
 // Enums used for User UserType
-//const UserType = require('../enums/usertype.js');
+const UserType = require('../enums/usertype.js');
 
 // change mongoose to use NodeJS global promises to supress promise deprication warning.
 // https://github.com/Automattic/mongoose/issues/4291
@@ -111,7 +111,7 @@ describe("MongoDB User Model Test", function () {
             assert.equal(product.location.type, "Point");
             assert.equal(product.location.coordinates[0], -87.6863);
             assert.equal(product.location.coordinates[1], 41.945314);
-            //assert.equal(UserType.enumValueOf(product.usergroups[0]).isStudent(), true);
+            assert.equal(UserType.enumValueOf(product.usergroups[0]).isStudent(), true);
             done();
         });
     });
