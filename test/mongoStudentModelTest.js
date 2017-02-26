@@ -15,9 +15,9 @@ const Student = require('../models/student.js');
 // Connection String for our Two2er Mongodb Database
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 // Enums used for Educational Degrees
-const Degree = require('../enums/degree.js');
+//const Degree = require('../enums/degree.js');
 // Enums used for User UserType
-const UserType = require('../enums/usertype.js');
+//const UserType = require('../enums/usertype.js');
 
 // change mongoose to use NodeJS global promises to supress promise deprication warning.
 // https://github.com/Automattic/mongoose/issues/4291
@@ -99,11 +99,11 @@ describe("MongoDB Student Model Test", function () {
             assert.equal(user_product.education.length, 1);
             assert.equal(user_product.education[0].school, "DePaul University");
             assert.equal(user_product.education[0].field, "History");
-            assert.equal(Degree.enumValueOf(user_product.education[0].degree), Degree.BA);
+            //assert.equal(Degree.enumValueOf(user_product.education[0].degree), Degree.BA);
             assert.equal(user_product.education[0].year, 2019);
             assert.equal(user_product.education[0].inProgress, true);
             assert.equal(user_product.usergroups.length, 1);
-            assert.equal(UserType.enumValueOf(user_product.usergroups[0]).isStudent(), true);
+            //assert.equal(UserType.enumValueOf(user_product.usergroups[0]).isStudent(), true);
 
             var student = new Student();
             assert.notEqual(student, undefined);
