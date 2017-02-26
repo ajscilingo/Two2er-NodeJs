@@ -99,11 +99,11 @@ describe("MongoDB Student Model Test", function () {
             assert.equal(user_product.education.length, 1);
             assert.equal(user_product.education[0].school, "DePaul University");
             assert.equal(user_product.education[0].field, "History");
-            //assert.equal(Degree.enumValueOf(user_product.education[0].degree), Degree.BA);
+            assert.equal(Degree.enumValueOf(user_product.education[0].degree), Degree.BA);
             assert.equal(user_product.education[0].year, 2019);
             assert.equal(user_product.education[0].inProgress, true);
             assert.equal(user_product.usergroups.length, 1);
-            //assert.equal(UserType.enumValueOf(user_product.usergroups[0]).isStudent(), true);
+            assert.equal(UserType.enumValueOf(user_product.usergroups[0]).isStudent(), true);
 
             var student = new Student();
             assert.notEqual(student, undefined);

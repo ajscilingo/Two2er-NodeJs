@@ -1,4 +1,4 @@
-const Enumify = require('Enumify');
+const Enumify = require('enumify');
 
 class UserType extends Enumify.Enum { 
     isTutor () {
