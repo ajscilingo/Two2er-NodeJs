@@ -40,6 +40,9 @@ describe('Running Tests', function () {
     describe('Loading users tests', function() {
         require('./users.js');
     });
+    describe('Loading stormpath tests', function() {
+        require('./stormpath.js');
+    });
     // describe('Loading student tests', function() {
     //     require('./students.js');
     // })
