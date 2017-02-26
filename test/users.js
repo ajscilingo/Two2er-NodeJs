@@ -437,7 +437,7 @@ describe('Running user tests\n', function() {
         .end(done);
     })*/
 
-    it('Test POST to /apiauth/users/update', function test(done) {
+    it.skip('Test POST to /apiauth/users/update', function test(done) {
         request(server)
         .post('/apiauth/users/update')
         .set('Accept', 'application/json')
