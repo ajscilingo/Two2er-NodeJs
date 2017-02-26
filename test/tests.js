@@ -12,6 +12,10 @@
 // Making global (no var keyword) so all our test modules can access it
 METERS_IN_MILES = 1609.34;
 
+// Bounding Box Used For Geospatial Tests Using geojson-random 
+// generated points, Bounding Box Keeps Points Within the US
+BBOX_USA = [-124.848974,24.396308,-66.885444,49.384358];
+
 // Set Port to 8080 for Tests as it won't run on Port 80
 // on Dev machines
 process.env.PORT = 8080;

@@ -4,7 +4,10 @@ const Tutor = require('../models/tutor.js');
 const Student = require('../models/student.js');
 const dateFormat = require('dateformat');
 const mongoose = require('mongoose');
+// For Output to KML
 const kml = require('tokml');
+// For Random Location Generation
+const geojsonRandom = require('geojson-random'); 
 
 // a middleware function with no mount path. This code is executed for every request to the router
 router.use( (req, res, next) => {
@@ -21,8 +24,11 @@ router.post ( '/', function (req, res) {
     // e.g if user.name is last it will appear first in the JSON 
 
     var user = new User();
+    
+    // generate a random location if needed
+    var randomLocation = geojsonRandom.position(BBOX_USA);
     // if no location is provided create default location 
-    user.location = (req.body.location ? req.body.location : {type: "Point", coordinates: [-87.625475, 41.878294]});
+    user.location = (req.body.location ? req.body.location : {type: "Point", coordinates: [randomLocation[0], randomLocation[1]]});
     // if no age provided default to 0
     user.age = (req.body.age ? req.body.age : 0);
     user.email = req.body.email;        

@@ -12,8 +12,8 @@ const BookingSchema = new Schema ({
     student_user_id: {type: Schema.Types.ObjectId, required: true, ref: User},  
     tutor_user_id: {type: Schema.Types.ObjectId, required: true, ref: User},   
     scheduledmeetingdate : Date,
-    confirmed : Boolean,
     bookingcreationdate : Date,
+    confirmed : Boolean,
     rejected: Boolean,
     cancelled: Boolean
 });

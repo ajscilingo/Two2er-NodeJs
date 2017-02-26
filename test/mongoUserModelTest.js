@@ -11,8 +11,15 @@ const mongoose = require('mongoose');
 const assert = require('assert');
 // Mongoose User Model
 const User = require('../models/user.js');
+
 // Connection String for our Two2er Mongodb Database
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
+// Used For creating Random Location Database
+const geojsonRandom = require('geojson-random');
+// Enums used for Educational Degrees
+const Degree = require('../enums/degree.js');
+// Enums used for User UserType
+const UserType = require('../enums/usertype.js');
 
 // change mongoose to use NodeJS global promises to supress promise deprication warning.
 // https://github.com/Automattic/mongoose/issues/4291
@@ -75,7 +82,7 @@ describe("MongoDB User Model Test", function () {
 
     });
 
-    it("Create New User Document", function createNewUser(done) {
+    it("Create New User Document - Minimal Attirbutes", function createNewUser(done) {
         
         // create new instance of User Model
         var user = new User();
@@ -85,7 +92,8 @@ describe("MongoDB User Model Test", function () {
         user.email = "testUser1234@two2er.com";
         user.name = "Test User 1234";
         user.location = {coordinates: [-87.6863, 41.945314], type: 'Point'};
-        
+        user.usergroups.push("Student");
+
         user.save( (err, product, numAffected) => {
             if(err)
                 done(err);
@@ -101,6 +109,7 @@ describe("MongoDB User Model Test", function () {
             assert.equal(product.location.type, "Point");
             assert.equal(product.location.coordinates[0], -87.6863);
             assert.equal(product.location.coordinates[1], 41.945314);
+            assert.equal(UserType.enumValueOf(product.usergroups[0]).isStudent(), true);
             done();
         });
     });
@@ -129,7 +138,59 @@ describe("MongoDB User Model Test", function () {
         });
     });
 
-  it("Geospatial Search - 1 Mile", function searchByLocation(done) {
+
+    it("Create New User Document - Random Location Data", function createNewUserRandomLocation(done) { 
+        
+        // Create new instance of User Model
+        var user = new User();
+        assert.notEqual(user, undefined);
+
+        user.age = 35;
+        user.email = "testUser1111@two2er.com";
+        user.name = "Test User 1111";
+        
+         // Random Location
+        var randomLocation = geojsonRandom.position(BBOX_USA);
+        user.location = {coordinates: [randomLocation[0], randomLocation[1]], type: 'Point'};
+
+        // Random Default Location
+        var defaultLocation = geojsonRandom.position(BBOX_USA);
+        user.defaultlocation = {coordinates: [defaultLocation[0], defaultLocation[1]], type: 'Point'};
+
+        user.save( (err, product, numAffected) => {
+            if(err)
+                done(err);
+            // assert that new document exists
+            assert.notEqual(product, undefined);
+            // assert only 1 document affected
+            assert.equal(numAffected, 1);
+            // assert properties of document as specified 
+            // above
+
+            assert.equal(product.age, 35);
+            assert.equal(product.email, "testUser1111@two2er.com");
+            assert.equal(product.name, "Test User 1111");
+            assert.equal(product.location.coordinates[0], randomLocation[0]);
+            assert.equal(product.location.coordinates[1], randomLocation[1]);
+            assert.equal(product.defaultlocation.coordinates[0], defaultLocation[0]);
+            assert.equal(product.defaultlocation.coordinates[1], defaultLocation[1]);
+            done();
+        });
+
+    });
+
+    it("Delete User Document By Name", function deleteUserByEmail(done) {
+    
+        User.remove({email : "Test User 1111"}, (err) => {
+            if(err) 
+                done(err);
+            else{
+                done();
+            }
+        });
+    });
+
+    it("Geospatial Search - 1 Mile", function searchByLocation(done) {
     
     // search 1 mile in distance
     var distance = 1 * METERS_IN_MILES;

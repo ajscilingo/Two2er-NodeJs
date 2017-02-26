@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const EducationSchema = new Schema({
     school : String,
     field : String,
-    degree: Number,
+    degree: String,
     year: Number,
     inProgress: Boolean,
     _id : {id: false}

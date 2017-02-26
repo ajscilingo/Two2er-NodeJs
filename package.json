@@ -23,6 +23,7 @@
     "enumify": "^1.0.4",
     "express": "^4.14.0",
     "express-stormpath": "^3.2.0",
+    "geojson-random": "^0.2.2",
     "mongodb": "^2.2.22",
     "mongoose": "^4.7.9",
     "pug": "^2.0.0-beta11",
