@@ -31,6 +31,7 @@ router.post ('/request', (req, res) => {
         booking.scheduledmeetingdate = req.body.scheduledmeetingdate;
         booking.tutor_user_id = req.body.tutor_user_id;
         booking.student_user_id = req.user.customData.user_id;
+        booking.status = "requested";
 
         booking.save( (err) => {
             if(err) 
@@ -53,7 +54,7 @@ router.post('/reject', (req, res) => {
      console.log(`${req.ip} is doing a POST via /booking/reject`);
 
      if(req.user){ 
-        Booking.findByIdAndUpdate(req.body.booking_id, {rejected: true}, (err, booking) =>{
+        Booking.findByIdAndUpdate(req.body.booking_id, {status: "rejected"}, (err, booking) =>{
             if(err)
                 re.status(404).send(err);
             else{
@@ -74,7 +75,7 @@ router.post('/confirm', (req, res) => {
     console.log(`${req.ip} is doing a POST via /booking/confirm`)
 
     if(req.user){ 
-        Booking.findByIdAndUpdate(req.body.booking_id, {confirmed: true}, (err, booking) =>{
+        Booking.findByIdAndUpdate(req.body.booking_id, {status: "confirmed"}, (err, booking) =>{
             if(err)
                 re.status(404).send(err);
             else{
@@ -94,7 +95,7 @@ router.post('/cancel', (req, res) => {
      console.log(`${req.ip} is doing a POST via /booking/cancel`)
 
     if(req.user){ 
-        Booking.findByIdAndUpdate(req.body.booking_id, {cancelled: true}, (err, booking) => {
+        Booking.findByIdAndUpdate(req.body.booking_id, {status: "cancelled"}, (err, booking) => {
             if(err)
                 re.status(404).send(err);
             else{

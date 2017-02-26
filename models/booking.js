@@ -13,9 +13,19 @@ const BookingSchema = new Schema ({
     tutor_user_id: {type: Schema.Types.ObjectId, required: true, ref: User},   
     scheduledmeetingdate : Date,
     bookingcreationdate : Date,
-    confirmed : Boolean,
-    rejected: Boolean,
-    cancelled: Boolean
+    status: {type: String, required: true}
 });
+
+BookingSchema.methods.isCancelled = function (callback) {
+    return (this.status == "cancelled");
+}
+
+BookingSchema.methods.isRejected = function (callback) {
+    return (this.status == "rejected");
+}
+
+BookingSchema.methods.isAccepted = function (callback) {
+    return (this.status == "accepted");
+}
 
 module.exports = mongoose.model("Booking", BookingSchema);
