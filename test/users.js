@@ -438,6 +438,11 @@ describe('Running user tests\n', function() {
     })*/
 
     it('Test POST to /apiauth/users/update', function test(done) {
+        var d = new Date();
+        var n = d.getTime();
+        
+        var newEmail = 'e' + n + '@mail.com';
+
         request(server)
         .post('/apiauth/users/update')
         .set('Accept', 'application/json')
@@ -445,7 +450,7 @@ describe('Running user tests\n', function() {
         .send({
             user_id: "58b2663072729710385c60c3",
             name: 'TestUserName',
-            email: 'test@gmail.com',
+            email: newEmail,
             age: '100',
             location: {
                 coordinates: [10,10],

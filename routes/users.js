@@ -7,67 +7,67 @@ const mongoose = require('mongoose');
 // For Output to KML
 const kml = require('tokml');
 // For Random Location Generation
-const geojsonRandom = require('geojson-random'); 
+const geojsonRandom = require('geojson-random');
 
 // a middleware function with no mount path. This code is executed for every request to the router
-router.use( (req, res, next) => {
-  console.log('Time:', dateFormat(Date.now(),'dd-mmm-yyyy HH:mm:ss'));
-  next();
+router.use((req, res, next) => {
+    console.log('Time:', dateFormat(Date.now(), 'dd-mmm-yyyy HH:mm:ss'));
+    next();
 });
 
 
 // add a new user (accessed via post http://localhost:8080/api/users)
-router.post ( '/', function (req, res) {
-    
+router.post('/', function (req, res) {
+
     // JSON attribute order seems to be dictated here in reverse
     // so if your attribute to appear first in your JSON object enter it last
     // e.g if user.name is last it will appear first in the JSON 
 
     var user = new User();
-    
+
     // generate a random location if needed
     var randomLocation = geojsonRandom.position(BBOX_USA);
     // if no location is provided create default location 
-    user.location = (req.body.location ? req.body.location : {type: "Point", coordinates: [randomLocation[0], randomLocation[1]]});
+    user.location = (req.body.location ? req.body.location : { type: "Point", coordinates: [randomLocation[0], randomLocation[1]] });
     // if no age provided default to 0
     user.age = (req.body.age ? req.body.age : 0);
-    user.email = req.body.email;        
+    user.email = req.body.email;
     user.name = req.body.name;
-    
+
     // some logging 
     console.log(`${req.ip} is doing a POST via /users`)
 
-    user.save( (err) => {
-        if(err) 
-            res.status(404).send(err);     
-       
-        else{
-            
+    user.save((err) => {
+        if (err)
+            res.status(404).send(err);
+
+        else {
+
             // update StormPath to include user model id 
             // if route reached by StormPath
             // authenticated endpoint.
             // doing this for faster access to look ups in student
             // and tutor and locations collections
-            
-            if(req.user){
+
+            if (req.user) {
                 console.log(user._id);
                 req.user.customData.user_id = user._id;
-                req.user.customData.save( (err) => {
+                req.user.customData.save((err) => {
                     if (err) {
                         res.status(400).send(`Oops! There was an error: ${err.userMessage}`);
                     }
                     else
                         console.log(`_id: ${user._id}`)
-                        res.json({message: `StormPath Authenticated User: ${user.name} has been created!`});
+                    res.json({ message: `StormPath Authenticated User: ${user.name} has been created!` });
                 });
             }
             // otherwise ignore stormpath if not 
             // authenticated.
-            else{
-               console.log(`_id: ${user._id}`)
-        	   res.json({message: `User: ${user.name} has been created!`});
+            else {
+                console.log(`_id: ${user._id}`)
+                res.json({ message: `User: ${user.name} has been created!` });
             }
-	    }
+        }
     });
 });
 
@@ -75,19 +75,29 @@ router.post ( '/', function (req, res) {
 router.post('/update', function (req, res) {
     console.log(`${req.ip} is doing a POST via /users/update`)
 
-    try{
+    try {
         if (req.body.user_id != null)
             var userid = req.body.user_id;
         else
             var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
-        
-        User.findOne({ _id : userid }, (err, user) => {
+
+        User.findOne({ _id: userid }, (err, user) => {
             if (req.body.name != null)
                 user.name = req.body.name;
             if (req.body.age != null)
                 user.age = req.body.age;
-            if (req.body.email != null)
+            if (req.body.email != null) {
                 user.email = req.body.email;
+
+                // If a Stormpath profile exists, delete Stormpath account
+                if (req.user && req.user.username != "max@test.com") {
+                    var oldEmail = req.user.email;
+                    req.user.email = req.body.email;
+                    req.user.username = req.body.email;
+                    req.user.save();
+                    console.log("username changed from " + oldEmail + " to " + req.user.email);
+                }
+            }
             if (req.body.education != null)
                 user.education = req.body.education;
             if (req.body.location != null)
@@ -101,54 +111,54 @@ router.post('/update', function (req, res) {
             if (req.body.defaultlocation != null)
                 user.defaultlocation = req.body.defaultlocation;
 
-            user.save( (err) => {
+            user.save((err) => {
                 if (err)
                     console.log(err);
             });
-            
+
             res.json(user);
         });
     }
-    catch(ex) {
+    catch (ex) {
         console.log(ex);
         throw ex;
     }
 });
 
 // get all the users (accessed via GET http://localhost:8080/api/users)
-router.get( '/', (req, res) => {
+router.get('/', (req, res) => {
 
     // some logging 
     console.log(`${req.ip} is doing a GET via /users`);
 
-    User.find( (err, users) => {
-        if(err) 
+    User.find((err, users) => {
+        if (err)
             res.status(404).send(err);
-        
+
         res.json(users);
     });
 });
 
 // get my user_id, only works if user is authenticated through stormpath
 router.get('/me', (req, res) => {
-    
-    if(req.user){
-         res.json({user_id: req.user.customData.user_id});
+
+    if (req.user) {
+        res.json({ user_id: req.user.customData.user_id });
     }
     else
-        res.json({user_id: 0});
+        res.json({ user_id: 0 });
 });
 
 // get user with name like <name> (accessed via GET http://localhost:8080/api/users/<name>)
-router.get('/getUserByName/:name?', (req, res) => {    
-    
+router.get('/getUserByName/:name?', (req, res) => {
+
     var fullname = req.params.name ? req.params.name : (req.user ? req.user.fullName : 'FindUserByNameTest');
 
     // some logging 
     console.log(`${req.ip} is doing a GET via /users/getUserByName/${req.params.name}`);
-    
-    User.findOne({ name: fullname}, (err, user) => {
-        if(err) 
+
+    User.findOne({ name: fullname }, (err, user) => {
+        if (err)
             res.status(404).send(err);
         res.json(user);
     });
@@ -161,8 +171,8 @@ router.get('/getUserByEmail/:email?', (req, res) => {
 
     console.log(`${req.ip} is doing a GET via /users/getUserByEmail/${req.params.email}`);
 
-    User.findOne({ email: email}, (err, user) => {
-        if(err)
+    User.findOne({ email: email }, (err, user) => {
+        if (err)
             res.status(404).send(err);
         res.json(user);
     });
@@ -172,18 +182,16 @@ router.get('/getUserByEmail/:email?', (req, res) => {
 router.get('/getUserById/:id?', (req, res) => {
 
     console.log(`${req.ip} is doing a GET via /uses/getUserById/${req.params.id}`);
-    
-    try
-    {
+
+    try {
         var user_id = mongoose.Types.ObjectId(req.params.id);
-        User.findOne({ _id: user_id}, (err, user) => {
-            if(err)
+        User.findOne({ _id: user_id }, (err, user) => {
+            if (err)
                 res.status(404).send(err);
             res.json(user);
         });
     }
-    catch (ex)
-    {
+    catch (ex) {
         //console.log(ex);
         res.json(null);
     }
@@ -192,22 +200,22 @@ router.get('/getUserById/:id?', (req, res) => {
 // delete user from user collection by mongo _id field 
 // does not delete from student or tutor collections
 router.get('/deleteById/:id', (req, res) => {
-   
+
     console.log(`${req.ip} is doing a GET via /users/deleteUserById/${req.params.id}`);
 
     var user_id = mongoose.Types.ObjectId(req.params.id);
 
-    User.remove({_id : user_id}, (err, commandResult) => {
-        if(err)
+    User.remove({ _id: user_id }, (err, commandResult) => {
+        if (err)
             res.status(404).send(err);
-        
+
         // If a Stormpath profile exists, delete Stormpath account
-        if(req.user && req.user.username != "max@test.com"){
+        if (req.user && req.user.username != "max@test.com") {
             req.user.delete();
         }
-        
+
         // commandResult is a command result, maybe investigate this further later
-        res.json({message: `User ${user_id} removed`});
+        res.json({ message: `User ${user_id} removed` });
         console.log(`User ${user_id} removed`);
     });
 });
@@ -218,34 +226,34 @@ router.get('/deleteByEmail/:email', (req, res) => {
 
     console.log(`${req.ip} is doing a GET via /users/deleteUserByEmail/${req.params.email}`);
 
-    User.findOne({ email : req.params.email }, (err, user) => {
-        if(err)
+    User.findOne({ email: req.params.email }, (err, user) => {
+        if (err)
             res.status(404).send(err);
-        else{
-            Tutor.remove({ user_id: user._id}, (err, commandResult) => {
-                if(err)
+        else {
+            Tutor.remove({ user_id: user._id }, (err, commandResult) => {
+                if (err)
                     res.status(404).send(err);
-                else{
-                    Student.remove({ user_id: user._id}, (err, commandResult) => {
-                        if(err)
+                else {
+                    Student.remove({ user_id: user._id }, (err, commandResult) => {
+                        if (err)
                             res.status(404).send(err);
                         else
-                            user.remove( (err, product) => {
-                                if(err)
+                            user.remove((err, product) => {
+                                if (err)
                                     res.status(404).send(err);
                                 else {
                                     // If a Stormpath profile exists, delete Stormpath account
-                                    if(req.user && req.user.username != "max@test.com"){
+                                    if (req.user && req.user.username != "max@test.com") {
                                         req.user.delete();
                                     }
-                                    res.json({message: `User ${user._id} removed`});
+                                    res.json({ message: `User ${user._id} removed` });
                                 }
                             });
                     });
                 }
             });
         }
-     });
+    });
 
 });
 
@@ -257,41 +265,41 @@ router.get('/findWithin/milesLonLat/:distance/:lon/:lat', (req, res) => {
     var distance = req.params.distance * METERS_IN_MILES;
 
     var geoSpatialQuery = User.find({
-        'location' : {
-            $nearSphere : {
-                $geometry : {
+        'location': {
+            $nearSphere: {
+                $geometry: {
                     type: "Point",
-                    coordinates : [req.params.lon, 
-                                   req.params.lat 
-                                ]
+                    coordinates: [req.params.lon,
+                    req.params.lat
+                    ]
                 },
-                $maxDistance : distance
+                $maxDistance: distance
             }
-        }   
+        }
     });
 
-    geoSpatialQuery.exec( (err, users) => {
-        if(err) 
+    geoSpatialQuery.exec((err, users) => {
+        if (err)
             res.status(404).send(err);
-        
+
         res.json(users);
     });
 });
 
 router.get('/exportToKML', (req, res) => {
-     console.log(`${req.ip} is doing a GET via /exportToKML`);
-     
-     // locations as KML
-     var locations = {type : "FeatureCollection", features : []};
+    console.log(`${req.ip} is doing a GET via /exportToKML`);
 
-     User.find( (err, users) => {
-        if(err) 
+    // locations as KML
+    var locations = { type: "FeatureCollection", features: [] };
+
+    User.find((err, users) => {
+        if (err)
             res.status(404).send(err);
 
-        users.forEach( (user) => {
-            locations.features.push({type: "Feature", geometry: user.location, properties: {name: user.name, age: user.age, email: user.email}});
+        users.forEach((user) => {
+            locations.features.push({ type: "Feature", geometry: user.location, properties: { name: user.name, age: user.age, email: user.email } });
         });
-        
+
         var kmlDocument = kml(locations, {
             name: 'name',
             documentName: 'User Locations',
@@ -307,7 +315,7 @@ router.get('/exportToKML', (req, res) => {
 router.post('/changepassword', function (req, res) {
     console.log(`${req.ip} is doing a POST via /users/changepassword`);
 
-    try{
+    try {
         if (req.user && req.body.password) {
             req.user.password = req.body.password;
             req.user.save();
@@ -315,7 +323,7 @@ router.post('/changepassword', function (req, res) {
             res.send("password changed for " + req.user.email);
         }
     }
-    catch(ex) {
+    catch (ex) {
         console.log(ex);
         throw ex;
     }
