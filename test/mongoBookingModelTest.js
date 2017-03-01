@@ -10,10 +10,13 @@ const mongoose = require('mongoose');
 const User = require('../models/user.js');
 const Student = require('../models/student.js');
 const Tutor = require('../models/tutor.js');
+const Booking = require('../models/booking.js');
 // Enums used for Educational Degrees
 const Degree = require('../enums/degree.js');
 // Enums used for User UserType
 const UserType = require('../enums/usertype.js');
+// Enums used for BookingStatus
+const BookingStatus = require('../enums/bookingstatus.js');
 // using nodejs's built-in assert
 const assert = require('assert');
 // Connection String for our Two2er Mongodb Database
@@ -238,12 +241,56 @@ describe("MongoDB Booking Model Test", function () {
 
     it("Test Booking Student With Tutor", function createNewTutor(done) {
         //Find Tutor
-        User.find({email: "MathTutor001@two2er.com"} , (err, users) => {
+        User.find({email: "MathTutor001@two2er.com"} , (err, users_tutors) => {
             if(err)
                 done(err);
             // assert only 1 user with this email address exists
-            assert.equal(users.length, 1);
-            done();
+            assert.equal(users_tutors.length, 1);
+            // save tutor_user_id
+            var tutor_user_id = users_tutors[0]._id;
+            // maybe there should be a check that it's an ObjectID here ??
+            
+            // Find student
+            User.find({email: "Student001@two2er.com"}, (err, users_students) => {
+                if(err)
+                    done(err);
+                // assert only 1 user with this email address exists
+                assert.equal(users_students.length, 1);
+                // save student_user_id
+                var student_user_id = users_students[0]._id;
+                // maybe there should be a check that it's an ObjectID here ??
+
+                // assert student_user_id is not the same as tutor_user_id
+                assert.equal(student_user_id != tutor_user_id, true);
+                
+                // create new booking
+                var booking = new Booking();
+                assert.notEqual(booking, undefined);
+
+                // set student and tutor ids
+                booking.student_user_id = student_user_id;
+                booking.tutor_user_id = tutor_user_id;
+                booking.bookingcreationdate = Date.now();
+                booking.scheduledmeetingdate = new Date("June 4, 2017, 11:30:00");
+                booking.status = BookingStatus.requested.name;
+                booking.save((err, booking_product, numAffected) => {
+                    if(err)
+                        done(err);
+                    // assert that new document exists
+                    assert.notEqual(booking_product, undefined);
+                    // assert only 1 document affected
+                    assert.equal(numAffected, 1);
+                    // assert that booking has id
+                    assert.notEqual(booking_product._id, undefined);
+                    // assert student_user_id 
+                    assert.equal(booking_product.student_user_id, student_user_id);
+                    // assert tutor_user_id
+                    assert.equal(booking_product.tutor_user_id, tutor_user_id);
+                    // assert status requested
+                    assert.equal(BookingStatus.enumValueOf(booking.status), BookingStatus.requested);
+                    done();
+                });
+            });
         });
     });
 
