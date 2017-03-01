@@ -31,11 +31,15 @@ describe('Running Tests', function () {
     });
 
     describe('Loading Mongo Student Model tests', function () {
-        require('./mongoStudentModelTest.js')
+        require('./mongoStudentModelTest.js');
     });
 
     describe('Loading Mongo Tutor Model tests', function () {
-        require('./mongoTutorModelTest.js')
+        require('./mongoTutorModelTest.js');
+    });
+
+    describe('Loading Mongo Booking Model tests', function () {
+        require('./mongoBookingModelTest.js');
     });
 
     describe('Loading root test', function() {

@@ -17,7 +17,6 @@ const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 // Used For creating Random Location Database
 const geojsonRandom = require('geojson-random');
 
-// Commenting Out Enums For Now
 // Enums used for Educational Degrees
 const Degree = require('../enums/degree.js');
 // Enums used for User UserType
