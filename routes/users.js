@@ -139,14 +139,19 @@ router.get('/', (req, res) => {
     });
 });
 
-// get my user_id, only works if user is authenticated through stormpath
+// get user attributes for currently logged in user
+// only works if user is authenticated through stormpath
 router.get('/me', (req, res) => {
 
     if (req.user) {
-        res.json({ user_id: req.user.customData.user_id });
+        User.findById(mongoose.Types.ObjectId(req.user.customData.user_id), (err, user) => {
+            if(err)
+                res.status(404).send(err);
+            res.json(user);
+        });
     }
     else
-        res.json({ user_id: 0 });
+        res.json(null);
 });
 
 // get user with name like <name> (accessed via GET http://localhost:8080/api/users/<name>)
