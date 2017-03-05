@@ -10,6 +10,8 @@ const Schema = mongoose.Schema;
 
 // location - last known location
 // defaultlocation - permanent (home location) location.
+// fcm_token used for sending push messages through Google's FCM services
+// image_url used for profile photo
 
 const UserSchema = new Schema({
     name: {type: String, required: true},
@@ -18,6 +20,8 @@ const UserSchema = new Schema({
     location: {type: LocationSchema, required: true},
     education: {type: [EducationSchema], required: false},
     usergroups: [String],
+    image_url: String,
+    fcm_token: String, 
     admin: {type: Boolean, required: false},
     isstudent: {type: Boolean, required: false},
     istutor: {type: Boolean, required: false},
