@@ -107,7 +107,19 @@ router.post('/cancel', (req, res) => {
      else{
         res.json({student_user_id: 0});
     }
+});
 
+
+router.get('/', (req, res) => {
+    console.log(`${req.ip} is doing a GET via /booking`);
+
+    if(req.user) {
+        Booking.find( {$or :[{student_user_id : req.user.customData.user_id}, {tutor_user_id : req.user.customData.user_id}]}, (err, booking) => {
+            if (err)
+                res.status(404).send(err);
+            res.json(booking);
+        });
+    }
 });
 
 module.exports = router;
