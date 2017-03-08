@@ -5,6 +5,9 @@
 
 const router = require('express').Router();
 const Booking = require('../models/booking.js');
+const User = require('../models/user.js')
+const Location = require('../models/schemas/location.js')
+const mongoose = require('mongoose');
 const dateFormat = require('dateformat');
 
 // a middleware function with no mount path. This code is executed for every request to the router
@@ -114,9 +117,32 @@ router.get('/', (req, res) => {
     console.log(`${req.ip} is doing a GET via /booking`);
 
     if(req.user) {
-        Booking.find( {$or :[{student_user_id : req.user.customData.user_id}, {tutor_user_id : req.user.customData.user_id}]}, (err, booking) => {
+        Booking.find( {$or :[{student_user_id : req.user.customData.user_id}, {tutor_user_id : req.user.customData.user_id}]}).lean().exec((err, booking) => {
             if (err)
                 res.status(404).send(err);
+            
+            var obj = JSON.parse(JSON.stringify(booking));
+
+            booking.forEach( function(b, index, theArray) {
+                User.findById(mongoose.Types.ObjectId(b.student_user_id), (err2, stu) => {
+                    if (err2)
+                        res.status(404).send(err2);
+                    User.findById(mongoose.Types.ObjectId(b.tutor_user_id), (err3, tut) => {
+                        if (err3)
+                            res.status(404).send(err3);
+                        
+                        if (stu)
+                            theArray[index]["student_name"] = stu.name;
+                        else
+                            theArray[index]["student_name"] = "N/A";
+                        
+                        if (tut)
+                            theArray[index]["tutor_name"] = tut.name;
+                        else
+                            theArray[index]["tutor_name"] = "N/A";
+                    });
+                });
+            });
             res.json(booking);
         });
     }
