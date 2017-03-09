@@ -113,70 +113,72 @@ router.post('/cancel', (req, res) => {
 });
 
 
-router.get('/', (req, res) => {
-    console.log(`${req.ip} is doing a GET via /booking`);
-
-    if(req.user) {
-        Booking.find( {$or :[{student_user_id : req.user.customData.user_id}, {tutor_user_id : req.user.customData.user_id}]}).lean().exec((err, booking) => {
-            if (err)
-                res.status(404).send(err);
-            
-            var obj = JSON.parse(JSON.stringify(booking));
-
-            booking.forEach( function(b, index, theArray) {
-                User.findById(mongoose.Types.ObjectId(b.student_user_id), (err2, stu) => {
-                    if (err2)
-                        res.status(404).send(err2);
-                    User.findById(mongoose.Types.ObjectId(b.tutor_user_id), (err3, tut) => {
-                        if (err3)
-                            res.status(404).send(err3);
-                        
-                        if (stu)
-                            theArray[index]["student_name"] = stu.name;
-                        else
-                            theArray[index]["student_name"] = "N/A";
-                        
-                        if (tut)
-                            theArray[index]["tutor_name"] = tut.name;
-                        else
-                            theArray[index]["tutor_name"] = "N/A";
-                    });
-                });
-            });
-            res.json(booking);
-        });
-    }
-});
-
 // router.get('/', (req, res) => {
 //     console.log(`${req.ip} is doing a GET via /booking`);
 
-//     var student_name = "student name";
-//     var tutor_name = "tutor name";
-
 //     if(req.user) {
-//         Booking.find( {$or :[{student_user_id : req.user.customData.user_id}, {tutor_user_id : req.user.customData.user_id}]}).then((booking) => {
+//         Booking.find( {$or :[{student_user_id : req.user.customData.user_id}, {tutor_user_id : req.user.customData.user_id}]}).lean().exec((err, booking) => {
+//             if (err)
+//                 res.status(404).send(err);
             
-//               booking.forEach( (document, index, array) => {
-//                     User.findById(mongoose.Types.ObjectId(booking.student_user_id)).then( (student) =>{
-//                         student_name = student.name;
-//                         console.log(`Student Name: ${student_name}`);
-//                     }).catch( (err) => {
-//                         res.status(500).send(err);
-//                     });
-//                     User.findById(mongoose.Types.ObjectId(booking.tutor_user_id)).then( (tutor) => {
-//                         tutor_name = tutor.name; 
-//                         console.log(`Tutor Name: ${tutor_name}`);
-//                     }).catch( (err) => {
-//                         res.status(500).send(err);
-//                     });
-//               });
-//               res.json(booking);
+//             var obj = JSON.parse(JSON.stringify(booking));
 
-//         }).catch( (err) => { 
-//             res.status(500).send(err);
+//             booking.forEach( function(b, index, theArray) {
+//                 User.findById(mongoose.Types.ObjectId(b.student_user_id), (err2, stu) => {
+//                     if (err2)
+//                         res.status(404).send(err2);
+//                     User.findById(mongoose.Types.ObjectId(b.tutor_user_id), (err3, tut) => {
+//                         if (err3)
+//                             res.status(404).send(err3);
+                        
+//                         if (stu)
+//                             theArray[index]["student_name"] = stu.name;
+//                         else
+//                             theArray[index]["student_name"] = "N/A";
+                        
+//                         if (tut)
+//                             theArray[index]["tutor_name"] = tut.name;
+//                         else
+//                             theArray[index]["tutor_name"] = "N/A";
+//                     });
+//                 });
+//             });
+//             res.json(booking);
 //         });
 //     }
 // });
+
+router.get('/', (req, res) => {
+    console.log(`${req.ip} is doing a GET via /booking`);
+
+    var student_name = "student name";
+    var tutor_name = "tutor name";
+
+    if(req.user) {
+        Booking.find( {$or :[{student_user_id : req.user.customData.user_id}, {tutor_user_id : req.user.customData.user_id}]}).then((booking) => {
+            
+            //   booking.forEach( (document, index, array) => {
+            //         User.findById(mongoose.Types.ObjectId(booking.student_user_id)).then( (student) =>{
+            //             student_name = student.name;
+            //             console.log(`Student Name: ${student_name}`);
+            //         }).catch( (err) => {
+            //             res.status(500).send(err);
+            //         });
+            //         User.findById(mongoose.Types.ObjectId(booking.tutor_user_id)).then( (tutor) => {
+            //             tutor_name = tutor.name; 
+            //             console.log(`Tutor Name: ${tutor_name}`);
+            //         }).catch( (err) => {
+            //             res.status(500).send(err);
+            //         });
+            //   });
+              booking[0]["test"] = "test";
+              var response = {student_user_id : booking[0].student_user_id, test : User.findById()};
+              res.json(response);
+
+        }).catch( (err) => { 
+            res.status(500).send(err);
+        });
+    }
+});
 
 module.exports = router;

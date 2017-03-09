@@ -182,7 +182,7 @@ describe("MongoDB User Model Test", function () {
 
     it("Delete User Document By Name", function deleteUserByEmail(done) {
     
-        User.remove({email : "Test User 1111"}, (err) => {
+        User.remove({name : "Test User 1111"}, (err) => {
             if(err) 
                 done(err);
             else{

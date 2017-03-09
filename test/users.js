@@ -117,6 +117,7 @@ describe('Running user tests\n', function() {
         .end(done);
     });*/
 
+    //skipping creating a new user for now
     it('Test POST to /apiauth/users', function test(done) {
         request(server)
         .post('/apiauth/users')
