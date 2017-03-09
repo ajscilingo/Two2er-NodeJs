@@ -448,7 +448,7 @@ describe('Running user tests\n', function() {
         .set('Accept', 'application/json')
         .set('Authorization', 'Bearer ' + getToken())
         .send({
-            user_id: "58b2663072729710385c60c3",
+            user_id: "58c0bc9596f79e0686fe1bbc",
             name: 'TestUserName',
             email: newEmail,
             age: '100',
