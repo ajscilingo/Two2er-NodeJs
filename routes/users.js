@@ -89,7 +89,7 @@ router.post('/update', function (req, res) {
             if (req.body.email != null) {
                 user.email = req.body.email;
 
-                // If a Stormpath profile exists, delete Stormpath account
+                // If a Stormpath profile exists, change username on Stormpath account
                 if (req.user && req.user.username != "max@test.com") {
                     var oldEmail = req.user.email;
                     req.user.email = req.body.email;
@@ -110,6 +110,8 @@ router.post('/update', function (req, res) {
                 user.about = req.body.about;
             if (req.body.defaultlocation != null)
                 user.defaultlocation = req.body.defaultlocation;
+            if (req.body.image_url != null)
+                user.about = req.body.image_url;
 
             user.save((err) => {
                 if (err)
