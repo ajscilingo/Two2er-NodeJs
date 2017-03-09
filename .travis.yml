@@ -8,7 +8,8 @@ deploy:
   env: LowCost-env
   bucket_name: elasticbeanstalk-us-east-2-120103986746
   region: us-east-2
-  access_key_id: {{AWS_ACCESS_KEY}}
+  access_key_id: 
+    secure: {{AWS_ACCESS_KEY}}
   secret_access_key:
     secure: {{AWS_SECRET_KEY}}
   on:
