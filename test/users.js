@@ -331,7 +331,7 @@ describe('Running user tests\n', function() {
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, function (err, res) {
             if(err) return done(err);
-            assert.equal(res.body.length, 4);
+            assert.equal(res.body.length, 3);
             done();   
         });
     });
@@ -354,7 +354,7 @@ describe('Running user tests\n', function() {
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, function (err, res) {
             if(err) return done(err);
-            assert.equal(res.body.length, 5);
+            assert.equal(res.body.length, 4);
             done();   
         });
     });
@@ -377,7 +377,7 @@ describe('Running user tests\n', function() {
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, function (err, res) {
             if(err) return done(err);
-            assert.equal(res.body.length, 6);
+            assert.equal(res.body.length, 5);
             done();   
         });
     });

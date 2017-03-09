@@ -214,8 +214,8 @@ describe("MongoDB User Model Test", function () {
         if(err) 
             done(err);
         else{
-            // assert that there are 4 users in this 1 mile search
-            assert.equal(users.length, 4);
+            // assert that there are 3 users in this 1 mile search
+            assert.equal(users.length, 3);
             done();
         }
     });
@@ -245,8 +245,8 @@ describe("MongoDB User Model Test", function () {
         if(err) 
             done(err);
         else{
-            // assert that there are 5 users in this 2 mile search
-            assert.equal(users.length, 5);
+            // assert that there are 4 users in this 2 mile search
+            assert.equal(users.length, 4);
             done();
         }
     });
@@ -276,8 +276,8 @@ describe("MongoDB User Model Test", function () {
         if(err) 
             done(err);
         else{
-            // assert that there are 6 users in this 4 mile search
-            assert.equal(users.length, 6);
+            // assert that there are 5 users in this 4 mile search
+            assert.equal(users.length, 5);
             done();
         }
     });
