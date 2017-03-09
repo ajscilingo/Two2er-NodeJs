@@ -111,7 +111,7 @@ router.post('/update', function (req, res) {
             if (req.body.defaultlocation != null)
                 user.defaultlocation = req.body.defaultlocation;
             if (req.body.image_url != null)
-                user.about = req.body.image_url;
+                user.image_url = req.body.image_url;
 
             user.save((err) => {
                 if (err)
