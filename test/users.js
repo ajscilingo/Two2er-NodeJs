@@ -117,6 +117,7 @@ describe('Running user tests\n', function() {
         .end(done);
     });*/
 
+    //skipping creating a new user for now
     it('Test POST to /apiauth/users', function test(done) {
         request(server)
         .post('/apiauth/users')
@@ -331,7 +332,7 @@ describe('Running user tests\n', function() {
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, function (err, res) {
             if(err) return done(err);
-            assert.equal(res.body.length, 4);
+            assert.equal(res.body.length, 3);
             done();   
         });
     });
@@ -354,7 +355,7 @@ describe('Running user tests\n', function() {
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, function (err, res) {
             if(err) return done(err);
-            assert.equal(res.body.length, 5);
+            assert.equal(res.body.length, 4);
             done();   
         });
     });
@@ -377,7 +378,7 @@ describe('Running user tests\n', function() {
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, function (err, res) {
             if(err) return done(err);
-            assert.equal(res.body.length, 6);
+            assert.equal(res.body.length, 5);
             done();   
         });
     });
@@ -448,7 +449,7 @@ describe('Running user tests\n', function() {
         .set('Accept', 'application/json')
         .set('Authorization', 'Bearer ' + getToken())
         .send({
-            user_id: "58b2663072729710385c60c3",
+            user_id: "58c0bc9596f79e0686fe1bbc",
             name: 'TestUserName',
             email: newEmail,
             age: '100',
