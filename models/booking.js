@@ -10,7 +10,9 @@ const Schema = mongoose.Schema;
 
 const BookingSchema = new Schema ({
     student_user_id: {type: Schema.Types.ObjectId, required: true, ref: User},  
-    tutor_user_id: {type: Schema.Types.ObjectId, required: true, ref: User},   
+    student_name: {type: String, required: true},
+    tutor_user_id: {type: Schema.Types.ObjectId, required: true, ref: User},
+    tutor_name: {type: String, required: true},
     scheduledmeetingdate : Date,
     bookingcreationdate : Date,
     status: {type: String, required: true}

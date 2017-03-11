@@ -33,6 +33,8 @@ router.post('/', function (req, res) {
     user.age = (req.body.age ? req.body.age : 0);
     user.email = req.body.email;
     user.name = req.body.name;
+    // set image to empty string by default
+    user.image_url = '';
 
     // some logging 
     console.log(`${req.ip} is doing a POST via /users`)
@@ -144,7 +146,6 @@ router.get('/', (req, res) => {
 // get user attributes for currently logged in user
 // only works if user is authenticated through stormpath
 router.get('/me', (req, res) => {
-
     if (req.user) {
         User.findById(mongoose.Types.ObjectId(req.user.customData.user_id), (err, user) => {
             if(err)
@@ -335,5 +336,31 @@ router.post('/changepassword', function (req, res) {
         throw ex;
     }
 });
+
+// set fcm_token in order to communicate through firebase messaging 
+// for current user
+router.post('/setFCMToken', (req, res) => {
+     console.log(`${req.ip} is doing a POST via /setFCMToken`);
+     
+     var fcm_token = req.body.fcm_token;
+
+     if (req.user && fcm_token) {
+         User.findById(mongoose.Types.ObjectId(req.user.customData.user_id), (err, user) => {
+            if(err)
+                res.status(404).send(err);
+            user.fcm_tokens.push(fcm_token);
+            user.save( (err, updated_user, numAffected) =>{
+                if(err)
+                    res.status(404).send(err);
+                if(numAffected = 1){
+                    res.json("{message: fcm_token updated}");
+                }
+            });
+        });
+     }
+     else {
+         res.json(null);
+     }
+})
 
 module.exports = router;
