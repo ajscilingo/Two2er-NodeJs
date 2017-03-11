@@ -250,6 +250,9 @@ describe("MongoDB Booking Model Test", function () {
             var tutor_user_id = users_tutors[0]._id;
             // maybe there should be a check that it's an ObjectID here ??
             
+            // save tutor's name
+            var tutor_name = users_tutors[0].name;
+            
             // Find student
             User.find({email: "Student001@two2er.com"}, (err, users_students) => {
                 if(err)
@@ -260,6 +263,7 @@ describe("MongoDB Booking Model Test", function () {
                 var student_user_id = users_students[0]._id;
                 // maybe there should be a check that it's an ObjectID here ??
 
+                var student_name = users_students[0].name;
                 // assert student_user_id is not the same as tutor_user_id
                 assert.equal(student_user_id != tutor_user_id, true);
                 
@@ -269,7 +273,9 @@ describe("MongoDB Booking Model Test", function () {
 
                 // set student and tutor ids
                 booking.student_user_id = student_user_id;
+                booking.student_name = student_name;
                 booking.tutor_user_id = tutor_user_id;
+                booking.tutor_name = tutor_name;
                 booking.bookingcreationdate = Date.now();
                 booking.scheduledmeetingdate = new Date("June 4, 2017, 11:30:00");
                 booking.status = BookingStatus.requested.name;
