@@ -51,7 +51,7 @@ router.post('/', function (req, res) {
             // doing this for faster access to look ups in student
             // and tutor and locations collections
 
-            if (req.user) {
+            if (req.user && req.body.isTest != true) {
                 console.log(user._id);
                 req.user.customData.user_id = user._id;
                 req.user.customData.save((err) => {
@@ -92,7 +92,7 @@ router.post('/update', function (req, res) {
                 user.email = req.body.email;
 
                 // If a Stormpath profile exists, change username on Stormpath account
-                if (req.user && req.user.username != "max@test.com") {
+                if (req.user && req.body.isTest != true) {
                     var oldEmail = req.user.email;
                     req.user.email = req.body.email;
                     req.user.username = req.body.email;
@@ -218,7 +218,7 @@ router.get('/deleteById/:id', (req, res) => {
             res.status(404).send(err);
 
         // If a Stormpath profile exists, delete Stormpath account
-        if (req.user && req.user.username != "max@test.com") {
+        if (req.user && req.body.isTest != true) {
             req.user.delete();
         }
 
@@ -251,7 +251,7 @@ router.get('/deleteByEmail/:email', (req, res) => {
                                     res.status(404).send(err);
                                 else {
                                     // If a Stormpath profile exists, delete Stormpath account
-                                    if (req.user && req.user.username != "max@test.com") {
+                                    if (req.user && req.body.isTest != true) {
                                         req.user.delete();
                                     }
                                     res.json({ message: `User ${user._id} removed` });
@@ -324,7 +324,7 @@ router.post('/changepassword', function (req, res) {
     console.log(`${req.ip} is doing a POST via /users/changepassword`);
 
     try {
-        if (req.user && req.body.password) {
+        if (req.user && req.body.password && req.body.isTest != true) {
             req.user.password = req.body.password;
             req.user.save();
             console.log("password changed for " + req.user.email);
