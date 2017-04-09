@@ -8,8 +8,8 @@
 // connect to our MongoDB through mongoose module
 const mongoose = require('mongoose');
 const User = require('../models/user.js');
-const Student = require('../models/student.js');
-const Tutor = require('../models/tutor.js');
+const Student = require('../models/schemas/student.js');
+const Tutor = require('../models/schemas/tutor.js');
 const Booking = require('../models/booking.js');
 // Enums used for Educational Degrees
 const Degree = require('../enums/degree.js');

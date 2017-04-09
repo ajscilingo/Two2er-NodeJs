@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const User = require('../models/user.js');
-const Tutor = require('../models/tutor.js');
-const Student = require('../models/student.js');
+const Tutor = require('../models/schemas/tutor.js');
+const Student = require('../models/schemas/student.js');
 const dateFormat = require('dateformat');
 const mongoose = require('mongoose');
 // For Output to KML

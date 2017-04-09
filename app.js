@@ -114,9 +114,15 @@ app.use(errorHandler);
 
 // catches errors 
 function errorHandler (err, req, res, next) {
-  res.status(err.status).render("error", {
-       status: err.status,
-       message: err.message 
+  if (err.statusCode >= 100 && err.statusCode < 600)
+    res.status(err.status).render("error", {
+        status: err.status,
+        message: err.message 
+      });
+  else
+    res.render("error", {
+      status: err.status,
+      message: err.message
     });
 }
 

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const Tutor = require('../models/tutor.js');
+const Tutor = require('../models/schemas/tutor.js');
 const dateFormat = require('dateformat');
 const mongoose = require('mongoose');
 

@@ -11,7 +11,7 @@ const mongoose = require('mongoose');
 const assert = require('assert');
 // Mongoose User and Student Models
 const User = require('../models/user.js');
-const Student = require('../models/student.js');
+const Student = require('../models/schemas/student.js');
 // Connection String for our Two2er Mongodb Database
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 // Enums used for Educational Degrees
