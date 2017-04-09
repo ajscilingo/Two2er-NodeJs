@@ -1,6 +1,8 @@
 var token = '';
 var username = "max@test.com";
 var password = "Password123";
+// var username = "t.durden@mail.com";
+// var password = "TD0627023Dp!";
 var sp = require('stormpath');
 
 var client = new sp.Client({
