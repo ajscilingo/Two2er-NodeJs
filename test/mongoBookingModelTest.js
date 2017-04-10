@@ -8,8 +8,8 @@
 // connect to our MongoDB through mongoose module
 const mongoose = require('mongoose');
 const User = require('../models/user.js');
-const Student = require('../models/schemas/student.js');
-const Tutor = require('../models/schemas/tutor.js');
+const Student = require('../models/schemas/student.js').model;
+const Tutor = require('../models/schemas/tutor.js').model;
 const Booking = require('../models/booking.js');
 // Enums used for Educational Degrees
 const Degree = require('../enums/degree.js');
@@ -93,7 +93,12 @@ describe("MongoDB Booking Model Test", function () {
 
         // Add to Tutors User Group
         user.usergroups.push(UserType.Tutor.name);
-    
+        
+        // create new tutor document associated with user document
+        user.tutor = new Tutor();
+        user.tutor.user_id = user._id;
+        user.tutor.subjects = ["Algebra", "Calculus"];
+
         user.save( (err, user_product, numAffected) => {
             if(err)
                 done(err);
@@ -102,32 +107,19 @@ describe("MongoDB Booking Model Test", function () {
             assert.notEqual(user_product, undefined);
             // assert only 1 document affected
             assert.equal(numAffected, 1);
+           
+            assert.notEqual(user_product.tutor, undefined);
 
-            // create new tutor document associated with user document
-            var tutor = new Tutor();
-            assert.notEqual(tutor, undefined);
-
-            tutor.user_id = user._id;
-            tutor.subjects = ["Algebra", "Calculus"];
-
-            tutor.save( (err, tutor_product, numAffected) => {
-                if(err)
-                    done(err);
-                // assert that new document exists
-                assert.notEqual(tutor_product, undefined);
-                // assert only 1 document affected
-                assert.equal(numAffected, 1);
-                // assert properties of document as specified 
-                // above
-                assert.equal(tutor_product.user_id, user._id);
-                assert.equal(tutor_product.subjects[0], "Algebra");
-                assert.equal(tutor_product.subjects[1], "Calculus");
-                assert.equal(user_product.education.length, 1);
-                assert.equal(Degree.enumValueOf(user_product.education[0].degree), Degree.BS);
-                assert.equal(UserType.enumValueOf(user_product.usergroups[0]).isTutor(), true);
-               
-                done();
-            });
+            assert.equal(user_product.education.length, 1);
+            assert.equal(Degree.enumValueOf(user_product.education[0].degree), Degree.BS);
+            assert.equal(UserType.enumValueOf(user_product.usergroups[0]).isTutor(), true);
+            // assert properties of document as specified 
+            // above
+            assert.equal(user_product.tutor.user_id, user._id);
+            assert.equal(user_product.tutor.subjects[0], "Algebra");
+            assert.equal(user_product.tutor.subjects[1], "Calculus");
+            done();
+           
         });
     });
 
@@ -150,6 +142,13 @@ describe("MongoDB Booking Model Test", function () {
         // Add to Student User Group
         user.usergroups.push(UserType.Student.name);
 
+        // create new Student document associated with user document
+        user.student = new Student();
+        assert.notEqual(user.student, undefined);
+
+        user.student.courses.push("MAT 141");
+        user.student.courses.push("MAT 160");
+
         user.save( (err, user_product, numAffected) => {
             if(err)
                 done(err);
@@ -158,85 +157,36 @@ describe("MongoDB Booking Model Test", function () {
             assert.notEqual(user_product, undefined);
             // assert only 1 document affected
             assert.equal(numAffected, 1);
+            
+            // assert that new document exists
+            assert.notEqual(user_product.student, undefined);
 
-            // create new Student document associated with user document
-            var student = new Student();
-            assert.notEqual(student, undefined);
-
-            student.user_id = user._id;
-            student.courses.push("MAT 141");
-            student.courses.push("MAT 160");
-
-            student.save( (err, student_product, numAffected) => {
-                if(err)
-                    done(err);
-                // assert that new document exists
-                assert.notEqual(student_product, undefined);
-                // assert only 1 document affected
-                assert.equal(numAffected, 1);
-                // assert properties of document as specified 
-                // above
-                assert.equal(student_product.user_id, user._id);
-                assert.equal(student_product.courses.length, 2);
-                assert.equal(student_product.courses.includes("MAT 141"), true);
-                assert.equal(student_product.courses.includes("MAT 160"), true);
-                done();
-            });
+            // assert properties of document as specified 
+            // above
+            assert.equal(user_product.student.courses.length, 2);
+            assert.equal(user_product.student.courses.includes("MAT 141"), true);
+            assert.equal(user_product.student.courses.includes("MAT 160"), true);
+            done();
+        
         });
     });
 
     afterEach( function removeStudent(done){
-        User.find({email: "Student001@two2er.com"} , (err, users) => {
+        User.remove({email: "Student001@two2er.com"}, (err) => {
             if(err)
                 done(err);
-            // assert only 1 user with this email address exists
-            assert.equal(users.length, 1);
-            // get _id attribute from Users collection used
-            // to delete Student document
-            var user_id = users[0]._id;
-            Student.remove({user_id: user_id}, (err, commandResult) => {
-                if(err)
-                    done(err);
-                // assert only 1 student with this user_id was removed
-                assert.equal(commandResult.result.n, 1);
-                // remove associated user document
-                users[0].remove( (err, user) => {
-                    if(err)
-                        done(err);
-                    assert.equal(user.email, "Student001@two2er.com");
-                    done();
-                });
-            });
-
+            else
+                done();
         });
-
     });
 
     afterEach( function removeTutor(done){
-        User.find({email: "MathTutor001@two2er.com"} , (err, users) => {
+        User.remove({email: "MathTutor001@two2er.com"}, (err) => {
             if(err)
                 done(err);
-            // assert only 1 user with this email address exists
-            assert.equal(users.length, 1);
-            // get _id attribute from Users collection used
-            // to delete Tutor document
-            var user_id = users[0]._id;
-            Tutor.remove({user_id: user_id}, (err, commandResult) => {
-                if(err)
-                    done(err);
-                // assert only 1 tutor with this user_id was removed
-                assert.equal(commandResult.result.n, 1);
-                // remove associated user document
-                users[0].remove( (err, user) => {
-                    if(err)
-                        done(err);
-                    assert.equal(user.email, "MathTutor001@two2er.com");
-                    done();
-                });
-            });
-
+            else
+                done();
         });
-
     });
 
     it("Test Booking Student With Tutor", function createNewTutor(done) {
@@ -245,7 +195,7 @@ describe("MongoDB Booking Model Test", function () {
             if(err)
                 done(err);
             // assert only 1 user with this email address exists
-            assert.equal(users_tutors.length, 1);
+            assert.equal(users_tutors.length, 1);   
             // save tutor_user_id
             var tutor_user_id = users_tutors[0]._id;
             // maybe there should be a check that it's an ObjectID here ??

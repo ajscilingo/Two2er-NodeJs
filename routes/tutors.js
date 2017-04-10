@@ -105,16 +105,16 @@ router.post('/update', (req, res) => {
 });
 
 // Get all tutors
-// router.get('/', (req, res) => {
-//     console.log(`${req.ip} is doing a GET via /tutors`);
+router.get('/', (req, res) => {
+    console.log(`${req.ip} is doing a GET via /tutors`);
 
-//     Tutor.find( (err, tutors) => {
-//         if(err) 
-//             res.status(404).send(err);
+    User.find({tutor: {$exists: true}}, (err, tutors) => {
+        if(err) 
+            res.status(404).send(err);
         
-//         res.json(tutors);
-//     })
-// });
+        res.json(tutors);
+    })
+});
 
 
 module.exports = router;

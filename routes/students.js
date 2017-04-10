@@ -86,17 +86,15 @@ router.post('/update', (req, res) => {
     
 });
 
-// Get all students
-// WE NEED TO DISCUSS THIS
-// router.get('/', (req, res) => {
-//     console.log(`${req.ip} is doing a GET via /students`);
+router.get('/', (req, res) => {
+    console.log(`${req.ip} is doing a GET via /students`);
 
-//     Student.find( (err, students) => {
-//         if(err) 
-//             res.status(404).send(err);
+    User.find({student: {$exists: true}}, (err, students) => {
+        if(err) 
+            res.status(404).send(err);
         
-//         res.json(students);
-//     })
-// });
+        res.json(students);
+    });
+});
 
 module.exports = router;
