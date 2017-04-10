@@ -6,8 +6,9 @@ const Schema = mongoose.Schema;
 const TutorSchema = new Schema({
     subjects: {type: [String], required: false}, // list of subjects approved to tutor, for now making required false
     rating : Number,  // user rating
-    isAvailableNow : Boolean  // can tutor right now?
+    isAvailableNow : Boolean, // can tutor right now?
+     _id : {id: false}
 });
 
-//TutorSchema.index(user_id);
-module.exports = TutorSchema;
+// export both schema and model
+module.exports = {schema: TutorSchema, model: mongoose.model("Tutor", TutorSchema)}

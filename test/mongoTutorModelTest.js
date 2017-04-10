@@ -11,7 +11,7 @@ const mongoose = require('mongoose');
 const assert = require('assert');
 // Mongoose User and Tutor Models
 const User = require('../models/user.js');
-const Tutor = require('../models/schemas/tutor.js');
+const Tutor = require('../models/schemas/tutor.js').model;
 // Connection String for our Two2er Mongodb Database
 const url = 'mongodb://Admin:Password1@52.14.105.241:27017/Two2er';
 
@@ -85,6 +85,11 @@ describe("MongoDB Tutor Model Test", function () {
 
         // Add to Tutors User Group
         user.usergroups.push('Tutor');
+        user.tutor = new Tutor();
+        assert.notEqual(user.tutor, undefined);
+        user.tutor.rating = 5.0;
+        user.tutor.isAvailableNow = false;
+        user.tutor.subjects = ["Math", "Physics"];
 
         user.save( (err, user_product, numAffected) => {
             if(err)
@@ -101,83 +106,73 @@ describe("MongoDB Tutor Model Test", function () {
             assert.equal(user_product.location.type, "Point");
             assert.equal(user_product.location.coordinates[0], -87.65263);
             assert.equal(user_product.location.coordinates[1], 41.934214);
-
-            var tutor = new Tutor();
-            assert.notEqual(tutor, undefined);
-
-            tutor.user_id = user._id;
-            tutor.subjects = ["Math", "Physics"];
-
-            tutor.save( (err, tutor_product, numAffected) => {
-                if(err)
-                    done(err);
-                // assert that new document exists
-                assert.notEqual(tutor_product, undefined);
-                // assert only 1 document affected
-                assert.equal(numAffected, 1);
-                // assert properties of document as specified 
-                // above
-                assert.equal(tutor_product.user_id, user._id);
-                assert.equal(tutor_product.subjects[0], "Math");
-                assert.equal(tutor_product.subjects[1], "Physics");
-                assert.equal(user_product.education.length, 3);
-                assert.equal(Degree.enumValueOf(user_product.education[0].degree), Degree.BS);
-                assert.equal(Degree.enumValueOf(user_product.education[1].degree), Degree.MS);
-                assert.equal(Degree.enumValueOf(user_product.education[2].degree), Degree.PHD);
-                assert.equal(UserType.enumValueOf(user_product.usergroups[0]).isTutor(), true);
-                done();
-            });
-
+            assert.equal(Degree.enumValueOf(user_product.education[0].degree), Degree.BS);
+            assert.equal(Degree.enumValueOf(user_product.education[1].degree), Degree.MS);
+            assert.equal(Degree.enumValueOf(user_product.education[2].degree), Degree.PHD);
+            assert.equal(user_product.education.length, 3);
+            assert.equal(UserType.enumValueOf(user_product.usergroups[0]).isTutor(), true);
+            // assert that tutor document exists
+            assert.notEqual(user_product.tutor, undefined);
+            // assert properties of document as specified 
+            assert.equal(user_product.tutor.rating, 5.0);
+            assert.equal(user_product.tutor.isAvailableNow, false);
+            assert.equal(user_product.tutor.subjects.length, 2);
+            assert.equal(user_product.tutor.subjects[0], "Math");
+            assert.equal(user_product.tutor.subjects[1], "Physics");    
+            done();
         });
 
     });
 
-    it("Search For Tutor Document By Email", function searchForTutor(done) {
+    it("Update User With Tutor Document", function searchForTutor(done) {
         
         User.findOne({email : "tutorUser1234@two2er.com"}, (err, user) => {
             if(err)
                 done(err);
-            else{
-                assert.notEqual(user, undefined);
-                assert.notEqual(user._id, undefined);
-                assert.equal(user.email, "tutorUser1234@two2er.com");
-                Tutor.findOne({user_id: user._id}, (err, tutor) =>{
-                    if(err)
-                        done(err);
-                    else{
-                        //assert.equal(student.user_id, user._id);
-                        assert.equal(tutor.subjects[0], "Math");
-                        assert.equal(tutor.subjects[1], "Physics");
-                        done();          
-                    }
-                });
-            }
-        });
+            
+            assert.notEqual(user, undefined);
+            assert.notEqual(user._id, undefined);
+            assert.equal(user.email, "tutorUser1234@two2er.com");
+            assert.equal(user.age, 27);
+            assert.equal(user.tutor.subjects.length, 2);
+            assert.equal(user.tutor.subjects[0], "Math");
+            assert.equal(user.tutor.subjects[1], "Physics");
+            // make updates
+            user.age = 29;
+            user.tutor.rating = 4.0;
+            user.markModified("tutor.rating");
+            user.tutor.isAvailableNow = true;
+            user.markModified("tutor.isAvailableNow");
+            var newSubjects = ["Science", "History"];
+            user.tutor.subjects = user.tutor.subjects.concat(newSubjects);
+            user.markModified("tutor.subjects");
+            user.save((err, user_product, numAffected) => {
+                if(err)
+                    done(err);
+                else{
+                    assert.notEqual(user_product, undefined);
+                    assert.equal(numAffected, 1);
+                    assert.equal(user_product.age, 29);
+                    assert.equal(user_product.tutor.rating, 4.0);
+                    assert.equal(user_product.tutor.subjects.length, 4);
+                    assert.equal(user_product.tutor.subjects[0], "Math");
+                    assert.equal(user_product.tutor.subjects[1], "Physics");
+                     assert.equal(user_product.tutor.subjects[2], "Science");
+                    assert.equal(user_product.tutor.subjects[3], "History");
+                    done();
+                }
+            });
 
+                     
+        });
     });
 
-    it("Delete User and Tutor Document By Email", function deleteTutorByEmail(done) {
-    
-        User.findOne({email : "tutorUser1234@two2er.com"}, (err, user) => {
-            if(err)
+    it("Delete User With Tutor Document", function deleteTutorByEmail(done) {
+        User.remove({email : "tutorUser1234@two2er.com"}, (err) => {
+            if(err) 
                 done(err);
             else{
-                assert.notEqual(user, undefined);
-                assert.notEqual(user._id, undefined);
-                assert.equal(user.email, "tutorUser1234@two2er.com");
-                Tutor.remove({user_id: user._id}, (err) =>{
-                    if(err)
-                        done(err);
-                    else{
-                        user.remove( (err, product) => {
-                            if(err)
-                                done(err);
-                            else{
-                                done();
-                            }
-                        });    
-                    }
-                });
+                done();
             }
         });
     });

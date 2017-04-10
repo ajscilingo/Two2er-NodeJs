@@ -28,8 +28,8 @@ const UserSchema = new Schema({
     creationdate: {type: Date, required: false},
     defaultlocation: {type: LocationSchema, required: false},
     userMode: String,    // Expects a UserType enum string either UserType.Student or UserType.Tutor
-    student: {type: [StudentSchema], required: false},
-    tutor: {type: [TutorSchema], required: false}
+    student: {type: StudentSchema, required: false},
+    tutor: {type: TutorSchema, required: false}
 });
 
 // Make sure this attribute has a spatial index

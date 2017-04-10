@@ -1,5 +1,7 @@
 const router = require('express').Router();
-const Tutor = require('../models/schemas/tutor.js');
+const TutorSchema = require('../models/schemas/tutor.js').schema;
+const Tutor = require('../models/schemas/tutor.js').model;
+const User = require('../models/user.js');
 const dateFormat = require('dateformat');
 const mongoose = require('mongoose');
 
@@ -9,87 +11,110 @@ router.use(function (req, res, next) {
   next();
 });
 
-// add a new user (accessed via post http://localhost:8080/api/tutors)
+// creates a new tutor document for user (accessed via post http://localhost:8080/api/tutors)
 router.post('/', (req, res) => {
-    var tutor = new Tutor();
-    tutor.subjects = req.body.subjects;
-    tutor.user_id = req.body.user_id;
-
+   
     console.log(`${req.ip} is doing a POST via /tutors`);
+    
+    // if case in place for testing purposes when not logged in through stormpath
+    // if logged in through stormpath there's no need to post with a user_id 
+    // parameter as this will be obtained through the req.user data
+    if (req.body.user_id != null)
+        var user_id = req.body.user_id;
+    else
+        var user_id = req.user.customData.user_id;
 
-    tutor.save( (err) => {
-        if(err) 
-            res.status(404).send(err);
+    if(user_id != null){ 
         
-        res.json({message: `A tutor has been created!`});
-    });
+        User.findById(mongoose.Types.ObjectId(user_id), (err, user) => {
+            if(err)
+                res.status(404).send(err);
+            
+            // create new tutor document
+            if(req.body.tutor != null)
+                user.tutor = req.body.tutor;
+            else{
+                user.tutor = new Tutor();
+                user.tutor.rating = 5;
+                user.tutor.isAvailableNow = false;
+                user.tutor.subjects = ["Math", "English"];
+            }
+            
+             user.save((err) => {
+                if (err)
+                    res.status(404).send(err);
+                res.json({message: `A tutor document has been created for ${user_id}!`});
+            });
+        });
+    }
+    else
+        res.json({message: 'user_id not found'});
 });
 
 router.post('/update', (req, res) => {
+
+    console.log(`${req.ip} is doing a POST via /tutors/update`);
+    
+    // if case in place for testing purposes when not logged in through stormpath
+    // if logged in through stormpath there's no need to post with a user_id 
+    // parameter as this will be obtained through the req.user data
     if (req.body.user_id != null)
-        var userid = req.body.user_id;
+        var user_id = req.body.user_id;
     else
-        var userid = req.user.customData.user_id;
-    Tutor.findOne({user_id : userid}, (err, tut) => {
-        if (err)
-            console.log(err);
-        if (req.body.subjects != null)
-            tut.subjects = req.body.subjects;
-        if (req.body.rating != null)
-            tut.rating = req.body.rating;
-        if (req.body.qualification != null)
-            tut.qualification = req.body.qualification;
-        if (req.body.score != null)
-            tut.score = req.body.score;
-        if (req.body.availabilitynow != null)
-            tut.availabilitynow = req.body.availabilitynow;
-        tut.save((err) => {
-            if (err)
-                console.log(err);
+        var user_id = req.user.customData.user_id;
+
+    if(user_id != null){ 
+        
+        User.findById(mongoose.Types.ObjectId(user_id), (err, user) => {
+            if(err)
+                res.status(404).send(err);
+            
+            // create new tutor document
+            if(user.tutor != null){
+                
+                if(req.body.rating != null){
+                    user.tutor.rating = req.body.rating;
+                    user.markModified("tutor.rating");
+                }
+                
+                if(req.body.isAvailableNow != null){
+                    user.tutor.isAvailableNow = req.body.isAvailableNow;
+                    user.markModified("tutor.isAvailableNow");
+                }
+                
+                if(req.body.subjects != null){
+                    if(user.tutor.subjects != null)
+                        user.tutor.subjects = user.tutor.subjects.concat(req.body.subjects);
+                    else
+                        user.tutor.subjects = req.body.subjects;
+                    user.markModified("tutor.subjects");
+                }
+                
+            }
+        
+            user.save((err) => {
+                if (err)
+                    res.status(404).send(err);
+                res.json({message: `Tutor data updated for ${user_id}!`});
+            });
         });
-        res.json(tut);
-    });
+    }
+    else
+        res.json({message: 'user_id not found'});
+
 });
 
 // Get all tutors
-router.get('/', (req, res) => {
-    console.log(`${req.ip} is doing a GET via /tutors`);
+// router.get('/', (req, res) => {
+//     console.log(`${req.ip} is doing a GET via /tutors`);
 
-    Tutor.find( (err, tutors) => {
-        if(err) 
-            res.status(404).send(err);
+//     Tutor.find( (err, tutors) => {
+//         if(err) 
+//             res.status(404).send(err);
         
-        res.json(tutors);
-    })
-});
+//         res.json(tutors);
+//     })
+// });
 
-// Get tutor by email
-router.get('/:email', (req,res) => {
-    console.log(`${req.ip} is doing a GET via /tutors/${req.params.email}`)
-
-    User.findOne({ email: req.params.email}, (err, user) => {
-        Tutor.findOne({ user_id: user._id }, (err, tutor) => {
-            if (err)
-                res.status(404).send(err);
-            
-            res.json(tutor);
-        }); 
-    });
-});
-
-// delete tutor by user_id
-router.get('/deleteByUserId/:user_id', (req, res) => {
-    console.log(`${req.ip} is doing a GET via /tutors/deleteByUserId/${req.params.user_id}`);
-    
-    var user_id = mongoose.Types.ObjectId(req.params.user_id);
-
-    Tutor.remove({user_id: req.params.user_id}, (err, commandResult) => {
-        if(err)
-            res.status(404).send(err);
-        // commandResult is a command result, maybe investigate this further later
-        res.json({message: `Tutor ${req.params.user_id} removed`});
-        console.log(`Tutor ${req.params.user_id} removed`);
-    });
-});
 
 module.exports = router;

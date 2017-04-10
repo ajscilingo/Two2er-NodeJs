@@ -4,7 +4,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const StudentSchema = new Schema({
-    courses : [String]
+    courses : [String],
+     _id : {id: false}
 });
 
-module.exports = StudentSchema;
+// export both schema and model
+module.exports = {schema: StudentSchema, model: mongoose.model("Student", StudentSchema)}

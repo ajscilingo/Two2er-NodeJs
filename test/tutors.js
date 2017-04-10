@@ -94,12 +94,7 @@ describe('Running tutors tests\n', function() {
         .send({
             user_id: "58b203f17a1674544d639a9e",
             subjects: ["subjectA", "subjectB"],
-            rating: 100,
-            qualification: ["qualA", "qualB"],
-            score: {
-                name: "ScoreName",
-                score: 99
-            },
+            rating: 4.0,
             availabilitynow: "true",
             badfield: "bad"
         })
