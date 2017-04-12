@@ -22,8 +22,8 @@ const UserSchema = new Schema({
     location: {type: LocationSchema, required: true}, // THIS NEEDS TO BE MIGRATED TO THE LOCATION COLLECTIONS
     education: {type: [EducationSchema], required: false},
     usergroups: [String], // For now each user is both a UserType.Student and UserType.Tutor
-    image_url: String,  // For user's profile image
-    fcm_tokens: [String], 
+    image_url: {type: String, required: false},  // For user's profile image
+    fcm_tokens: {type: [String], required: false}, 
     about: {type: String, required: false},
     creationdate: {type: Date, required: false},
     defaultlocation: {type: LocationSchema, required: false},

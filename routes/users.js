@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const kml = require('tokml');
 // For Random Location Generation
 const geojsonRandom = require('geojson-random');
+const UserType = require('../enums/usertype.js');
 
 // a middleware function with no mount path. This code is executed for every request to the router
 router.use((req, res, next) => {
@@ -27,16 +28,25 @@ router.post('/', function (req, res) {
 
     // generate a random location if needed
     var randomLocation = geojsonRandom.position(BBOX_USA);
+
     // if no location is provided create default location 
     user.location = (req.body.location ? req.body.location : { type: "Point", coordinates: [randomLocation[0], randomLocation[1]] });
-    // if no age provided default to 0
+    user.defaultlocation = user.location;
     user.age = (req.body.age ? req.body.age : 0);
     user.email = req.body.email;
     user.name = req.body.name;
-    // set image to empty string by default
-    user.image_url = '';
+    user.image_url = req.body.image_url ? req.body.image_url : '';
+    if (req.body.userMode != null && (req.body.userMode == UserType.Student.name) || (req.body.userMode == UserType.Tutor.name)) {
+        user.usergroups.push(req.body.userMode);
+        user.userMode = req.body.userMode;
+    }
+    else {
+        user.usergroups.push(UserType.Student.name);
+        user.userMode = UserType.Student.name;
+    }
+    user.about = (req.body.about ? req.body.about : '');
+    user.creationdate = dateFormat(Date.now(), 'dd-mmm-yyyy HH:mm:ss');
 
-    // some logging 
     console.log(`${req.ip} is doing a POST via /users`)
 
     user.save((err) => {
@@ -101,19 +111,19 @@ router.post('/update', function (req, res) {
                 }
             }
             if (req.body.education != null)
-                user.education = req.body.education;
+            {
+                user.education.school = req.body.eduction.school;
+                user.education.field = req.body.eduction.field;
+                user.education.degree = req.body.eduction.degree;
+                user.education.year = req.body.eduction.year;
+                user.education.inProgress = req.body.eduction.inProgress;
+            }
             if (req.body.location != null)
                 user.location = req.body.location;
-            if (req.body.isstudent != null)
-                user.isstudent = req.body.isstudent;
-            if (req.body.istutor != null)
-                user.istutor = req.body.istutor;
             if (req.body.about != null)
                 user.about = req.body.about;
             if (req.body.defaultlocation != null)
                 user.defaultlocation = req.body.defaultlocation;
-            if (req.body.image_url != null)
-                user.image_url = req.body.image_url;
 
             user.save((err) => {
                 if (err)
@@ -160,6 +170,7 @@ router.get('/me', (req, res) => {
 // get user with name like <name> (accessed via GET http://localhost:8080/api/users/<name>)
 router.get('/getUserByName/:name?', (req, res) => {
 
+console.log(req.params.name);
     var fullname = req.params.name ? req.params.name : (req.user ? req.user.fullName : 'FindUserByNameTest');
 
     // some logging 
@@ -237,30 +248,15 @@ router.get('/deleteByEmail/:email', (req, res) => {
     User.findOne({ email: req.params.email }, (err, user) => {
         if (err)
             res.status(404).send(err);
-        else {
-            Tutor.remove({ user_id: user._id }, (err, commandResult) => {
-                if (err)
-                    res.status(404).send(err);
-                else {
-                    Student.remove({ user_id: user._id }, (err, commandResult) => {
-                        if (err)
-                            res.status(404).send(err);
-                        else
-                            user.remove((err, product) => {
-                                if (err)
-                                    res.status(404).send(err);
-                                else {
-                                    // If a Stormpath profile exists, delete Stormpath account
-                                    if (req.user && req.body.isTest != true) {
-                                        req.user.delete();
-                                    }
-                                    res.json({ message: `User ${user._id} removed` });
-                                }
-                            });
-                    });
-                }
-            });
+
+        // If a Stormpath profile exists, delete Stormpath account
+        if (req.user && req.body.isTest != true) {
+            req.user.delete();
         }
+
+        // commandResult is a command result, maybe investigate this further later
+        res.json({ message: `User ${user_id} removed` });
+        console.log(`User ${user_id} removed`);
     });
 
 });

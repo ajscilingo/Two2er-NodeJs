@@ -61,6 +61,31 @@ describe('Running user tests\n', function() {
             
             var cnt = 0;
             res.body.forEach(function(elem) {
+                // schemas.userSchema.forEach(function(field) {
+                //     assert.notEqual(elem[field], undefined, 'Undefined field: ' + field);
+                // });
+                // schemas.locationSchema.forEach(function(field) {
+                //     var loc = elem['location'];
+                //     assert.notEqual(loc[field], undefined, 'Undefined field: location. ' + field);
+                // });
+                cnt++;
+            });
+
+            assert.notEqual(cnt, 0);
+
+            done();
+        });
+    });
+
+    it('Test schema of a well defined user', function testPath(done) {
+        request(server)
+        .get('/apiauth/getUserByName/user for automated testing 1')
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer ' + getToken())
+        .expect(200, (err, res) => {
+            if (err) return done(err);
+
+            res.body.forEach(function(elem) {
                 schemas.userSchema.forEach(function(field) {
                     assert.notEqual(elem[field], undefined, 'Undefined field: ' + field);
                 });
@@ -68,10 +93,7 @@ describe('Running user tests\n', function() {
                     var loc = elem['location'];
                     assert.notEqual(loc[field], undefined, 'Undefined field: location. ' + field);
                 });
-                cnt++;
             });
-
-            assert.notEqual(cnt, 0);
 
             done();
         });
@@ -188,38 +210,38 @@ describe('Running user tests\n', function() {
         });
     });
 
-    it('Test GET /apiauth/findWithin/milesLonLat/1/-87.6663/41.935314', function test(done) {
+    it('Test GET /apiauth/findWithin/milesLonLat/1/20/20', function test(done) {
         request(server)
-        .get('/apiauth/users/findWithin/milesLonLat/1/-87.6663/41.935314')
+        .get('/apiauth/users/findWithin/milesLonLat/1/20/20')
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer ' + getToken())
+        .expect(200, function (err, res) {
+            if(err) return done(err);
+            assert.equal(res.body.length, 1);
+            done();   
+        });
+    });
+
+    it('Test GET /apiauth/findWithin/milesLonLat/2/20/20', function test(done) {
+        request(server)
+        .get('/apiauth/users/findWithin/milesLonLat/2/20/20')
+        .set('Accept', 'application/json')
+        .set('Authorization', 'Bearer ' + getToken())
+        .expect(200, function (err, res) {
+            if(err) return done(err);
+            assert.equal(res.body.length, 2);
+            done();   
+        });
+    });
+
+    it('Test GET /apiauth/findWithin/milesLonLat/4/20/20', function test(done) {
+        request(server)
+        .get('/apiauth/users/findWithin/milesLonLat/4/20/20')
         .set('Accept', 'application/json')
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, function (err, res) {
             if(err) return done(err);
             assert.equal(res.body.length, 3);
-            done();   
-        });
-    });
-
-    it('Test GET /apiauth/findWithin/milesLonLat/2/-87.6663/41.935314', function test(done) {
-        request(server)
-        .get('/apiauth/users/findWithin/milesLonLat/2/-87.6663/41.935314')
-        .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer ' + getToken())
-        .expect(200, function (err, res) {
-            if(err) return done(err);
-            assert.equal(res.body.length, 4);
-            done();   
-        });
-    });
-
-    it('Test GET /apiauth/findWithin/milesLonLat/4/-87.6663/41.935314', function test(done) {
-        request(server)
-        .get('/apiauth/users/findWithin/milesLonLat/4/-87.6663/41.935314')
-        .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer ' + getToken())
-        .expect(200, function (err, res) {
-            if(err) return done(err);
-            assert.equal(res.body.length, 5);
             done();   
         });
     });
@@ -262,14 +284,14 @@ describe('Running user tests\n', function() {
                 year: 2000,
                 inProgress: "true"
             },
-            admin: "false",
-            isstudent: "true",
-            istutor: "false",
             about: "about info",
             defaultLocation: {
                 type: "Point",
                 coordinates: [10, 10]
             },
+            image_url: 'testurl',
+            userMode: 'Student',
+            about: 'aboutfieldfield',
             badfield: 'bad'
         })
         .expect(200)

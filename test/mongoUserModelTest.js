@@ -201,8 +201,8 @@ describe("MongoDB User Model Test", function () {
             $nearSphere : {
                 $geometry : {
                     type: "Point",
-                    coordinates : [ -87.6663, 
-                                   41.935314
+                    coordinates : [ 20, 
+                                   20
                                 ]
                 },
                 $maxDistance : distance
@@ -215,7 +215,7 @@ describe("MongoDB User Model Test", function () {
             done(err);
         else{
             // assert that there are 3 users in this 1 mile search
-            assert.equal(users.length, 3);
+            assert.equal(users.length, 1);
             done();
         }
     });
@@ -232,8 +232,8 @@ describe("MongoDB User Model Test", function () {
             $nearSphere : {
                 $geometry : {
                     type: "Point",
-                    coordinates : [ -87.6663, 
-                                   41.935314
+                    coordinates : [ 20, 
+                                   20
                                 ]
                 },
                 $maxDistance : distance
@@ -246,7 +246,7 @@ describe("MongoDB User Model Test", function () {
             done(err);
         else{
             // assert that there are 4 users in this 2 mile search
-            assert.equal(users.length, 4);
+            assert.equal(users.length, 2);
             done();
         }
     });
@@ -263,8 +263,8 @@ describe("MongoDB User Model Test", function () {
             $nearSphere : {
                 $geometry : {
                     type: "Point",
-                    coordinates : [ -87.6663, 
-                                   41.935314
+                    coordinates : [ 20, 
+                                   20
                                 ]
                 },
                 $maxDistance : distance
@@ -277,7 +277,7 @@ describe("MongoDB User Model Test", function () {
             done(err);
         else{
             // assert that there are 5 users in this 4 mile search
-            assert.equal(users.length, 5);
+            assert.equal(users.length, 3);
             done();
         }
     });
