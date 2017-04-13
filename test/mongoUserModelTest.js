@@ -201,8 +201,8 @@ describe("MongoDB User Model Test", function () {
             $nearSphere : {
                 $geometry : {
                     type: "Point",
-                    coordinates : [ 20, 
-                                   20
+                    coordinates : [ 166.674962, 
+                                   -77.842975
                                 ]
                 },
                 $maxDistance : distance
@@ -214,7 +214,7 @@ describe("MongoDB User Model Test", function () {
         if(err) 
             done(err);
         else{
-            // assert that there are 3 users in this 1 mile search
+            // assert that there is 1 user in this 1 mile search
             assert.equal(users.length, 1);
             done();
         }
@@ -232,8 +232,8 @@ describe("MongoDB User Model Test", function () {
             $nearSphere : {
                 $geometry : {
                     type: "Point",
-                    coordinates : [ 20, 
-                                   20
+                    coordinates : [ 166.674962, 
+                                   -77.842975
                                 ]
                 },
                 $maxDistance : distance
@@ -245,7 +245,7 @@ describe("MongoDB User Model Test", function () {
         if(err) 
             done(err);
         else{
-            // assert that there are 4 users in this 2 mile search
+            // assert that there are 2 users in this 2 mile search
             assert.equal(users.length, 2);
             done();
         }
@@ -263,8 +263,8 @@ describe("MongoDB User Model Test", function () {
             $nearSphere : {
                 $geometry : {
                     type: "Point",
-                    coordinates : [ 20, 
-                                   20
+                    coordinates : [ 166.674962, 
+                                   -77.842975
                                 ]
                 },
                 $maxDistance : distance
@@ -276,7 +276,7 @@ describe("MongoDB User Model Test", function () {
         if(err) 
             done(err);
         else{
-            // assert that there are 5 users in this 4 mile search
+            // assert that there are 3 users in this 4 mile search
             assert.equal(users.length, 3);
             done();
         }

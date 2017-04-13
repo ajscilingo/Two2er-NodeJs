@@ -210,9 +210,9 @@ describe('Running user tests\n', function() {
         });
     });
 
-    it('Test GET /apiauth/findWithin/milesLonLat/1/20/20', function test(done) {
+    it('Test GET /apiauth/findWithin/milesLonLat/1/166.674962/-77.842975', function test(done) {
         request(server)
-        .get('/apiauth/users/findWithin/milesLonLat/1/20/20')
+        .get('/apiauth/users/findWithin/milesLonLat/1/166.674962/-77.842975')
         .set('Accept', 'application/json')
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, function (err, res) {
@@ -222,9 +222,9 @@ describe('Running user tests\n', function() {
         });
     });
 
-    it('Test GET /apiauth/findWithin/milesLonLat/2/20/20', function test(done) {
+    it('Test GET /apiauth/findWithin/milesLonLat/2/166.674962/-77.842975', function test(done) {
         request(server)
-        .get('/apiauth/users/findWithin/milesLonLat/2/20/20')
+        .get('/apiauth/users/findWithin/milesLonLat/2/166.674962/-77.842975')
         .set('Accept', 'application/json')
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, function (err, res) {
@@ -234,9 +234,9 @@ describe('Running user tests\n', function() {
         });
     });
 
-    it('Test GET /apiauth/findWithin/milesLonLat/4/20/20', function test(done) {
+    it('Test GET /apiauth/findWithin/milesLonLat/4/166.765827/-77.807675', function test(done) {
         request(server)
-        .get('/apiauth/users/findWithin/milesLonLat/4/20/20')
+        .get('/apiauth/users/findWithin/milesLonLat/4/166.765827/-77.807675')
         .set('Accept', 'application/json')
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, function (err, res) {
