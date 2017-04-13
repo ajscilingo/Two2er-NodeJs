@@ -139,6 +139,26 @@ router.post('/update', function (req, res) {
     }
 });
 
+// associate logged in stormpath user with the user document id specified by :id
+// this will change the req.user.customData.user_id to what's in place by :id
+// THIS ROUTE SHOULD BE USED SPARINGLY, WE DON'T WANT USERS CALLING THIS UNLESS
+// THERE'S GOOD REASON TO
+router.post('/associate/with/objectid/:id', (req,res) => {
+     
+     // first check if user making request is logged in through stormpath
+     // if not don't continue
+    if (req.user && req.body.isTest != true) {
+        
+        // next check to see if document exists in user collection
+        // if not 
+
+    }
+    else{
+        res.json({message: "Not a valid user!"});
+    }
+});
+
+
 // get all the users (accessed via GET http://localhost:8080/api/users)
 router.get('/', (req, res) => {
 
