@@ -273,12 +273,12 @@ describe('Running user tests\n', function() {
                 coordinates: [10,10],
                 type: 'Point'
             },
-            education: [{
+            education: {
                 school: "School",
                 frield: "Field",
                 degree: 1,
                 year: 2000,
-                inProgress: "true"}]
+                inProgress: "true"}
             ,
             about: "about info",
             defaultLocation: {

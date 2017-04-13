@@ -110,8 +110,11 @@ router.post('/update', function (req, res) {
                     console.log("username changed from " + oldEmail + " to " + req.user.email);
                 }
             }
+            // need api to push new education objects
             // if (req.body.education != null)
             // {
+            //     console.log(req.body.education);
+            //     console.log(user.education);
             //     user.education[0].school = req.body.eduction.school;
             //     user.education[0].field = req.body.eduction.field;
             //     user.education[0].degree = req.body.eduction.degree;
@@ -247,16 +250,20 @@ router.get('/deleteByEmail/:email', (req, res) => {
 
     User.findOne({ email: req.params.email }, (err, user) => {
         if (err)
+        {
             res.status(404).send(err);
+        }
+
+        var tmpId = user._id;
 
         // If a Stormpath profile exists, delete Stormpath account
         if (req.user && req.body.isTest != true) {
             req.user.delete();
         }
-
+        
         // commandResult is a command result, maybe investigate this further later
-        res.json({ message: `User ${user_id} removed` });
-        console.log(`User ${user_id} removed`);
+        res.json({ message: `User ${tmpId} removed` });
+        console.log(`User ${tmpId} removed`);
     });
 
 });
