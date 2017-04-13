@@ -110,14 +110,14 @@ router.post('/update', function (req, res) {
                     console.log("username changed from " + oldEmail + " to " + req.user.email);
                 }
             }
-            if (req.body.education != null)
-            {
-                user.education.school = req.body.eduction.school;
-                user.education.field = req.body.eduction.field;
-                user.education.degree = req.body.eduction.degree;
-                user.education.year = req.body.eduction.year;
-                user.education.inProgress = req.body.eduction.inProgress;
-            }
+            // if (req.body.education != null)
+            // {
+            //     user.education[0].school = req.body.eduction.school;
+            //     user.education[0].field = req.body.eduction.field;
+            //     user.education[0].degree = req.body.eduction.degree;
+            //     user.education[0].year = req.body.eduction.year;
+            //     user.education[0].inProgress = req.body.eduction.inProgress;
+            // }
             if (req.body.location != null)
                 user.location = req.body.location;
             if (req.body.about != null)

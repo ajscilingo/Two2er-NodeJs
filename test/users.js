@@ -79,24 +79,20 @@ describe('Running user tests\n', function() {
 
     it('Test schema of a well defined user', function testPath(done) {
         request(server)
-        .get('/apiauth/getUserByName/user for automated testing 1')
+        .get('/apiauth/users/getUserByName/AutomatedTestUser1')
         .set('Accept', 'application/json')
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, (err, res) => {
             if (err) return done(err);
 
-            res.body.forEach(function(elem) {
-                schemas.userSchema.forEach(function(field) {
-                    assert.notEqual(elem[field], undefined, 'Undefined field: ' + field);
-                });
-                schemas.locationSchema.forEach(function(field) {
-                    var loc = elem['location'];
-                    assert.notEqual(loc[field], undefined, 'Undefined field: location. ' + field);
-                });
+            var user = res.body;
+            schemas.userSchema.forEach(function(field) {
+                assert.notEqual(user[field], undefined, 'Undefined field: ' + field);
             });
 
-            done();
-        });
+        done();    
+     });
+        
     });
 
     //skipping creating a new user for now
@@ -277,13 +273,13 @@ describe('Running user tests\n', function() {
                 coordinates: [10,10],
                 type: 'Point'
             },
-            education: {
+            education: [{
                 school: "School",
                 frield: "Field",
                 degree: 1,
                 year: 2000,
-                inProgress: "true"
-            },
+                inProgress: "true"}]
+            ,
             about: "about info",
             defaultLocation: {
                 type: "Point",
@@ -296,7 +292,7 @@ describe('Running user tests\n', function() {
         })
         .expect(200)
         .end(done);
-    })
+    });
 
     it('Test GET /apiauth/deleteByEmail/:email deletes user by email', function test(done) {
         request(server)

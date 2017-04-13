@@ -1,6 +1,6 @@
 module.exports = {
     userSchema : ['name', 'email', 'age', 'location','education','usergroups','image_url'
-        ,'fcm_tokens','about','creationdate','defaultlocation','userMode','student','tutor'],
+        ,'fcm_tokens','about','creationdate','defaultlocation','userMode'],
     locationSchema : ['coordinates', 'type'],
     userLocationSchema : ['createdAt', 'location'],
     studentSchema : ['courses'],
