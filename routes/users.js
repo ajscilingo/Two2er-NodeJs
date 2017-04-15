@@ -10,6 +10,34 @@ const kml = require('tokml');
 const geojsonRandom = require('geojson-random');
 const UserType = require('../enums/usertype.js');
 
+
+// function to save stormpath user and mongo user
+function saveUser(response, mongoUser, stormpathUser = undefined){
+    
+    // if no stormpath user just save mongo document
+    if(stormpathUser === undefined){
+        mongoUser.save( (err) => {
+            if (err)
+                response.status(404).send(err);
+            response.json(mongoUser);
+        });
+    }
+    // if stormpath user, save stormpath user data then save mongo document
+    else {
+        stormpathUser.save( (err) => {
+            if(err)
+                response.status(404).send(err);
+            // save mongo document
+            mongoUser.save( (err) => {
+                if(err)
+                    response.status(404).send(err);
+                response.json(mongoUser);
+            });
+        });
+    }
+}
+
+
 // a middleware function with no mount path. This code is executed for every request to the router
 router.use((req, res, next) => {
     console.log('Time:', dateFormat(Date.now(), 'dd-mmm-yyyy HH:mm:ss'));
@@ -89,7 +117,7 @@ router.post('/update', function (req, res) {
 
     try {
         if (req.body.user_id != null)
-            var userid = req.body.user_id;
+            var userid = mongoose.Types.ObjectId(req.body.user_id);
         else
             var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
 
@@ -98,18 +126,57 @@ router.post('/update', function (req, res) {
                 user.name = req.body.name;
             if (req.body.age != null)
                 user.age = req.body.age;
+            if (req.body.location != null)
+                user.location = req.body.location;
+            if (req.body.about != null)
+                user.about = req.body.about;
+            if (req.body.defaultlocation != null)
+                user.defaultlocation = req.body.defaultlocation;    
+            // change made to email and possibly also user_id
             if (req.body.email != null) {
                 user.email = req.body.email;
 
                 // If a Stormpath profile exists, change username on Stormpath account
+                // and also update user model if stormpath save is successful
                 if (req.user && req.body.isTest != true) {
                     var oldEmail = req.user.email;
                     req.user.email = req.body.email;
                     req.user.username = req.body.email;
-                    req.user.save();
-                    console.log("username changed from " + oldEmail + " to " + req.user.email);
+                    // account for change in user_id
+                    if(req.body.user_id != null)
+                        req.user.customData.user_id = userid;
+
+                    saveUser(res, user, req.user);
+                }
+                // If this is a test, regardless if req.user exists or not just update the mongodb user document
+                else {
+                   saveUser(res, user);
                 }
             }
+            // change made to user_id but not email, update stormpath customData.user_id
+            else if(req.body.user_id != null){
+
+                 // If a Stormpath profile exists and not isTest, change customData.user_id 
+                if(req.user && req.body.isTest != true){
+                    
+                    // change user_id data to associate it with correct mongodb user document
+                    req.user.customData.user_id = userid;
+
+                    // save change
+                    saveUser(res, user, req.user);
+                }
+                // if test regardless of whether or not there's a stormpath user, just save mongodb user document
+                else {
+                    saveUser(res, user);
+                }
+
+            }
+            // no change to email or user_id just make change to mongodb document
+            else {
+                saveUser(res, user);
+            }
+           
+            
             // need api to push new education objects
             // if (req.body.education != null)
             // {
@@ -121,19 +188,7 @@ router.post('/update', function (req, res) {
             //     user.education[0].year = req.body.eduction.year;
             //     user.education[0].inProgress = req.body.eduction.inProgress;
             // }
-            if (req.body.location != null)
-                user.location = req.body.location;
-            if (req.body.about != null)
-                user.about = req.body.about;
-            if (req.body.defaultlocation != null)
-                user.defaultlocation = req.body.defaultlocation;
-
-            user.save((err) => {
-                if (err)
-                    console.log(err);
-            });
-
-            res.json(user);
+            
         });
     }
     catch (ex) {
@@ -327,6 +382,7 @@ router.get('/exportToKML', (req, res) => {
         if (err)
             res.status(404).send(err);
 
+        // FYI forEach is a blocking call, it is not asynchronous!!
         users.forEach((user) => {
             locations.features.push({ type: "Feature", geometry: user.location, properties: { name: user.name, age: user.age, email: user.email } });
         });
