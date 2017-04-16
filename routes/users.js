@@ -91,6 +91,7 @@ router.post('/', function (req, res) {
 
             if (req.user && req.body.isTest != true) {
                 console.log(user._id);
+
                 req.user.customData.user_id = user._id;
                 req.user.customData.save((err) => {
                     if (err) {
@@ -116,88 +117,83 @@ router.post('/', function (req, res) {
 router.post('/update', function (req, res) {
     console.log(`${req.ip} is doing a POST via /users/update`)
 
-    try {
-        if (req.body.user_id != null)
-            var userid = mongoose.Types.ObjectId(req.body.user_id);
-        else
-            var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
 
-        User.findOne({ _id: userid }, (err, user) => {
-            if (req.body.name != null)
-                user.name = req.body.name;
-            if (req.body.age != null)
-                user.age = req.body.age;
-            if (req.body.location != null)
-                user.location = req.body.location;
-            if (req.body.education != null)
-                user.education = req.body.education;
-            if (req.body.usergroups != null)
-                user.usergroups = req.body.usergroups;
-            if (req.body.image_url != null)
-                user.image_url = req.body.image_url;
-            if (req.body.fcm_tokens != null)
-                user.fcm_tokens = req.body.fcm_tokens;
-            if (req.body.about != null)
-                user.about = req.body.about;
-            if (req.body.defaultlocation != null)
-                user.defaultlocation = req.body.defaultlocation;
-            if (req.body.userMode != null)
-                user.userMode = req.body.userMode;
-            if (req.body.student != null)
-                user.student = req.body.student;
-            if (req.body.tutor != null)
-                user.tutor = req.body.tutor;
+    if (req.body.user_id != null)
+        var userid = mongoose.Types.ObjectId(req.body.user_id);
+    else
+        var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
 
-            // change made to email and possibly also user_id
-            if (req.body.email != null) {
-                user.email = req.body.email;
+    User.findOne({ _id: userid }, (err, user) => {
+        if (req.body.name != null)
+            user.name = req.body.name;
+        if (req.body.age != null)
+            user.age = req.body.age;
+        if (req.body.location != null)
+            user.location = req.body.location;
+        if (req.body.education != null)
+            user.education = req.body.education;
+        if (req.body.usergroups != null)
+            user.usergroups = req.body.usergroups;
+        if (req.body.image_url != null)
+            user.image_url = req.body.image_url;
+        if (req.body.fcm_tokens != null)
+            user.fcm_tokens = req.body.fcm_tokens;
+        if (req.body.about != null)
+            user.about = req.body.about;
+        if (req.body.defaultlocation != null)
+            user.defaultlocation = req.body.defaultlocation;
+        if (req.body.userMode != null)
+            user.userMode = req.body.userMode;
+        if (req.body.student != null)
+            user.student = req.body.student;
+        if (req.body.tutor != null)
+            user.tutor = req.body.tutor;
 
-                // If a Stormpath profile exists, change username on Stormpath account
-                // and also update user model if stormpath save is successful
-                if (req.user && req.body.isTest != true) {
-                    var oldEmail = req.user.email;
-                    req.user.email = req.body.email;
-                    req.user.username = req.body.email;
-                    // account for change in user_id
-                    if (req.body.user_id != null)
-                        req.user.customData.user_id = userid;
+        // change made to email and possibly also user_id
+        if (req.body.email != null) {
+            user.email = req.body.email;
 
-                    saveUser(res, user, req.user);
-                }
-                // If this is a test, regardless if req.user exists or not just update the mongodb user document
-                else {
-                    saveUser(res, user);
-                }
-            }
-            // change made to user_id but not email, update stormpath customData.user_id
-            else if (req.body.user_id != null) {
-
-                // If a Stormpath profile exists and not isTest, change customData.user_id 
-                if (req.user && req.body.isTest != true) {
-
-                    // change user_id data to associate it with correct mongodb user document
+            // If a Stormpath profile exists, change username on Stormpath account
+            // and also update user model if stormpath save is successful
+            if (req.user && req.body.isTest != true) {
+                var oldEmail = req.user.email;
+                req.user.email = req.body.email;
+                req.user.username = req.body.email;
+                // account for change in user_id
+                if (req.body.user_id != null)
                     req.user.customData.user_id = userid;
 
-                    // save change
-                    saveUser(res, user, req.user);
-                }
-                // if test regardless of whether or not there's a stormpath user, just save mongodb user document
-                else {
-                    saveUser(res, user);
-                }
-
+                saveUser(res, user, req.user);
             }
-            // no change to email or user_id just make change to mongodb document
+            // If this is a test, regardless if req.user exists or not just update the mongodb user document
+            else {
+                saveUser(res, user);
+            }
+        }
+        // change made to user_id but not email, update stormpath customData.user_id
+        else if (req.body.user_id != null) {
+
+            // If a Stormpath profile exists and not isTest, change customData.user_id 
+            if (req.user && req.body.isTest != true) {
+
+                // change user_id data to associate it with correct mongodb user document
+                req.user.customData.user_id = userid;
+
+                // save change
+                saveUser(res, user, req.user);
+            }
+            // if test regardless of whether or not there's a stormpath user, just save mongodb user document
             else {
                 saveUser(res, user);
             }
 
-        });
-    }
-    catch (ex) {
-        console.log(ex);
-        throw ex;
-    }
+        }
+        // no change to email or user_id just make change to mongodb document
+        else {
+            saveUser(res, user);
+        }
+
+    });
 });
 
 // get all the users (accessed via GET http://localhost:8080/api/users)
@@ -424,67 +420,9 @@ router.post('/setFCMToken', (req, res) => {
     }
 });
 
-/**
- * checks to see if timekit token is set, if not creates one and
- * assigns it to this user, returns back timekit user info
- * requires authenticated stormpath user
- */
+
 router.get('/me/timekit', (req, res) => {
-    console.log(`${req.ip} is doing a POST via /me/timekit`);
-
-    if(req.user) {
-        
-        var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
-
-        User.findOne({ _id: userid }, (err, user) => {
-            if (err)
-                res.status(404).send(err);
-
-            // if timekit token already exists return user info
-            if(user.timekit_token != null){
-                
-                if(req.user.email != null){
-                    timekit.setUser(req.user.email, user.timekit_token);
-                    // return user info
-                    timekit.getUserInfo().then( (response) => {
-                        res.json(response.data);
-                    }).catch( (response) => {
-                        res.status(500).send(response.error);
-                    });
-                }
-                else
-                    res.status(500).send({message: 'email address required!'});
-            }
-            // else create new timekit user
-            // for now everyone is in 'America/Chicago'
-            // We'll need to start collecting this information
-            // upon registration.
-            else{ 
-                timekit.createUser({
-                        email: req.user.email,
-                        timezone: 'America/Chicago',
-                        first_name: req.user.givenName,
-                        last_name: req.user.surname  
-                }).then( (response) => {
-                    user.timekit_token = response.data.api_token;
-                    saveUser(res, user);
-                }).catch( (response) => {
-                    res.status(500).send(response);
-                });
-            } 
-        });
-    }
-    else {
-        req.status(500).send({message: 'this endpoint requires authentication!'});
-    }
-    
-});
-
-/**
- * Returns the a list of timekit.io calendars for logged in users
- */
-router.get('/me/timekit/calendars', (req, res) => { 
-    console.log(`${req.ip} is doing a POST via /me/timekit`);
+    console.log(`${req.ip} is doing a GET via /me/timekit`);
 
     if (req.user) {
 
@@ -499,23 +437,165 @@ router.get('/me/timekit/calendars', (req, res) => {
 
                 if (req.user.email != null) {
                     timekit.setUser(req.user.email, user.timekit_token);
-                    timekit.getCalendars().then( (response) => {
+                    // return user info
+                    timekit.getUserInfo().then((response) => {
                         res.json(response.data);
-                    }).catch( (response) => {
+                    }).catch((response) => {
+                        res.status(500).send(response.error);
+                    });
+                }
+                else
+                    res.status(500).send({ message: 'email address required!' });
+            }
+            else
+                res.status(500).send({ message: 'timekit_token is null!' });
+        });
+    }
+    else {
+        req.status(500).send({ message: 'this endpoint requires authentication!' });
+    }
+
+});
+
+/**
+ * checks to see if timekit token is set, if not creates one and
+ * assigns it to this user, returns back timekit user info
+ * requires authenticated stormpath user
+ */
+router.post('/me/timekit', (req, res) => {
+    console.log(`${req.ip} is doing a POST via /me/timekit`);
+
+    if (req.user) {
+
+        var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
+
+        User.findOne({ _id: userid }, (err, user) => {
+            if (err)
+                res.status(404).send(err);
+
+            if (user.timekit_token == null) {
+
+                if (req.user.email != null) {
+
+                    timekit.createUser({
+                        email: req.user.email,
+                        timezone: (req.body.timezone ? req.body.timezone : 'America/Chicago'),
+                        first_name: req.user.givenName,
+                        last_name: req.user.surname
+                    }).then((response) => {
+                        user.timekit_token = response.data.api_token;
+                        saveUser(res, user);
+                    }).catch((response) => {
+                        res.status(500).send(response);
+                    });
+
+                }
+                else
+                    res.status(500).send({ message: 'email address required!' });
+            }
+            else
+                res.status(500).send({ message: 'timekit_token is already set' });
+        });
+
+    }
+    else
+        req.status(500).send({ message: 'this endpoint requires authentication!' });
+});
+
+/**
+ * Returns the a list of timekit.io calendars for logged in users
+ */
+router.get('/me/timekit/calendar', (req, res) => {
+    console.log(`${req.ip} is doing a GET via /me/timekit/calendars`);
+
+    if (req.user) {
+
+        var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
+
+        User.findOne({ _id: userid }, (err, user) => {
+            if (err)
+                res.status(404).send(err);
+
+            // if timekit token already exists return user info
+            if (user.timekit_token != null) {
+
+                if (req.user.email != null) {
+                    timekit.setUser(req.user.email, user.timekit_token);
+                    timekit.getCalendars().then((response) => {
+                        res.json(response.data);
+                    }).catch((response) => {
                         res.status(401).send(response);
                     });
                 }
                 else
-                    res.status(500).send({message: 'email address required!'});
+                    res.status(500).send({ message: 'email address required!' });
             }
             else
-                res.status(500).send({message: 'timekit.io token required'});
+                res.status(500).send({ message: 'timekit.io token required' });
         });
     }
     else {
-        req.status(500).send({message: 'this endpoint requires authentication!'});
+        req.status(500).send({ message: 'this endpoint requires authentication!' });
     }
 });
+
+/**
+ * Create New Calendar for user if one doesn't exist
+ * 
+ */
+router.post('/me/timekit/calendar', (req, res) => {
+    console.log(`${req.ip} is doing a POST via /me/timekit/calendars`);
+
+    if (req.user) {
+
+        var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
+
+        User.findOne({ _id: userid }, (err, user) => {
+            if (err)
+                res.status(404).send(err);
+
+            if (user.timekit_token != null) {
+
+                if (req.user.email != null) {
+                    
+                    if(user.timekit_calendar_id == null){
+
+                        timekit.setUser(req.user.email, user.timekit_token);
+
+                        var givenNameLastIndex = req.user.givenName.length - 1;
+                        var giveNameLastLetter = req.user.givenName.substring(givenNameLastIndex, 1).toLowerCase();
+                        var givenName = req.user.givenName;
+                        var calendar_name = ((giveNameLastLetter == 's') ? givenName + "' Bookings" : givenName + "'s Bookings");
+                        var calendar_description = "all bookings for " + req.user.fullName;
+
+                        // create new calendar
+                        timekit.createCalendar({
+                            name: calendar_name,
+                            description: calendar_description
+                        }).then((response) => {
+                            user.timekit_calendar_id = response.data.id;
+                            saveUser(res, user);
+
+                        }).catch((response) => {
+                            res.status(500).send(response);
+                        });
+                    }
+                    else
+                        res.status(500).send({ message: 'calendar already exists!' });
+                }   
+                else
+                    res.status(500).send({ message: 'email address required!' });
+            }
+            else
+                res.status(500).send({ message: 'timekit.io token required' });
+
+        });
+    }
+    else {
+        req.status(500).send({ message: 'this endpoint requires authentication!' });
+    }
+});
+
 
 // need api to push new education objects
 // if (req.body.education != null)

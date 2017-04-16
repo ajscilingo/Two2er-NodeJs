@@ -14,7 +14,9 @@ const BookingSchema = new Schema ({
     tutor_user_id: {type: Schema.Types.ObjectId, required: true, ref: User},
     tutor_name: {type: String, required: true},
     scheduledmeetingdate : Date,
+    scheduledendingdate : Date,
     bookingcreationdate : Date,
+    timekit_booking_id : {type: String, required: false},
     status: {type: String, required: true}
 });
 

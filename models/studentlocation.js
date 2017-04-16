@@ -9,7 +9,6 @@ const StudentLocationSchema = new Schema({
     user_id: {type: Schema.Types.ObjectId, required: true, ref: User},      // foreign key to users collection
     createdAt: {type: Date, expires: '10m', default: Date.now},
     location: LocationSchema
-
 });
 
 // Make sure this attribute has a spatial index

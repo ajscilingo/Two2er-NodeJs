@@ -7,6 +7,7 @@ const router = require('express').Router();
 const Booking = require('../models/booking.js');
 const User = require('../models/user.js')
 const Location = require('../models/schemas/location.js')
+const timekit = require('../timekit.js');
 const mongoose = require('mongoose');
 const dateFormat = require('dateformat');
 const Promise = require('bluebird');
@@ -126,8 +127,24 @@ router.post ('/request', (req, res) => {
 
         var booking = new Booking();
         
-        booking.bookingcreationdate = Date.now();
-        booking.scheduledmeetingdate = req.body.scheduledmeetingdate;
+
+        var creationDate = new Date();
+        
+        // make default ending date 1 hour from now
+        var endingDate = new Date();
+        endingDate.setHours(endingDate.getHours() + 1);
+
+        var scheduledmeetingdate = (req.body.scheduledmeetingdate ? req.body.scheduledmeetingdate : creationDate);
+        var scheduledendingdate = (req.body.scheduledendingdate ? req.body.scheduledendingdate : endingDate);
+
+        // timekit.io wants dates as strings in ISO-8601 format
+        var startTime = dateFormat(scheduledmeetingdate, "isoDateTime");
+        var endTime = dateFormat(scheduledendingdate, "isoDateTime");
+
+
+        booking.bookingcreationdate = creationDate;
+        booking.scheduledendingdate = scheduledendingdate;
+        booking.scheduledmeetingdate = scheduledmeetingdate;
         booking.tutor_user_id = req.body.tutor_user_id;
         booking.student_user_id = req.user.customData.user_id;
         booking.status = "requested";
@@ -137,7 +154,54 @@ router.post ('/request', (req, res) => {
                 booking.student_name = student.name;
                 User.findById(mongoose.Types.ObjectId(req.body.tutor_user_id), (err, tutor) => {
                     // save booking and send notification to tutor
-                    saveBookingAndSendNotificationToTutor(err, tutor, student, booking ,res);
+                    //saveBookingAndSendNotificationToTutor(err, tutor, student, booking ,res);
+                    
+                    // send booking to timekit.io if user has timekit info
+                    if(tutor.timekit_token != null){
+                        // set timekit scheduling to tutor user
+                        timekit.setUser(tutor.email, tutor.timekit_token);
+                        
+                        if(tutor.timekit_calendar_id != null){
+                            // creating booking in tutor's calendar
+                            timekit.createBooking({
+                                graph: 'confirm_decline',
+                                action: 'create',
+                                event: {
+                                    start: startTime,
+                                    end: endTime,
+                                    what: 'Tutoring Session',
+                                    where: '1 E. Jackson Blvd, Chicago, IL 60604, USA',
+                                    calendar_id: tutor.timekit_calendar_id,
+                                    description: 'HELP!!' 
+                                },
+                                customer: {
+                                    name: student.name,
+                                    email: student.email,
+                                    phone: '(312) 588-2300',
+                                    voip: 'voip',
+                                    timezone: 'America/Chicago'
+                                },
+                                settings: {
+                                    allow_double_bookings: false
+                                }
+                            }).then( (response) => {
+                                // record timekit event id
+                                booking.timekit_booking_id = response.data.id;
+                                // save booking and send notification to tutor
+                                saveBookingAndSendNotificationToTutor(err, tutor, student, booking ,res);
+                            }).catch ( (response) => {
+                                res.status(response.status).send(response.statusText)
+                            });
+                        }
+                        else
+                            res.status(500).send({message: "timekit calendar missing!"});
+                    }
+                    else {
+                        // save booking and send notification to tutor using our booking system
+                        // WE WILL WANT TO REMOVE THIS ELSE CONDITION ONCE WE FULLY IMPLEMENT TIMEKIT.IO
+                        // AND JUST FAIL THE CALL IF TIMEKIT INFO IS MISSING.
+                        saveBookingAndSendNotificationToTutor(err, tutor, student, booking ,res);
+                    }
                 });
             }
         });
