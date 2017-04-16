@@ -24,6 +24,7 @@ const UserSchema = new Schema({
     usergroups: [String], // For now each user is both a UserType.Student and UserType.Tutor
     image_url: {type: String, required: false},  // For user's profile image
     fcm_tokens: {type: [String], required: false}, 
+    timekit_token : {type: String, required: false},  //used for timekit.io scheduling
     about: {type: String, required: false},
     creationdate: {type: Date, required: false},
     defaultlocation: {type: LocationSchema, required: false},
