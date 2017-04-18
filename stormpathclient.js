@@ -1,10 +1,12 @@
+const bluebird = require('bluebird');
+
 var token = '';
-//var username = "max@test.com";
-//var password = "Password123";
+var username = "max@test.com";
+var password = "Password123";
 //var username = "t.durden@mail.com";
 //var password = "TD0627023Dp!";
-var username = "NewMaxPower@mail.com";
-var password = "Password1";
+//var username = "NewMaxPower@mail.com";
+//var password = "Password1";
 var sp = require('stormpath');
 
 var client = new sp.Client({
@@ -14,21 +16,57 @@ var client = new sp.Client({
     }
 });
 
-/*var accountData = {
-    givenName: 'Max',
-    surname: 'Power',
-    username: username,
-    email: username,
-    password: password
-};
+// reference to two2erContext in stormpath
+var two2erContext;
 
-application.createAccount(accountData, function (err, account) {
-    if (err) {
-        return console.error(err);
+getTwo2erContext = function () {
+    
+    // if two2erContext not created, create it
+    if(two2erContext == null){  
+        
+        return new Promise( function(resolve, reject) {
+            client.getApplications({ name: 'Two2er' }, (err, applications) => {
+                
+                if(err) {
+                    console.error(err);
+                    reject(null);
+                }
+                
+                two2erContext = applications.items[0];
+                resolve(two2erContext);
+            });
+        });
     }
+    else 
+        return new Promise( function (resolve, reject) {
+            resolve(two2erContext);
+        });
+}
 
-    console.log('Created account %s', account.fullName);
-});*/
+getMyToken = function(uname = username, pword = password){
+    
+    return new Promise( function (resolve, reject) {
+        getTwo2erContext().then( (two2erApp) => {
+
+            var auth = new sp.OAuthAuthenticator(two2erApp);
+            auth.authenticate({
+                body: {
+                    grant_type: 'password',
+                    username: uname,
+                    password: pword
+                }
+            }, (err, result) => {
+                if(err) 
+                    reject(err);
+                else
+                    resolve(result.accessTokenResponse.access_token);
+            });
+
+        }).catch( (error) => {
+            reject(error);
+        }); 
+    });
+}
 
 client.getApplications({ name: 'Two2er' }, function (err, applications) {
     if (err) {
