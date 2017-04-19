@@ -299,6 +299,51 @@ router.get('/', (req, res) => {
     }
 });
 
+
+
+/**
+ * Get list of bookings for authenticated user 
+ * from timekit.io calendar
+ */
+router.get('/timekit', (req, res) => {
+    console.log(`${req.ip} is doing a GET via /booking/timekit`);
+
+    if(req.user){ 
+         
+         var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
+
+         User.findOne({ _id: userid }, (err, user) => {
+            if (err)
+                res.status(404).send(err);
+            
+            if (user.timekit_token != null) {
+                
+                if (req.user.email != null) {
+                    
+                    // set timekit to use current user
+                    timekit.setUser(req.user.email, user.timekit_token);
+
+                    timekit.include('attributes').getBookings().then( (response) => {
+                        res.json(response.data);
+                    }).catch( (response) => {
+                        res.status(response.status).send(response.statusText);
+                    });
+
+                }
+                else
+                    res.status(500).send({ message: 'email address required!' });
+            }
+            else
+                res.status(500).send({ message: 'timekit.io token required' });
+
+         });
+
+    }
+    else {
+        req.status(500).send({ message: 'this endpoint requires authentication!' });
+    }
+});
+
 // router.get('/', (req, res) => {
 //     console.log(`${req.ip} is doing a GET via /booking`);
 
