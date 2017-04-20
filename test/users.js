@@ -79,7 +79,7 @@ describe('Running user tests\n', function() {
 
     it('Test schema of a well defined user', function testPath(done) {
         request(server)
-        .get('/apiauth/users/getUserByName/AutomatedTestUser1')
+        .get('/apiauth/users/getUserById/58eab79d7f43a719c8c0eab9')
         .set('Accept', 'application/json')
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, (err, res) => {
@@ -111,37 +111,6 @@ describe('Running user tests\n', function() {
             }
         })
         .end(done);
-    });
-
-    it('Test GET /apiauth/getUserByName/:name returns user by name', function test(done) {
-        request(server)
-        .get('/apiauth/users/getUserByName/FindUserByNameTest')
-        .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer ' + getToken())
-        .expect(200, function (err, res) {
-            if (err) return done(err);
-            var user = res.body;
-            var loc = user['location'];
-            assert.equal(user['name'], 'FindUserByNameTest');
-            assert.equal(user['email'], 'fubnt@gmail.com');
-            assert.equal(user['age'], '100');
-            assert.equal(loc['coordinates'][0], -87.603545);
-            assert.equal(loc['coordinates'][1], 41.891667);
-            assert.equal(loc['type'], 'Point');
-            done();
-        });
-    });
-
-    it('Test GET /apiauth/getUserByName/:name for non-existant user', function test(done) {
-        request(server)
-        .get('/apiauth/users/getUserByName/asdf')
-        .set('Accept', 'application/json')
-        .set('Authorization', 'Bearer ' + getToken())
-        .expect(200, function (err, res) {
-            if (err) return done(err);
-            assert.equal(res.body, null);
-            done();
-        });
     });
 
     it('Test GET /apiauth/getUserByEmail/:email returns user by email', function test(done) {
@@ -294,9 +263,9 @@ describe('Running user tests\n', function() {
         .end(done);
     });
 
-    it('Test GET /apiauth/deleteByEmail/:email deletes user by email', function test(done) {
+    it('Test DELETE /apiauth/deleteByEmail/:email deletes user by email', function test(done) {
         request(server)
-        .get('/apiauth/users/deleteByEmail/testtest@gmail.com')
+        .delete('/apiauth/users/deleteByEmail/testtest@gmail.com')
         .set('Accept', 'application/json')
         .set('Authorization', 'Bearer ' + getToken())
         .expect(200, function (err, res) {

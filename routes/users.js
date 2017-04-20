@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const User = require('../models/user.js');
-const Tutor = require('../models/schemas/tutor.js');
-const Student = require('../models/schemas/student.js').schema;
+const Tutor = require('../models/schemas/tutor.js').model;
+const Student = require('../models/schemas/student.js').model;
 const dateFormat = require('dateformat');
 const timekit = require('../timekit.js');
 const mongoose = require('mongoose');
@@ -19,19 +19,25 @@ function saveUser(response, mongoUser, stormpathUser = undefined) {
     if (stormpathUser === undefined) {
         mongoUser.save((err) => {
             if (err)
-                response.status(404).send(err);
+                response.status(500).send(err);
             response.json(mongoUser);
         });
     }
     // if stormpath user, save stormpath user data then save mongo document
     else {
+        
+        // check to see if stormpathUser has a user_id property
+        // if not set it to the mongoUser._id
+        if(stormpathUser.customData.user_id == null)
+            stormpathUser.customData.user_id = mongoUser._id;
+        
         stormpathUser.save((err) => {
             if (err)
-                response.status(404).send(err);
+                response.status(500).send(err);
             // save mongo document
             mongoUser.save((err) => {
                 if (err)
-                    response.status(404).send(err);
+                    response.status(500).send(err);
                 response.json(mongoUser);
             });
         });
@@ -67,49 +73,108 @@ router.post('/', function (req, res) {
     if (req.body.userMode != null && (req.body.userMode == UserType.Student.name) || (req.body.userMode == UserType.Tutor.name)) {
         user.usergroups.push(req.body.userMode);
         user.userMode = req.body.userMode;
+        
+        // create new Student document
+        if(user.userMode == UserType.Student.name)
+            user.student = new Student();
+        // create new Tutor document
+        if(user.userMode == UserType.Tutor.name){
+            user.tutor = new Tutor();
+            user.tutor.rating = 5.0;
+            user.tutor.isAvailableNow = false;
+        }
+
     }
     else {
         user.usergroups.push(UserType.Student.name);
         user.userMode = UserType.Student.name;
+        // create new Student document
+        user.student = new Student();
     }
     user.about = (req.body.about ? req.body.about : '');
     user.creationdate = dateFormat(Date.now(), 'dd-mmm-yyyy HH:mm:ss');
 
     console.log(`${req.ip} is doing a POST via /users`)
 
-    user.save((err) => {
-        if (err)
-            res.status(404).send(err);
+    /** TODO
+     * Create New Timekit User and save token id
+     * Create New Calendar 
+     */
 
-        else {
+    if(req.user && req.body.isTest != true){
+        timekit.createUser({
+            email: req.user.email,
+            timezone: (req.body.timezone ? req.body.timezone : 'America/Chicago'),
+            first_name: req.user.givenName,
+            last_name: req.user.surname
+        }).then((response) => {
+            user.timekit_token = response.data.api_token;
+            
+            // set timekit user to new user just created
+            timekit.setUser(req.user.email, user.timekit_token);
 
-            // update StormPath to include user model id 
-            // if route reached by StormPath
-            // authenticated endpoint.
-            // doing this for faster access to look ups in student
-            // and tutor and locations collections
+            // create name for new calendar based on user's name
+            var givenNameLastIndex = req.user.givenName.length - 1;
+            var giveNameLastLetter = req.user.givenName.substring(givenNameLastIndex, 1).toLowerCase();
+            var givenName = req.user.givenName;
+            var calendar_name = ((giveNameLastLetter == 's') ? givenName + "' Bookings" : givenName + "'s Bookings");
+            var calendar_description = "all bookings for " + req.user.fullName;
 
-            if (req.user && req.body.isTest != true) {
-                console.log(user._id);
+            // create new calendar
+            timekit.createCalendar({
+                name: calendar_name,
+                description: calendar_description
+            }).then((response) => {
+                user.timekit_calendar_id = response.data.id;
+                // save mongo user document and stormpath user
+                saveUser(res, user, req.user);
+            }).catch((response) => {
+                res.status(500).send(response);
+            });
 
-                req.user.customData.user_id = user._id;
-                req.user.customData.save((err) => {
-                    if (err) {
-                        res.status(400).send(`Oops! There was an error: ${err.userMessage}`);
-                    }
-                    else
-                        console.log(`_id: ${user._id}`)
-                    res.json({ message: `StormPath Authenticated User: ${user.name} has been created!` });
-                });
-            }
-            // otherwise ignore stormpath if not 
-            // authenticated.
-            else {
-                console.log(`_id: ${user._id}`)
-                res.json({ message: `User: ${user.name} has been created!` });
-            }
-        }
-    });
+        }).catch((response) => {
+            res.status(500).send(response);
+        });
+    }
+    // just save mongo user if isTest and stormpathuser is undefined
+    else{
+        saveUser(res, user);
+    }
+
+
+    // user.save((err) => {
+    //     if (err)
+    //         res.status(404).send(err);
+
+    //     else {
+
+    //         // update StormPath to include user model id 
+    //         // if route reached by StormPath
+    //         // authenticated endpoint.
+    //         // doing this for faster access to look ups in student
+    //         // and tutor and locations collections
+
+    //         if (req.user && req.body.isTest != true) {
+    //             console.log(user._id);
+
+    //             req.user.customData.user_id = user._id;
+    //             req.user.customData.save((err) => {
+    //                 if (err) {
+    //                     res.status(400).send(`Oops! There was an error: ${err.userMessage}`);
+    //                 }
+    //                 else
+    //                     console.log(`_id: ${user._id}`)
+    //                 res.json({ message: `StormPath Authenticated User: ${user.name} has been created!` });
+    //             });
+    //         }
+    //         // otherwise ignore stormpath if not 
+    //         // authenticated.
+    //         else {
+    //             console.log(`_id: ${user._id}`)
+    //             res.json({ message: `User: ${user.name} has been created!` });
+    //         }
+    //     }
+    // });
 });
 
 // update for the current user
@@ -224,21 +289,6 @@ router.get('/me', (req, res) => {
         res.json(null);
 });
 
-// get user with name like <name> (accessed via GET http://localhost:8080/api/users/<name>)
-router.get('/getUserByName/:name?', (req, res) => {
-
-    console.log(req.params.name);
-    var fullname = req.params.name ? req.params.name : (req.user ? req.user.fullName : 'FindUserByNameTest');
-
-    // some logging 
-    console.log(`${req.ip} is doing a GET via /users/getUserByName/${req.params.name}`);
-
-    User.findOne({ name: fullname }, (err, user) => {
-        if (err)
-            res.status(404).send(err);
-        res.json(user);
-    });
-});
 
 // get user by email 
 router.get('/getUserByEmail/:email?', (req, res) => {
@@ -275,7 +325,7 @@ router.get('/getUserById/:id?', (req, res) => {
 
 // delete user from user collection by mongo _id field 
 // does not delete from student or tutor collections
-router.get('/deleteById/:id', (req, res) => {
+router.delete('/deleteById/:id', (req, res) => {
 
     console.log(`${req.ip} is doing a GET via /users/deleteUserById/${req.params.id}`);
 
@@ -298,16 +348,15 @@ router.get('/deleteById/:id', (req, res) => {
 
 // deletes user by email, also deletes corresponding 
 // document in tutors and students collections
-router.get('/deleteByEmail/:email', (req, res) => {
+router.delete('/deleteByEmail/:email', (req, res) => {
 
     console.log(`${req.ip} is doing a GET via /users/deleteUserByEmail/${req.params.email}`);
 
-    User.findOne({ email: req.params.email }, (err, user) => {
+    User.remove({ email: req.params.email }, (err, commandResult) => {
         if (err) {
             res.status(404).send(err);
         }
 
-        var tmpId = user._id;
 
         // If a Stormpath profile exists, delete Stormpath account
         if (req.user && req.body.isTest != true) {
@@ -315,8 +364,8 @@ router.get('/deleteByEmail/:email', (req, res) => {
         }
 
         // commandResult is a command result, maybe investigate this further later
-        res.json({ message: `User ${tmpId} removed` });
-        console.log(`User ${tmpId} removed`);
+        res.json({ message: `${commandResult}` });
+        console.log(`${commandResult}`);
     });
 
 });
@@ -421,6 +470,7 @@ router.post('/setFCMToken', (req, res) => {
 });
 
 
+
 router.get('/me/timekit', (req, res) => {
     console.log(`${req.ip} is doing a GET via /me/timekit`);
 
@@ -460,7 +510,7 @@ router.get('/me/timekit', (req, res) => {
 /**
  * checks to see if timekit token is set, if not creates one and
  * assigns it to this user, returns back timekit user info
- * requires authenticated stormpath user
+ * requires authenticated stormpath user. 
  */
 router.post('/me/timekit', (req, res) => {
     console.log(`${req.ip} is doing a POST via /me/timekit`);
@@ -540,8 +590,7 @@ router.get('/me/timekit/calendar', (req, res) => {
 });
 
 /**
- * Create New Calendar for user if one doesn't exist
- * 
+ * Create New timekit.io Calendar for an existing user if one doesn't exist
  */
 router.post('/me/timekit/calendar', (req, res) => {
     console.log(`${req.ip} is doing a POST via /me/timekit/calendars`);
