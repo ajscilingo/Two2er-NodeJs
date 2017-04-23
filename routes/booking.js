@@ -135,7 +135,7 @@ router.post ('/request', (req, res) => {
 
         var scheduledmeetingdate = (req.body.scheduledmeetingdate ? req.body.scheduledmeetingdate : creationDate);
        
-        endingDate.setHours(scheduledmeetingDate.getHours() + 1);
+        endingDate.setHours(scheduledmeetingdate.getHours() + 1);
 
         var scheduledendingdate = (req.body.scheduledendingdate ? req.body.scheduledendingdate : endingDate);
 
