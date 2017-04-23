@@ -132,9 +132,11 @@ router.post ('/request', (req, res) => {
         
         // make default ending date 1 hour from now
         var endingDate = new Date();
-        endingDate.setHours(endingDate.getHours() + 1);
 
         var scheduledmeetingdate = (req.body.scheduledmeetingdate ? req.body.scheduledmeetingdate : creationDate);
+       
+        endingDate.setHours(scheduledmeetingDate.getHours() + 1);
+
         var scheduledendingdate = (req.body.scheduledendingdate ? req.body.scheduledendingdate : endingDate);
 
         // timekit.io wants dates as strings in ISO-8601 format

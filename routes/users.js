@@ -189,6 +189,9 @@ router.post('/update', function (req, res) {
         var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
 
     User.findOne({ _id: userid }, (err, user) => {
+        if (err) 
+            res.status(404).send(err);
+
         if (req.body.name != null)
             user.name = req.body.name;
         if (req.body.age != null)
