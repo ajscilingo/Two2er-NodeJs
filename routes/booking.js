@@ -133,11 +133,22 @@ router.post ('/request', (req, res) => {
         // make default ending date 1 hour from now
         var endingDate = new Date();
 
-        var scheduledmeetingdate = (req.body.scheduledmeetingdate ? req.body.scheduledmeetingdate : creationDate);
+        var scheduledmeetingdate = (req.body.scheduledmeetingdate ? new Date(Date.parse(req.body.scheduledmeetingdate)) : creationDate);
        
+        // send error response if scheduledmeetingdate is not a date
+        if(!(scheduledmeetingdate instanceof Date)){
+            res.status(500).send({message:"scheduledmeetingdate is not a valid Date Object!"});
+            return;
+        }
+
         endingDate.setHours(scheduledmeetingdate.getHours() + 1);
 
-        var scheduledendingdate = (req.body.scheduledendingdate ? req.body.scheduledendingdate : endingDate);
+        var scheduledendingdate = (req.body.scheduledendingdate ? new Date(Date.parse(req.body.scheduledendingdate)) : endingDate);
+        
+        if(!(scheduledendingdate instanceof Date)){
+            res.status(500).send({message: "scheduledending date is not a valid Date Object!"});
+            return;
+        }
 
         // timekit.io wants dates as strings in ISO-8601 format
         var startTime = dateFormat(scheduledmeetingdate, "isoDateTime");
@@ -192,7 +203,10 @@ router.post ('/request', (req, res) => {
                                 // save booking and send notification to tutor
                                 saveBookingAndSendNotificationToTutor(err, tutor, student, booking ,res);
                             }).catch ( (response) => {
-                                res.status(response.status).send(response.statusText)
+                                if(response.data)
+                                    res.status(response.status).send(response.data.error);
+                                else
+                                    res.status(response.status).send(response.statusText)
                             });
                         }
                         else
