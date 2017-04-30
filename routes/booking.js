@@ -334,64 +334,62 @@ router.get('/getTutorSchedule/:id?', (req, res) => {
 
   if (req.user) {
 
-    var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
     var tutorCalId;
-    var userCalId;
 
     // Getting tutor calendar_id using passed params
-    User.findOne({
-      _id: req.params.id
-    }, (err, user) => {
-      if (err) {
+    // and check tutor's availability
+    // all checking here is centric to the tutor
+    // we don't care about the student as timekit.io 
+    // only will be used from the point of view of the tutor 
+    // and not the student.
+    
+    User.findOne({ _id: req.params.id}, (err, user) => {
+      if (err) 
         res.status(500).send({message: 'Provide a valid tutor id'});
+        
+        if (user != null) {
+          
+          if (user.timekit_token != null) {
+              
+              if(user.timekit_calendar_id != null){
+              
+                  tutorCalId = user.timekit_calendar_id;
+
+                  availabilityData = {
+                    "calendar_ids": [
+                      tutorCalId
+                      ],
+                    "future": "5 days",
+                    "length": "60 minutes"
+                  }
+
+                  if(user.email)
+                  {
+                    // set timekit to user found in mongo by id
+                    timekit.setUser(user.email, user.timekit_token);
+
+                    timekit.findTime(availabilityData).then((response) => {
+                      res.json(response.data);
+                    }).catch((response) => {
+                      res.status(response.status).send(response.statusText);
+                    });
+                  }
+                  else
+                    res.status(500).send({message: 'email not found!'});
+              }
+              else
+                res.status(500).send({message: 'Timekit.io calendar id not found!'})
+          }
+          else
+            res.status(500).send({message: 'No Timekit.io token found!'});
       }
-      if (user != null) {
-        tutorCalId = user.timekit_calendar_id;
-      }
-    });
-
-    // Get availability
-    User.findOne({
-      _id: userid
-    }, (err, user) => {
-      if (err)
-        res.status(404).send(err);
-
-      if (user.timekit_token != null) {
-
-        userCalId = user.timekit_calendar_id;
-
-        availabilityData = {
-          "calendar_ids": [
-            userCalId, tutorCalId
-          ],
-          "future": "5 days",
-          "length": "60 minutes"
-        }
-
-        if (req.user.email != null) {
-
-          // set timekit to use current user
-          timekit.setUser(req.user.email, user.timekit_token);
-
-          timekit.findTime(availabilityData).then((response) => {
-            res.json(response.data);
-          }).catch((response) => {
-            res.status(response.status).send(response.statusText);
-          });
-
-        } else
-          res.status(500).send({message: 'email address required!'});
-        }
       else
-        res.status(500).send({message: 'timekit.io token required'});
+        res.status(500).send({message: 'Tutor not found!'});
 
-      }
-    );
-
-  } else {
+    });
+  } 
+  else
     req.status(500).send({message: 'this endpoint requires authentication!'});
-  }
 });
 
 /**
