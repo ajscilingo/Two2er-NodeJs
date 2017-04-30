@@ -110,6 +110,20 @@ function updateBookingStatusAndSendNotificaitonToStudent(booking_id, status, res
   });
 }
 
+function updateBookingStatus(req, res, timekit_booking_id?){
+  Booking.findOne({timekit_booking_id: timekit_booking_id}, (err, booking) =>{
+    if(err) 
+      res.status(500).send(err);
+    booking.status = req.body.state;
+    booking.save( (err) =>{
+      if(err)
+        res.status(500).send(err);
+      res.json({message: `Booking ${timekit_booking_id} state: ${req.body.state}`});
+    });
+    
+  });
+}
+
 // a middleware function with no mount path. This code is executed for every request to the router
 router.use(function(req, res, next) {
   console.log('Time:', dateFormat(Date.now(), 'dd-mmm-yyyy HH:mm:ss'));
@@ -237,12 +251,17 @@ router.post('/reject', (req, res) => {
 
   console.log(`${req.ip} is doing a POST via /booking/reject`);
 
+  // if the request is coming from a stormpath user decline this way
   if (req.user) {
     updateBookingStatusAndSendNotificaitonToStudent(req.body.booking_id, BookingStatus.declined.name, res);
-  } else {
-    res.json({tutor_user_id: 0});
+  } 
+   // if the request is coming from timekit.io instead update status but don't send notification
+  else{
+    if(req.body.id != null)
+      updateBookingStatus(req,res,req.body.id);
+    else
+      res.status(500).send({message: 'Could not find Id!'});
   }
-
 });
 
 // Route for tutor to confirm booking
@@ -250,10 +269,16 @@ router.post('/accept', (req, res) => {
 
   console.log(`${req.ip} is doing a POST via /booking/accept`)
 
+  // if the request is coming from a stormpath user confirm this way
   if (req.user) {
     updateBookingStatusAndSendNotificaitonToStudent(req.body.booking_id, BookingStatus.confirmed.name, res);
-  } else {
-    res.json({tutor_user_id: 0});
+  } 
+  // if the request is coming from timekit.io instead update status but don't send notification
+  else{
+    if(req.body.id != null)
+      updateBookingStatus(req,res,req.body.id);
+    else
+      res.status(500).send({message: 'Could not find Id!'});
   }
 });
 
@@ -274,7 +299,11 @@ router.post('/cancel', (req, res) => {
       }
     });
   } else {
-    res.json({student_user_id: 0});
+      if(req.body.id != null)
+        updateBookingStatus(req,res,req.body.id);
+      else
+        res.status(500).send({message: 'Could not find Id!'});
+      }
   }
 });
 
