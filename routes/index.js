@@ -7,7 +7,8 @@ const tutors = require('./tutors.js');
 const students = require('./students.js');
 const tutorLocations = require('./tutorlocations.js');
 const studentLocations = require('./studentlocations.js');
-const bookings =  require('./booking.js');
+const bookings = require('./booking.js');
+const subjects = require('./subjects.js');
 
 // using arrays to store the route method (e.g. GET,POST) and http endpoint
 var userRoutes = [];
@@ -16,10 +17,11 @@ var studentRoutes = [];
 var tutorLocationRoutes = [];
 var studentLocationRoutes = [];
 var bookingRoutes = [];
+var subjectRoutes = [];
 
 // populate userRoutes
 users.stack.forEach( (r) => {
-    var route = getRoute("users", r) 
+    var route = getRoute("users", r); 
     if(route != null){
         userRoutes.push(route.api);
         userRoutes.push(route.apiauth);
@@ -28,7 +30,7 @@ users.stack.forEach( (r) => {
 
 // populate tutorRoutes
 tutors.stack.forEach( (r) => {
-    var route = getRoute("tutors", r) 
+    var route = getRoute("tutors", r);
     if(route != null){
         tutorRoutes.push(route.api);
         tutorRoutes.push(route.apiauth);
@@ -37,7 +39,7 @@ tutors.stack.forEach( (r) => {
 
 // populate studentRoutes
 students.stack.forEach( (r) => {
-    var route = getRoute("students", r) 
+    var route = getRoute("students", r);
     if(route != null){
         studentRoutes.push(route.api);
         studentRoutes.push(route.apiauth);
@@ -46,7 +48,7 @@ students.stack.forEach( (r) => {
 
 // populate tutorLocationRoutes
 tutorLocations.stack.forEach( (r) => {
-    var route = getRoute("tutorlocations", r) 
+    var route = getRoute("tutorlocations", r);
     if(route != null){
         tutorLocationRoutes.push(route.api);
         tutorLocationRoutes.push(route.apiauth);
@@ -55,7 +57,7 @@ tutorLocations.stack.forEach( (r) => {
 
 // populate studentLocationRoutes
 studentLocations.stack.forEach( (r) => {
-    var route = getRoute("studentlocations", r) 
+    var route = getRoute("studentlocations", r);
     if(route != null){
         studentLocationRoutes.push(route.api);
         studentLocationRoutes.push(route.apiauth);
@@ -65,12 +67,21 @@ studentLocations.stack.forEach( (r) => {
 
 // populate bookingRoutes
 bookings.stack.forEach( (r) => {
-    var route = getRoute("booking", r) 
+    var route = getRoute("booking", r); 
     if(route != null){
         bookingRoutes.push(route.api);
         bookingRoutes.push(route.apiauth);
     }
 
+});
+
+// populate subjectRoutes
+subjects.stack.forEach( (r) => {
+    var route = getRoute("subjects", r);
+    if(route != null) {
+        subjectRoutes.push(route.api);
+        subjectRoutes.push(route.apiauth);
+    }
 });
 
 router.use(function (req, res, next) {
@@ -86,7 +97,8 @@ router.get('/', (req, res) =>{
         studentRoutes: studentRoutes,
         tutorLocationRoutes: tutorLocationRoutes,
         studentLocationRoutes: studentLocationRoutes,
-        bookingRoutes: bookingRoutes   
+        bookingRoutes: bookingRoutes,
+        subjectRoutes: subjectRoutes   
     });
 });
 
