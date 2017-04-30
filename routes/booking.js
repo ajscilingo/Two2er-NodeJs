@@ -256,11 +256,14 @@ router.post('/reject', (req, res) => {
     updateBookingStatusAndSendNotificaitonToStudent(req.body.booking_id, BookingStatus.declined.name, res);
   } 
    // if the request is coming from timekit.io instead update status but don't send notification
-  else{
+  else if(req.body.isTest != true){
     if(req.body.id != null)
       updateBookingStatus(req,res,req.body.id);
     else
       res.status(500).send({message: 'Could not find Id!'});
+  }
+  else {
+    res.json({message: null});
   }
 });
 
@@ -274,11 +277,14 @@ router.post('/accept', (req, res) => {
     updateBookingStatusAndSendNotificaitonToStudent(req.body.booking_id, BookingStatus.confirmed.name, res);
   } 
   // if the request is coming from timekit.io instead update status but don't send notification
-  else{
+  else if(req.body.isTest != true){
     if(req.body.id != null)
       updateBookingStatus(req,res,req.body.id);
     else
       res.status(500).send({message: 'Could not find Id!'});
+  }
+  else {
+    res.json({message: null});
   }
 });
 
@@ -298,12 +304,14 @@ router.post('/cancel', (req, res) => {
         res.json({message: `Booking ${booking._id} has been cancelled by ${req.user.customData.user_id}`});
       }
     });
-  } else {
+  } else if(req.body.isTest != true) {
       if(req.body.id != null)
         updateBookingStatus(req,res,req.body.id);
       else
         res.status(500).send({message: 'Could not find Id!'});
-      }
+  }
+  else {
+    res.json({message: null});
   }
 });
 
