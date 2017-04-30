@@ -4,6 +4,8 @@ const Tutor = require('../models/schemas/tutor.js').model;
 const User = require('../models/user.js');
 const dateFormat = require('dateformat');
 const mongoose = require('mongoose');
+const Subject = require('../models/subject.js');
+const TutorSubjects = require('../helpers/tutorsubjects.js');
 
 // a middleware function with no mount path. This code is executed for every request to the router
 router.use(function (req, res, next) {
@@ -30,21 +32,36 @@ router.post('/', (req, res) => {
             if(err)
                 res.status(404).send(err);
             
-            // create new tutor document
-            if(req.body.tutor != null)
-                user.tutor = req.body.tutor;
-            else{
-                user.tutor = new Tutor();
-                user.tutor.rating = 5;
-                user.tutor.isAvailableNow = false;
-                user.tutor.subjects = ["Math", "English"];
+            // check to see that user isn't already a tutor
+            if(user.tutor == null){
+
+                // create new tutor document
+                if(req.body.tutor != null)
+                    user.tutor = req.body.tutor;
+                else{
+                    user.tutor = new Tutor();
+                    user.tutor.rating = 5;
+                    user.tutor.isAvailableNow = false;
+                    user.tutor.subjects = ["Math", "English", "Science"];
+                }
+
+
+                var tutorSubjects = new TutorSubjects(user.tutor, Subject.collection);
+                tutorSubjects.addToSubjectsCollection()
+                    .then((value) => {
+                        console.log(`Number of subjects inserted ${value.insertedCount}`);
+                    }).catch((reason) => {
+                        console.error("Could not insert subjects");
+                    });
+
+                user.save((err) => {
+                    if (err)
+                        res.status(404).send(err);
+                    res.json({message: `A tutor document has been created for ${user_id}!`});
+                });
             }
-            
-             user.save((err) => {
-                if (err)
-                    res.status(404).send(err);
-                res.json({message: `A tutor document has been created for ${user_id}!`});
-            });
+            else
+                res.json({message: "user is already a tutor!"});
         });
     }
     else
@@ -88,6 +105,15 @@ router.post('/update', (req, res) => {
                     else
                         user.tutor.subjects = req.body.subjects;
                     user.markModified("tutor.subjects");
+
+                    // update Subjects collection
+                    var tutorSubjects = new TutorSubjects(user.tutor, Subject.collection);
+                    tutorSubjects.addToSubjectsCollection()
+                        .then((value) => {
+                            console.log(`Number of subjects inserted ${value.insertedCount}`);
+                        }).catch((reason) => {
+                            console.error("Could not insert subjects");
+                        });
                 }
                 
             }

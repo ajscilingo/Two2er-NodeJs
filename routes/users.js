@@ -10,7 +10,8 @@ const kml = require('tokml');
 // For Random Location Generation
 const geojsonRandom = require('geojson-random');
 const UserType = require('../enums/usertype.js');
-
+const Subject = require('../models/subject.js');
+const TutorSubjects = require('../helpers/tutorsubjects.js');
 
 // function to save stormpath user and mongo user
 function saveUser(response, mongoUser, stormpathUser = undefined) {
@@ -189,6 +190,9 @@ router.post('/update', function (req, res) {
         var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
 
     User.findOne({ _id: userid }, (err, user) => {
+        if (err) 
+            res.status(404).send(err);
+
         if (req.body.name != null)
             user.name = req.body.name;
         if (req.body.age != null)

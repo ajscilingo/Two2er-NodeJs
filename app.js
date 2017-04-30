@@ -87,6 +87,7 @@ var students = require('./routes/students');
 var tutorLocations = require('./routes/tutorlocations');
 var studentLocations = require('./routes/studentlocations');
 var booking = require('./routes/booking');
+var subjects = require('./routes/subjects');
 var dev = require('./routes/dev');
 var index = require('./routes/index');
 
@@ -107,6 +108,7 @@ app.use('/api/students', students);
 app.use('/api/studentlocations', studentLocations);
 app.use('/api/tutorlocations', tutorLocations);
 app.use('/api/booking', booking);
+app.use('/api/subjects', subjects);
 app.use('/', index);
 
 app.use('/apiauth/users', stormpath.authenticationRequired, users);
@@ -115,6 +117,7 @@ app.use('/apiauth/students', stormpath.authenticationRequired, students);
 app.use('/apiauth/studentlocations', stormpath.authenticationRequired, studentLocations);
 app.use('/apiauth/tutorlocations', stormpath.authenticationRequired, tutorLocations);
 app.use('/apiauth/booking', stormpath.authenticationRequired, booking);
+app.use('/apiauth/subjects', stormpath.authenticationRequired, subjects);
 app.use('/dev', stormpath.authenticationRequired, dev);
 
 var request = require("request");

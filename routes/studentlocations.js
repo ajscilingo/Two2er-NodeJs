@@ -12,8 +12,13 @@ router.use(function (req, res, next) {
 router.post ('/', (req, res) => {
     var date = new Date();
     
+    if (req.body.user_id != null)
+        var user_id = req.body.user_id;
+    else
+        var user_id = req.user.customData.user_id;
+    
     var studentLocation = new StudentLocation();
-    studentLocation.user_id = req.body.user_id;
+    studentLocation.user_id = user_id;
     studentLocation.createdAt = date.getTime();
     studentLocation.location = req.body.location;
 
