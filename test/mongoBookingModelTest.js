@@ -228,7 +228,7 @@ describe("MongoDB Booking Model Test", function () {
                 booking.tutor_name = tutor_name;
                 booking.bookingcreationdate = Date.now();
                 booking.scheduledmeetingdate = new Date("June 4, 2017, 11:30:00");
-                booking.status = BookingStatus.requested.name;
+                booking.status = BookingStatus.tentative.name;
                 booking.save((err, booking_product, numAffected) => {
                     if(err)
                         done(err);
@@ -243,7 +243,7 @@ describe("MongoDB Booking Model Test", function () {
                     // assert tutor_user_id
                     assert.equal(booking_product.tutor_user_id, tutor_user_id);
                     // assert status requested
-                    assert.equal(BookingStatus.enumValueOf(booking.status), BookingStatus.requested);
+                    assert.equal(BookingStatus.enumValueOf(booking.status), BookingStatus.tentative);
                     done();
                 });
             });

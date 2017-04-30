@@ -1,7 +1,7 @@
 // For the booking routes, we will have three possible routes
 // 1) Request (i.e. create) the booking,
 // 2) Accept the booking (confirmed)
-// 3) Reject the booking (rejected)
+// 3) Reject the booking (declined)
 
 const router = require('express').Router();
 const Booking = require('../models/booking.js');
@@ -44,8 +44,8 @@ function saveBookingAndSendNotificationToTutor(err, tutor, student, booking, res
       var fcm_message = {
         registration_ids: tutor.fcm_tokens,
         notification: {
-          title: 'Booking Requested',
-          body: `Booking Requested By ${student.name}`
+          title: 'Tentative Booking Requested',
+          body: `Tentative Booking Requested By ${student.name}`
         }
       };
 
@@ -165,7 +165,7 @@ router.post('/request', (req, res) => {
     booking.scheduledmeetingdate = scheduledmeetingdate;
     booking.tutor_user_id = req.body.tutor_user_id;
     booking.student_user_id = req.user.customData.user_id;
-    booking.status = "requested";
+    booking.status = "tentative";
 
     User.findById(mongoose.Types.ObjectId(req.user.customData.user_id), (err, student) => {
       if (student) {
@@ -238,7 +238,7 @@ router.post('/reject', (req, res) => {
   console.log(`${req.ip} is doing a POST via /booking/reject`);
 
   if (req.user) {
-    updateBookingStatusAndSendNotificaitonToStudent(req.body.booking_id, BookingStatus.rejected.name, res);
+    updateBookingStatusAndSendNotificaitonToStudent(req.body.booking_id, BookingStatus.declined.name, res);
   } else {
     res.json({tutor_user_id: 0});
   }
@@ -251,7 +251,7 @@ router.post('/accept', (req, res) => {
   console.log(`${req.ip} is doing a POST via /booking/accept`)
 
   if (req.user) {
-    updateBookingStatusAndSendNotificaitonToStudent(req.body.booking_id, BookingStatus.accepted.name, res);
+    updateBookingStatusAndSendNotificaitonToStudent(req.body.booking_id, BookingStatus.confirmed.name, res);
   } else {
     res.json({tutor_user_id: 0});
   }
@@ -436,55 +436,7 @@ router.get('/timekit', (req, res) => {
   }
 });
 
-// router.get('/', (req, res) => {
-//     console.log(`${req.ip} is doing a GET via /booking`);
 
-//     // used to
-//     // var UserData = {
-//     //     mo : (id) => {
-//     //         User.findById(mongoose.Types.ObjectId(id)).then( ;
-//     //     }
-//     // }    if(req.user) {
-//         Booking.find( {$or :[{student_user_id : req.user.customData.user_id}, {tutor_user_id : req.user.customData.user_id}]}).then((bookings) => {
 
-//             Promise.map(bookings, (booking) => {
-//                console.log(`student_user_id ${booking.student_user_id}`);
-//                console.log(`tutor_user_id ${booking.tutor_user_id}`);
-//                return {
-//                    booking_name: "booking 1234",
-//                    booking_title: "my booking",
-//                    student_user_id : booking.student_user_id,
-//                    tutor_user_id: booking.tutor_user_id
-//                }
-//             }).then( (transformedBookings) => {
-//                 res.json(transformedBookings);
-//             }).catch( (err) => {
-//                 console.log(err);
-//                 res.status(500).send(err);
-//             });
-//             //   booking.forEach( (document, index, array) => {
-//             //         User.findById(mongoose.Types.ObjectId(booking.student_user_id)).then( (student) =>{
-//             //             student_name = student.name;
-//             //             console.log(`Student Name: ${student_name}`);
-//             //         }).catch( (err) => {
-//             //             res.status(500).send(err);
-//             //         });
-//             //         User.findById(mongoose.Types.ObjectId(booking.tutor_user_id)).then( (tutor) => {
-//             //             tutor_name = tutor.name;
-//             //             console.log(`Tutor Name: ${tutor_name}`);
-//             //         }).catch( (err) => {
-//             //             res.status(500).send(err);
-//             //         });
-//             //   });
-//             //   booking[0]["test"] = "test";
-//             //   var response = {student_user_id : booking[0].student_user_id, test : User.findById()};
-//             //   res.json(response);
-
-//         }).catch( (err) => {
-//             res.status(500).send(err);
-//             console.log(err);
-//         });
-//     }
-// });
 
 module.exports = router;
