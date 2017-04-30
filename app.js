@@ -44,6 +44,8 @@ const stormpath = require('express-stormpath');
 const bodyParser = require('body-parser');
 const app = express();
 
+app.use('/',express.static(path.join(__dirname, '', 'admin-client'),{ redirect: false }));
+
 app.use(stormpath.init(app, {
   apiKey: {
     id: '1CRUFRGX863CDWSZFBLB66JS9',
@@ -54,6 +56,13 @@ app.use(stormpath.init(app, {
   },
   expand: {
     customData: true
+  },
+  web: {
+
+    // This produces option will disable the default HTML pages that express-stormpath
+    // will serve, we don't need them because our Angular app is responsible for them.
+
+    produces: ['application/json']
   }
 }));
 
@@ -108,6 +117,17 @@ app.use('/apiauth/tutorlocations', stormpath.authenticationRequired, tutorLocati
 app.use('/apiauth/booking', stormpath.authenticationRequired, booking);
 app.use('/dev', stormpath.authenticationRequired, dev);
 
+var request = require("request");
+require('./stormpathclient.js');
+
+app.get('/apiauth/stormpathusers', stormpath.groupsRequired(['Two2er Admins']), function (req, res) {
+  res.send(getAccounts());
+});
+
+app.route('/*')
+  .get(function(req, res) {
+    res.sendFile(path.join(__dirname, '', 'admin-client','index.html'));
+  });
 
 // used to catch errors
 app.use(errorHandler);

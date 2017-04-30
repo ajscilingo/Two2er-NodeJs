@@ -1,0 +1,19 @@
+<div class="container" if-user-state-known>
+    <h2 class="text-center" if-not-user>Welcome!</h2>
+    <h2 class="text-center" if-user>Welcome, {{user.fullName}}!</h2>
+    <hr>
+    <div class="jumbotron">
+        <div if-user>
+            <p>Now that you are logged in, you can manage the Two2er application.</p>
+        </div>
+        <div if-not-user>
+            <p>
+                <span>Ready to begin? You'll need to</span>
+                <a href="/login">Login</a>
+                <span>or</span>
+                <a href="/register">Create an Account</a>
+                <span>.</span>
+            </p>
+        </div>
+    </div>
+</div>

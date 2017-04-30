@@ -8,12 +8,17 @@ var password = "Password123";
 //var username = "NewMaxPower@mail.com";
 //var password = "Password1";
 var sp = require('stormpath');
+var accounts = "";
 
 var client = new sp.Client({
     apiKey: {
         id: '1CRUFRGX863CDWSZFBLB66JS9',
         secret: '2HoQ5havQ7+tj24VwjfXKtAwPuoF/2W2NuOdSqwCMsU'
     }
+});
+
+client.getAccounts(function(err, accountsCollection) {
+  this.accounts = accountsCollection.items;
 });
 
 // reference to two2erContext in stormpath
@@ -95,4 +100,8 @@ getToken = function () {
 
 getUsername = function () {
     return this.username;
+}
+
+getAccounts = function () {
+    return this.accounts;
 }
