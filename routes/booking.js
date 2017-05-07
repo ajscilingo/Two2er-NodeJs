@@ -171,7 +171,9 @@ router.post('/request', (req, res) => {
       res.status(500).send({message: "scheduledmeetingdate is not a valid Date Object!"});
       return;
     }
-
+    
+    // set the endingDate to same day as scheduledmeetingdate.
+    endingDate = scheduledmeetingdate;
     endingDate.setHours(scheduledmeetingdate.getHours() + 1);
 
     var scheduledendingdate = (req.body.scheduledendingdate

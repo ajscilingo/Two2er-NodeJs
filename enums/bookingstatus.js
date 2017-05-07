@@ -2,6 +2,6 @@
 const Enumify = require('enumify');
 
 class BookingStatus extends Enumify.Enum { }
-BookingStatus.initEnum(['tentative', 'confirmed', 'declined', 'cancelled']);
+BookingStatus.initEnum(['tentative', 'confirmed', 'declined', 'cancelled', "completed"]);
 
 module.exports = BookingStatus;
