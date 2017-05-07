@@ -56,4 +56,31 @@ router.get('/:email', (req,res) => {
     });
 });
 
+//do a spatial query given a distance in mile (:distance) and a longitude (:lon) and latitude (:lat) coordinate in decimal degrees
+router.get('/findWithin/milesLonLat/:distance/:lon/:lat', (req, res) => {
+    console.log(`${req.ip} is doing a GET via /findWithin/milesLonLat/${req.params.distance}/${req.params.lon}/${req.params.lat}`);
+
+    // conversion to miles to meters 
+    var distance = req.params.distance * METERS_IN_MILES;
+
+    var geoSpatialQuery = TutorLocation.find({
+        'location': {
+            $nearSphere: {
+                $geometry: {
+                    type: "Point",
+                    coordinates: [req.params.lon, req.params.lat]
+                },
+                $maxDistance: distance
+            }
+        }
+    });
+
+    geoSpatialQuery.exec((err, tutors) => {
+        if (err)
+            res.status(404).send(err);
+
+        res.json(tutors);
+    });
+});
+
 module.exports = router;
