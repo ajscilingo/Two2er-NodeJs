@@ -109,7 +109,7 @@ app.use('/api/studentlocations', studentLocations);
 app.use('/api/tutorlocations', tutorLocations);
 app.use('/api/booking', booking);
 app.use('/api/subjects', subjects);
-app.use('/', index);
+app.use('/api', index);
 
 app.use('/apiauth/users', stormpath.authenticationRequired, users);
 app.use('/apiauth/tutors', stormpath.authenticationRequired, tutors);

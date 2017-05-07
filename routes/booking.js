@@ -115,13 +115,26 @@ function updateBookingStatus(req, res, timekit_booking_id){
     if(err) 
       res.status(500).send(err);
     booking.status = req.body.state;
-    booking.save( (err) =>{
+    booking.save( (err) => {
       if(err)
         res.status(500).send(err);
       res.json({message: `Booking ${timekit_booking_id} state: ${req.body.state}`});
     });
     
   });
+}
+
+// return promise for booking update
+function updateTimekitBookingStatus(request, user, state){
+    
+    timekit.setUser(user.email, user.timekit_token);
+
+    var data = {
+      id: request.body.timekit_booking_id,
+      action: state
+    }
+    
+    return timekit.updateBooking(data);
 }
 
 // a middleware function with no mount path. This code is executed for every request to the router
@@ -244,18 +257,47 @@ router.post('/request', (req, res) => {
   }
 });
 
-// Route for tutor to reject booking
-// Also used later if tutor needs to cancel
-// To use this route you must be a tutor
-router.post('/reject', (req, res) => {
+
+// Route for Stormpath authenticated Users to decline a booking
+router.post('/decline', (req, res) => {
+  
+  console.log(`${req.ip} is doing a POST via /booking/decline`);
+  // if the request is coming from a stormpath user decline this way
+   if (req.user) {
+    
+    User.findById(mongoose.Types.ObjectId(req.user.customData.user_id), (err, user) => {
+      if(err)
+        res.status(500).send(err);
+
+      if (user.timekit_token != null) {
+        
+        updateTimekitBookingStatus(req, user, 'decline')
+        .then( (response) => {
+            res.json(response.data);
+        })
+        .catch( (reason) => {
+            res.status(reason.status).send({message: reason.statusText});
+        });
+      }
+      else
+        res.status(500).send({message: 'Timekit Token Required to Access this Endpoint!'});
+    
+    });
+  }
+  else 
+    res.status(500).send({message: 'this endpoint requires authentication!'});
+
+});
+
+
+// Route for Timekit to call when booking is declined
+// updates our Booking model to reflect decline status 
+// as shown on Timekit.io side.
+router.post('/timekit/decline', (req, res) => {
 
   console.log(`${req.ip} is doing a POST via /booking/reject`);
-
-  // if the request is coming from a stormpath user decline this way
-  if (req.user) {
-    updateBookingStatusAndSendNotificaitonToStudent(req.body.booking_id, BookingStatus.declined.name, res);
-  } 
-   // if the request is coming from timekit.io instead update status but don't send notification
+  if(req.user) 
+    res.status(403).send({message: 'Stormpath Users May Not Use This Endpoint'});
   else if(req.body.isTest != true){
     if(req.body.id != null)
       updateBookingStatus(req,res,req.body.id);
@@ -263,20 +305,47 @@ router.post('/reject', (req, res) => {
       res.status(500).send({message: 'Could not find Id!'});
   }
   else {
-    res.json({message: null});
+    res.json({message: 'this is a test'});
   }
 });
 
-// Route for tutor to confirm booking
-router.post('/accept', (req, res) => {
 
-  console.log(`${req.ip} is doing a POST via /booking/accept`)
-
+// Route for StormPath authenticated Users to decline a booking
+router.post('/confirm', (req, res) =>{
   // if the request is coming from a stormpath user confirm this way
   if (req.user) {
-    updateBookingStatusAndSendNotificaitonToStudent(req.body.booking_id, BookingStatus.confirmed.name, res);
-  } 
-  // if the request is coming from timekit.io instead update status but don't send notification
+    
+    User.findById(mongoose.Types.ObjectId(req.user.customData.user_id), (err, user) => {
+      if(err)
+        res.status(500).send(err);
+
+      if (user.timekit_token != null) {
+        
+        updateTimekitBookingStatus(req, user, 'confirm')
+        .then( (response) => {
+            res.json(response.data);
+        })
+        .catch( (reason) => {
+            res.status(reason.status).send({message: reason.statusText});
+        });
+      }
+      else
+        res.status(500).send({message: 'Timekit Token Required to Access this Endpoint!'});
+    
+    });
+  }
+  else 
+    res.status(500).send({message: 'this endpoint requires authentication!'});
+});
+
+
+// Route for Timekit to call when booking is confirmed
+// updates our Booking model to reflect confirmed status 
+// as shown on Timekit.io side.
+router.post('/timekit/confirm', (req, res) => {
+  console.log(`${req.ip} is doing a POST via /booking/accept`)
+  if(req.user)
+    res.status(403).send({message: 'Stormpath Users May Not Use This Endpoint'});
   else if(req.body.isTest != true){
     if(req.body.id != null)
       updateBookingStatus(req,res,req.body.id);
@@ -284,27 +353,46 @@ router.post('/accept', (req, res) => {
       res.status(500).send({message: 'Could not find Id!'});
   }
   else {
-    res.json({message: null});
+    res.json({message: 'this is a test'});
   }
 });
 
-// Route for student to cancel booking
+
 router.post('/cancel', (req, res) => {
 
-  console.log(`${req.ip} is doing a POST via /booking/cancel`)
+    if (req.user) {
+    User.findById(mongoose.Types.ObjectId(req.user.customData.user_id), (err, user) => {
+      if(err)
+        res.status(500).send(err);
 
-  if (req.user) {
-    Booking.findByIdAndUpdate(req.body.booking_id, {
-      status: "cancelled"
-    }, (err, booking) => {
-      if (err)
-        re.status(404).send(err);
-      else {
-        console.log(`Booking ${booking._id} has been cancelled by ${req.user.customData.user_id}`);
-        res.json({message: `Booking ${booking._id} has been cancelled by ${req.user.customData.user_id}`});
+      if (user.timekit_token != null) {
+        
+        updateTimekitBookingStatus(req, user, 'cancel')
+        .then( (response) => {
+            res.json(response.data);
+        })
+        .catch( (reason) => {
+            res.status(reason.status).send({message: reason.statusText});
+        });
       }
+      else
+        res.status(500).send({message: 'Timekit Token Required to Access this Endpoint!'});
     });
-  } else if(req.body.isTest != true) {
+  }
+  else 
+    res.status(500).send({message: 'this endpoint requires authentication!'});
+
+});
+
+// Route for Timekit to call when booking is cancelled
+// updates our Booking model to reflect cancelled status 
+// as shown on Timekit.io side.
+router.post('/timekit/cancel', (req, res) => {
+
+  console.log(`${req.ip} is doing a POST via /booking/cancel`)
+  if(req.user)
+    res.status(403).send({message: 'Stormpath Users May Not Use This Endpoint'});
+  else if(req.body.isTest != true) {
       if(req.body.id != null)
         updateBookingStatus(req,res,req.body.id);
       else
@@ -453,7 +541,7 @@ router.get('/timekit', (req, res) => {
           // set timekit to use current user
           timekit.setUser(req.user.email, user.timekit_token);
 
-          timekit.include('attributes').getBookings().then((response) => {
+          timekit.include('attributes','available_actions').getBookings().then((response) => {
             res.json(response.data);
           }).catch((response) => {
             res.status(response.status).send(response.statusText);
