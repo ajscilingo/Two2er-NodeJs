@@ -120,6 +120,15 @@ app.use('/apiauth/booking', stormpath.authenticationRequired, booking);
 app.use('/apiauth/subjects', stormpath.authenticationRequired, subjects);
 app.use('/dev', stormpath.authenticationRequired, dev);
 
+app.get('/s3', stormpath.authenticationRequired, function(req, res) {
+  req.app.get('stormpathApplication').getCustomData(function(err, customData) {
+    if(!customData) {
+      return res.status(500).send("Internal Server Error")
+    }
+    res.send(customData.AccessKey + ":" + customData.SecretKey)
+  })
+})
+
 var request = require("request");
 require('./stormpathclient.js');
 
