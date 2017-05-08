@@ -36,4 +36,8 @@ BookingSchema.methods.isTentative = function (callback) {
     return (this.status == "tentative");
 }
 
+BookingSchema.methods.isCompleted = function (callback) {
+    return (this.status == "completed");
+}
+
 module.exports = mongoose.model("Booking", BookingSchema);

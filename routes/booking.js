@@ -158,9 +158,7 @@ router.post('/request', (req, res) => {
     var booking = new Booking();
 
     var creationDate = new Date();
-
-    // make default ending date 1 hour from now
-    var endingDate = new Date();
+    var endingDate;
 
     var scheduledmeetingdate = (req.body.scheduledmeetingdate
       ? new Date(Date.parse(req.body.scheduledmeetingdate))
@@ -171,7 +169,10 @@ router.post('/request', (req, res) => {
       res.status(500).send({message: "scheduledmeetingdate is not a valid Date Object!"});
       return;
     }
-
+    
+    // set the endingDate to same day as scheduledmeetingdate.
+    // have to use the new Date constructor to make a copy of the scheduledmeetingdate
+    endingDate = new Date(scheduledmeetingdate);
     endingDate.setHours(scheduledmeetingdate.getHours() + 1);
 
     var scheduledendingdate = (req.body.scheduledendingdate
