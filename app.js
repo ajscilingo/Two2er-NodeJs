@@ -127,7 +127,7 @@ app.get('/s3', stormpath.authenticationRequired, function(req, res) {
     }
     res.send(customData.AccessKey + ":" + customData.SecretKey)
   })
-})
+});
 
 var request = require("request");
 require('./stormpathclient.js');
