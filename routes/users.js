@@ -12,6 +12,7 @@ const geojsonRandom = require('geojson-random');
 const UserType = require('../enums/usertype.js');
 const Subject = require('../models/subject.js');
 const TutorSubjects = require('../helpers/tutorsubjects.js');
+const TimekitUserExpiry = require('../helpers/timekituserexpiry.js');
 
 // function to save stormpath user and mongo user
 function saveUser(response, mongoUser, stormpathUser = undefined) {
@@ -102,80 +103,61 @@ router.post('/', function (req, res) {
      * Create New Calendar 
      */
 
-    if(req.user && req.body.isTest != true){
-        timekit.createUser({
-            email: req.user.email,
-            timezone: (req.body.timezone ? req.body.timezone : 'America/Chicago'),
-            first_name: req.user.givenName,
-            last_name: req.user.surname
-        }).then((response) => {
-            user.timekit_token = response.data.api_token;
+     // If Logged in via Stormpath and not a Test enter block
+    if(req.user && req.body.isTest != true) {
+        
+        // if enableTimekit set and user is tutor create Timekit User
+        // send password if you want user to have same password as timekit, otherwise 
+        // password defaulted to password
+        if(req.body.enableTimekit != undefined && user.userMode == UserType.Tutor.name) {
             
-            // set timekit user to new user just created
-            timekit.setUser(req.user.email, user.timekit_token);
-
-            // create name for new calendar based on user's name
-            var givenNameLastIndex = req.user.givenName.length - 1;
-            var giveNameLastLetter = req.user.givenName.substring(givenNameLastIndex, 1).toLowerCase();
-            var givenName = req.user.givenName;
-            var calendar_name = ((giveNameLastLetter == 's') ? givenName + "' Bookings" : givenName + "'s Bookings");
-            var calendar_description = "all bookings for " + req.user.fullName;
-
-            // create new calendar
-            timekit.createCalendar({
-                name: calendar_name,
-                description: calendar_description
+            timekit.createUser({
+                email: req.user.email,
+                timezone: (req.body.timezone ? req.body.timezone : 'America/Chicago'),
+                first_name: req.user.givenName,
+                last_name: req.user.surname,
+                password : (req.body.password ? req.body.password : 'two2er1234')
             }).then((response) => {
-                user.timekit_calendar_id = response.data.id;
-                // save mongo user document and stormpath user
-                saveUser(res, user, req.user);
+                user.timekit_token = response.data.api_token;
+                // set token expiration to 1 year from today
+                user.timekit_token_expiration = new Date().setUTCFullYear(new Date().getUTCFullYear + 1);
+                // set timekit user to new user just created
+                timekit.setUser(req.user.email, user.timekit_token);
+
+                // create name for new calendar based on user's name
+                var givenNameLastIndex = req.user.givenName.length - 1;
+                var giveNameLastLetter = req.user.givenName.substring(givenNameLastIndex, 1).toLowerCase();
+                var givenName = req.user.givenName;
+                var calendar_name = ((giveNameLastLetter == 's') ? givenName + "' Bookings" : givenName + "'s Bookings");
+                var calendar_description = "all bookings for " + req.user.fullName;
+
+                // create new calendar
+                timekit.createCalendar({
+                    name: calendar_name,
+                    description: calendar_description
+                }).then((response) => {
+                    user.timekit_calendar_id = response.data.id;
+                    // save mongo user document and stormpath user
+                    saveUser(res, user, req.user);
+                }).catch((response) => {
+                    res.status(500).send(response);
+                });
+
             }).catch((response) => {
                 res.status(500).send(response);
             });
-
-        }).catch((response) => {
-            res.status(500).send(response);
-        });
+        }
+         // else just save mongo user
+        else
+        {
+            console.log("Skipping creation of timekit user");
+            saveUser(res, user);
+        }
     }
     // just save mongo user if isTest and stormpathuser is undefined
     else{
         saveUser(res, user);
     }
-
-
-    // user.save((err) => {
-    //     if (err)
-    //         res.status(404).send(err);
-
-    //     else {
-
-    //         // update StormPath to include user model id 
-    //         // if route reached by StormPath
-    //         // authenticated endpoint.
-    //         // doing this for faster access to look ups in student
-    //         // and tutor and locations collections
-
-    //         if (req.user && req.body.isTest != true) {
-    //             console.log(user._id);
-
-    //             req.user.customData.user_id = user._id;
-    //             req.user.customData.save((err) => {
-    //                 if (err) {
-    //                     res.status(400).send(`Oops! There was an error: ${err.userMessage}`);
-    //                 }
-    //                 else
-    //                     console.log(`_id: ${user._id}`)
-    //                 res.json({ message: `StormPath Authenticated User: ${user.name} has been created!` });
-    //             });
-    //         }
-    //         // otherwise ignore stormpath if not 
-    //         // authenticated.
-    //         else {
-    //             console.log(`_id: ${user._id}`)
-    //             res.json({ message: `User: ${user.name} has been created!` });
-    //         }
-    //     }
-    // });
 });
 
 // update for the current user
@@ -430,20 +412,39 @@ router.get('/exportToKML', (req, res) => {
 });
 
 // change password for the current user
+// have to account change for timekit.io as well here but 
+// only if req.body.enableTimeKit is set
 router.post('/changepassword', function (req, res) {
     console.log(`${req.ip} is doing a POST via /users/changepassword`);
 
-    try {
-        if (req.user && req.body.password && req.body.isTest != true) {
-            req.user.password = req.body.password;
-            req.user.save();
-            console.log("password changed for " + req.user.email);
-            res.send("password changed for " + req.user.email);
-        }
+    if (req.user && req.body.password && req.body.isTest != true) {
+        req.user.password = req.body.password;
+        req.user.save( (err) => {
+            if(err) 
+                res.status(500).send(err);
+            else {
+                if(req.body.enableTimekit){
+                    
+                    timekit.setUser(req.user.email, user.timekit_token);
+
+                    timekit.updateUser({
+                        password: req.body.password
+                    }).then( (response) =>{
+                        console.log("password changed for " + req.user.email);
+                        res.send({message: `password changed for ${req.user.email}`});
+                    }).catch( (reason) => {
+                        res.status(reason.status).send({message: reason.statusText});
+                    });
+                }
+                else{
+                    console.log("password changed for " + req.user.email);
+                    res.send({message: `password changed for ${req.user.email}`});
+                }
+            }
+        });
     }
-    catch (ex) {
-        console.log(ex);
-        throw ex;
+    else{
+        res.status(500).send({message: "password unchanged!"});
     }
 });
 
@@ -463,7 +464,7 @@ router.post('/setFCMToken', (req, res) => {
                 if (err)
                     res.status(404).send(err);
                 if (numAffected = 1) {
-                    res.json("{message: fcm_token updated}");
+                    res.json({message: "fcm_token updated"});
                 }
             });
         });
@@ -535,7 +536,8 @@ router.post('/me/timekit', (req, res) => {
                         email: req.user.email,
                         timezone: (req.body.timezone ? req.body.timezone : 'America/Chicago'),
                         first_name: req.user.givenName,
-                        last_name: req.user.surname
+                        last_name: req.user.surname,
+                        password : (req.body.password ? req.body.password : 'two2er1234')
                     }).then((response) => {
                         user.timekit_token = response.data.api_token;
                         saveUser(res, user);
@@ -649,17 +651,76 @@ router.post('/me/timekit/calendar', (req, res) => {
     }
 });
 
+// method here that updates the token if the expiration date has 
+// come otherwise leave the token be
+router.post('/me/timekit/auth', (req, res) => {
+     console.log(`${req.ip} is doing a POST via /me/timekit/auth`);
 
-// need api to push new education objects
-// if (req.body.education != null)
-// {
-//     console.log(req.body.education);
-//     console.log(user.education);
-//     user.education[0].school = req.body.eduction.school;
-//     user.education[0].field = req.body.eduction.field;
-//     user.education[0].degree = req.body.eduction.degree;
-//     user.education[0].year = req.body.eduction.year;
-//     user.education[0].inProgress = req.body.eduction.inProgress;
-// }
+     var responseObj = null;
+
+     if(req.user) {
+         
+         if (req.body.user_id != null)
+            var userid = mongoose.Types.ObjectId(req.body.user_id);
+        else
+            var userid = mongoose.Types.ObjectId(req.user.customData.user_id);
+        
+        User.findOne({ _id: userid }, (err, user) => {
+            if (err)
+                res.status(404).send(err);
+            
+            if (user.timekit_token != null) {
+            
+                if (req.user.email != null) {
+                    
+                    /** 
+                     * CHECK TOKEN EXPIRATION DATE 
+                     * IF EXPIRATION DATE IS WITHIN 10 DAYS OF EXPIRING
+                     * RETURN JSON USER DOCUMENT WITH UPDATED TOKEN
+                     * THEN RETURN JSON USER DOCUMENT WITH CURRENT TOKEN
+                    */
+                    
+
+                    var timeToExpire = new TimekitUserExpiry(user);
+                    var days = timeToExpire.getDaysBetween();
+
+                    if(timeToExpire.isExpiringSoon() == true){
+
+                        timekit.auth({
+                            username: req.user.email,
+                            password: req.body.password
+                        }).then( (response) =>{
+                            user.timekit_token = response.data.api_token;
+                            user.timekit_token_expiration = newExpirationDate;
+                            user.save( (err) => { 
+                                if(err) 
+                                    res.status(500).send(err);
+                                else
+                                    responseObj = {user: user, days_until_expiration: days};
+                                    res.json(user);
+                            });
+                        }).catch( (reason) => {
+                            res.status(reason.status).send(reason.statusText);
+                        });
+                    }
+                    else {
+                        console.log(`Timekit Token Expires in ${days} days`);
+                        responseObj = {user: user, days_until_expiration: days};
+                        res.json(responseObj);
+                    }
+                }
+                else
+                    res.status(500).send({message: 'email address required!' });
+            }
+            else
+                res.status(500).send({message: 'timekit.io token required' });
+
+        });
+     }
+      else {
+        req.status(500).send({message: 'this endpoint requires authentication!' });
+    }
+
+});
 
 module.exports = router;

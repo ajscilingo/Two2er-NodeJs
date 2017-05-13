@@ -25,6 +25,7 @@ const UserSchema = new Schema({
     image_url: {type: String, required: false},  // For user's profile image
     fcm_tokens: {type: [String], required: false}, 
     timekit_token : {type: String, required: false},  //used for timekit.io scheduling
+    timekit_token_expiration : {type: Date, required: false}, //used to determine when timekit token expires
     timekit_calendar_id : {type: String, required: false},  // used for keeping track of bookings using a timekit.io calendar
     about: {type: String, required: false},
     creationdate: {type: Date, required: false},
