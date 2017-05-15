@@ -1,8 +1,6 @@
 /**
  * @typedef TutorSubjects 
  * @type {Object}
- * @property tutorDocument {Tutor} - Refeference to Tutor MongoDb Document
- * @property subjectCollection {Collection} - Reference to Subject MongoDb Collection
  */
 
 /**
