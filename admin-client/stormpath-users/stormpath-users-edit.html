@@ -3,15 +3,17 @@
 
     <form novalidate="novalidate" class="form-horizontal">
         <div class="control-group">
+            <label class="control-label" for="inputFirstName">First Name:</label>
+
             <div class="controls">
-                <img ng-src="{{user.image_url}}" width=200px/>
+                <input type="text" id="inputFirstName" ng-model="user.givenName"/>
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label" for="inputName">Name:</label>
+            <label class="control-label" for="inputLastName">Last Name:</label>
 
             <div class="controls">
-                <input type="text" id="inputName" ng-model="user.name"/>
+                <input type="text" id="inputLastName" ng-model="user.surname"/>
             </div>
         </div>
         <div class="control-group">
@@ -19,20 +21,6 @@
 
             <div class="controls">
                 <input type="text" id="inputEmail" ng-model="user.email"/>
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="age">Age:</label>
-
-            <div class="controls">
-                <input type="text" id="inputAge" ng-model="user.age"/>
-            </div>
-        </div>
-        <div class="control-group">
-            <label class="control-label" for="userMode">User Mode:</label>
-
-            <div class="controls">
-                <input type="text" id="inputUserMode" ng-model="user.userMode"/>
             </div>
         </div>
         <div class="control-group">

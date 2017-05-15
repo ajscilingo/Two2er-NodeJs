@@ -18,18 +18,23 @@ angular.module('exampleApp')
         }
       });
   })
-  .controller('StormpathUsersCtrl', function ($scope, $http, $timeout, $user) {
+  .controller('StormpathUsersCtrl', function ($scope, $http, $timeout, $user, $location) {
     $scope.saving = false;
     $scope.saved = false;
     $scope.error = null;
-    
+
+    // callback for ng-click 'editUser':
+    $scope.editUser = function (userId) {
+      $location.path('/stormpath-users-edit/' + userId);
+    };
+
     $http({
       method: 'GET',
-        url: 'apiauth/stormpathusers/'
-      }).then(function successCallback(response) {
-          $scope.users = response.data;
-        }, function errorCallback(response) {
-          // called asynchronously if an error occurs
-          // or server returns response with an error status.
-        });
+      url: 'apiauth/stormpathusers/'
+    }).then(function successCallback(response) {
+      $scope.users = response.data;
+    }, function errorCallback(response) {
+      // called asynchronously if an error occurs
+      // or server returns response with an error status.
+    });
   });

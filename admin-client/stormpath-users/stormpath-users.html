@@ -18,7 +18,7 @@
               <tr ng-repeat="user in users">
                 <td>{{ user.fullName }}</td>
                 <td>{{ user.email }}</td>
-                <td><a ng-click="editUser(user.username)" class="btn btn-small btn-primary">Edit</a></td>
+                <td><a ng-click="editUser(user.email)" class="btn btn-small btn-primary">Edit</a></td>
                 <td><a ng-click="deleteUser(user.username)" class="btn btn-small btn-danger">Delete</a></td>
               </tr>
             </tbody>

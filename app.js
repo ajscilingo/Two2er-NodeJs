@@ -136,6 +136,16 @@ app.get('/apiauth/stormpathusers', stormpath.groupsRequired(['Two2er Admins']), 
   res.send(getAccounts());
 });
 
+app.get('/apiauth/stormpathusers/:email', stormpath.groupsRequired(['Two2er Admins']), function (req, res) {
+  var email = req.params.email;
+  console.log(email);
+  res.send(getAccount(email));
+});
+
+app.post('/apiauth/stormpathusers', stormpath.groupsRequired(['Two2er Admins']), function (req, res) {
+  saveAccount(req.body);
+});
+
 app.route('/*')
   .get(function(req, res) {
     res.sendFile(path.join(__dirname, '', 'admin-client','index.html'));

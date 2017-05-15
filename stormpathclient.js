@@ -105,3 +105,29 @@ getUsername = function () {
 getAccounts = function () {
     return this.accounts;
 }
+
+getAccount = function (email) {
+    for (var x=0; this.accounts && x < this.accounts.length; x++) {
+        var account = this.accounts[x];
+        
+        if (account.email == email)
+            return account;
+    }
+}
+
+saveAccount = function (user) {
+    for (var x=0; this.accounts && x < this.accounts.length; x++) {
+        var account = this.accounts[x];
+        
+        if (account.href == user.href) {
+            console.log('update ' + user.email);
+            account.givenName = user.givenName;
+            account.surname = user.surname;
+
+            account.save(function(err, savedAccount) {
+                if (err) throw err;
+                console.log('Updated account:' + JSON.stringify(savedAccount));
+            });
+        }
+    }
+}
