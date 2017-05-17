@@ -16,7 +16,7 @@ require('events').EventEmitter.defaultMaxListeners = Infinity;
 // going to add some attributes as noted here
 // http://stackoverflow.com/questions/40585705/connection-timeout-for-mongodb-using-mongoose
 // mongoose.connect(url)
-// updated the socketOption connectionTimeout to connectTimeoutMS as stated here 
+// updated the socketOption connectionTimeout to connectTimeoutMS as stated here
 // http://mongodb.github.io/node-mongodb-native/2.1/api/Server.html
 
 // change mongoose to use NodeJS global promises to supress promise deprication warning.
@@ -77,7 +77,7 @@ app.set("views", path.join(__dirname, "views"));
 // Miles in terms of Meters for geospatial queries
 METERS_IN_MILES = 1609.34;
 
-// Bounding Box Used For Geospatial Tests Using geojson-random 
+// Bounding Box Used For Geospatial Tests Using geojson-random
 // generated points, Bounding Box Keeps Points Within the US
 BBOX_USA = [-124.848974,24.396308,-66.885444,49.384358];
 
@@ -85,6 +85,7 @@ var users = require('./routes/users');
 var tutors = require('./routes/tutors');
 var students = require('./routes/students');
 var tutorLocations = require('./routes/tutorlocations');
+var locations = require('./routes/locations');
 var studentLocations = require('./routes/studentlocations');
 var booking = require('./routes/booking');
 var subjects = require('./routes/subjects');
@@ -92,8 +93,8 @@ var dev = require('./routes/dev');
 var index = require('./routes/index');
 
 
-// We have to load bodyparser before loading any routes 
-// otherwise the routes cannot access the body property on 
+// We have to load bodyparser before loading any routes
+// otherwise the routes cannot access the body property on
 // requests!
 
 // remove powered-by from headers
@@ -107,6 +108,7 @@ app.use('/api/tutors', tutors);
 app.use('/api/students', students);
 app.use('/api/studentlocations', studentLocations);
 app.use('/api/tutorlocations', tutorLocations);
+app.use('/api/locations', locations);
 app.use('/api/booking', booking);
 app.use('/api/subjects', subjects);
 app.use('/api', index);
@@ -116,6 +118,7 @@ app.use('/apiauth/tutors', stormpath.authenticationRequired, tutors);
 app.use('/apiauth/students', stormpath.authenticationRequired, students);
 app.use('/apiauth/studentlocations', stormpath.authenticationRequired, studentLocations);
 app.use('/apiauth/tutorlocations', stormpath.authenticationRequired, tutorLocations);
+app.use('/apiauth/locations', stormpath.authenticationRequired, locations);
 app.use('/apiauth/booking', stormpath.authenticationRequired, booking);
 app.use('/apiauth/subjects', stormpath.authenticationRequired, subjects);
 app.use('/dev', stormpath.authenticationRequired, dev);
@@ -154,12 +157,12 @@ app.route('/*')
 // used to catch errors
 app.use(errorHandler);
 
-// catches errors 
+// catches errors
 function errorHandler (err, req, res, next) {
   if (err.statusCode >= 100 && err.statusCode < 600)
     res.status(err.status).render("error", {
         status: err.status,
-        message: err.message 
+        message: err.message
       });
   else
     res.render("error", {
@@ -170,10 +173,10 @@ function errorHandler (err, req, res, next) {
 
 
 // listen on port 80 unless otherwise specified
-var port = process.env.PORT || 80; 
+var port = process.env.PORT || 80;
 
 // make a reference to the http.Server object that
-// is returned by app.listen() that we'll want to 
+// is returned by app.listen() that we'll want to
 // export out for out test cases
 var server = app.listen(port);
 console.log(`Listening on port ${port}`);
@@ -193,6 +196,6 @@ process.on('SIGINT', () => {
 });
 
 
-// exporting http.Server from app.listen() out so we 
+// exporting http.Server from app.listen() out so we
 // can use it in our test cases
 module.exports = server;
