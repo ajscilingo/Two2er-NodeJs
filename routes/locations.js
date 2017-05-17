@@ -19,24 +19,19 @@ router.put ('/me/:lon/:lat', (req, res) => {
             if (err)
                 res.status(404).send(err);
 
-            var location = new Location();
-            location.user_id = req.user.customData.user_id;
-            location.coordinates =  [req.params.lon, req.params.lat];
-            console.log("\nloc created");
-            console.log(location);
-
-
-            location.save( (err) => {
-                if(err)
-                    res.status(404).send(err);
-            });
-            user.location =  { type: "Point", coordinates: [40.8781, 87.6274] };
-            // user.location = location;
-
-            console.log(user);
-
-
-            // user.location = { coordinates: [(req.params.lon).valueOf(), (req.params.lat).valueOf()], type: "Point" };
+            // var location = new Location();
+            // location.user_id = req.user.customData.user_id;
+            // location.coordinates =  [req.params.lon, req.params.lat];
+            // console.log("\nloc created");
+            // console.log(location);
+            //
+            //
+            // location.save( (err) => {
+            //     if(err)
+            //         res.status(404).send(err);
+            // });
+            // user.location =  { type: "Point", coordinates: [41.8781, 87.6274] };
+            user.location = { coordinates: [(req.params.lon).valueOf(), (req.params.lat).valueOf()], type: "Point" };
 
             user.save( (err) => {
                 if(err)

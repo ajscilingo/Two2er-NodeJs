@@ -6,8 +6,7 @@ const Schema = mongoose.Schema;
 const LocationSchema = new Schema({
     type: {type: String, default: "Point"},
     coordinates: {type: [Number], default: [0,0]},
-    modifiedAt: {type: Date, default: Date.now},
-    _id : {id: false}
+    modifiedAt: {type: Date, default: Date.now}
 });
 
 // we need to export the schema here instead of the model.
