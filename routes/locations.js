@@ -11,27 +11,17 @@ router.use(function (req, res, next) {
   next();
 });
 
-// add to student location (accessed via post http://localhost:8080/api/tutorlocations)
+// Update logged in user location (accessed via post http://localhost:8080/api/locations/me/:lon/:lat)
 router.put ('/me/:lon/:lat', (req, res) => {
+  console.log(`${req.ip} is doing a PUT via /apiauth/locations/me/:lon/:lat`);
 
     if (req.user) {
         User.findById(mongoose.Types.ObjectId(req.user.customData.user_id), (err, user) => {
             if (err)
                 res.status(404).send(err);
 
-            // var location = new Location();
-            // location.user_id = req.user.customData.user_id;
-            // location.coordinates =  [req.params.lon, req.params.lat];
-            // console.log("\nloc created");
-            // console.log(location);
-            //
-            //
-            // location.save( (err) => {
-            //     if(err)
-            //         res.status(404).send(err);
-            // });
-            // user.location =  { type: "Point", coordinates: [41.8781, 87.6274] };
             user.location = { coordinates: [(req.params.lon).valueOf(), (req.params.lat).valueOf()], type: "Point" };
+            // The modifiedAt filed contains latest time of update
 
             user.save( (err) => {
                 if(err)
@@ -47,7 +37,7 @@ router.put ('/me/:lon/:lat', (req, res) => {
 });
 
 
-// Get loggedin users locations
+// Get logged in users locations
 router.get('/me', (req, res) => {
   console.log(`${req.ip} is doing a GET via /apiauth/locations/me`);
 
