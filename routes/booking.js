@@ -515,7 +515,7 @@ router.get('/getTutorSchedule/:id?', (req, res) => {
     });
   } 
   else
-    req.status(500).send({message: 'this endpoint requires authentication!'});
+    res.status(500).send({message: 'this endpoint requires authentication!'});
 });
 
 /**
