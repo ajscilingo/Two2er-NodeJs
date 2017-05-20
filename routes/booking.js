@@ -480,13 +480,22 @@ router.get('/getTutorSchedule/:id?', (req, res) => {
               if(user.timekit_calendar_id != null){
               
                   tutorCalId = user.timekit_calendar_id;
+                  
+                  // Should eventually include the timezone in the user
+                  // model so that we don't manually set it to America/Chicago
+                  // for each tutor.
 
                   availabilityData = {
                     "calendar_ids": [
                       tutorCalId
                       ],
+                    "filters" : {
+                      "and" : [
+                        { business_hours : { timezone : "America/Chicago" }}
+                      ]
+                    },
                     "future": "5 days",
-                    "length": "60 minutes"
+                    "length": "60 minutes",
                   }
 
                   if(user.email)
