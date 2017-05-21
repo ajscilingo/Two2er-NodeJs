@@ -3,10 +3,10 @@
 angular.module('exampleApp')
   .config(function ($stateProvider) {
     $stateProvider
-      .state('users', {
-        url: '/users',
-        templateUrl: 'users/users.html',
-        controller: 'UsersCtrl',
+      .state('bookings', {
+        url: '/bookings',
+        templateUrl: 'bookings/bookings.html',
+        controller: 'BookingsCtrl',
         /**
          * The Stormpath Angular SDK provides a configuration block that informs
          * UI router about protected routes.  When we use `authenticate: true`,
@@ -18,23 +18,23 @@ angular.module('exampleApp')
         }
       });
   })
-  .controller('UsersCtrl', function ($scope, $http, $timeout, $user, $location) {
+  .controller('BookingsCtrl', function ($scope, $http, $timeout, $user, $location) {
     $scope.saving = false;
     $scope.saved = false;
     $scope.error = null;
 
-    // callback for ng-click 'editUser':
-    $scope.editUser = function (userId) {
-      $location.path('/users-edit/' + userId);
+    // callback for ng-click 'editBooking':
+    $scope.editBooking = function (bookingId) {
+      $location.path('/bookings-edit/' + bookingId);
     };
 
-    // callback for ng-click 'deleteUser':
-    $scope.deleteUser = function (userId) {
+    // callback for ng-click 'deleteBooking':
+    $scope.deleteBooking = function (bookingId) {
       $http({
         method: 'DELETE',
-        url: 'apiauth/users/deleteById/' + userId
+        url: 'apiauth/booking/deleteById/' + bookingId
       }).then(function successCallback(response) {
-        $location.path('/users');
+        $location.path('/bookings');
       }, function errorCallback(response) {
         // called asynchronously if an error occurs
         // or server returns response with an error status.
@@ -43,9 +43,9 @@ angular.module('exampleApp')
 
     $http({
       method: 'GET',
-      url: 'apiauth/users/'
+      url: 'apiauth/booking/all'
     }).then(function successCallback(response) {
-      $scope.users = response.data;
+      $scope.bookings = response.data;
     }, function errorCallback(response) {
       // called asynchronously if an error occurs
       // or server returns response with an error status.

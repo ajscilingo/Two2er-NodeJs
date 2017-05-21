@@ -21,6 +21,7 @@ angular.module('exampleApp', [
     STORMPATH_CONFIG.AUTO_AUTHORIZED_URIS.push('/users-edit');
     STORMPATH_CONFIG.AUTO_AUTHORIZED_URIS.push('/stormpath-users');
     STORMPATH_CONFIG.AUTO_AUTHORIZED_URIS.push('/stormpath-users-edit');
+    STORMPATH_CONFIG.AUTO_AUTHORIZED_URIS.push('/bookings');
   })
   .run(function($stormpath,$rootScope,$state){
 

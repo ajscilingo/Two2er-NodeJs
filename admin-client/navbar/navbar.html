@@ -18,6 +18,9 @@
                 <li if-user ng-class="{active: isActive('/stormpath-users')}">
                     <a ui-sref="stormpath-users">Manage Stormpath Users</a>
                 </li>
+                <li if-user ng-class="{active: isActive('/bookings')}">
+                    <a ui-sref="bookings">Manage Bookings</a>
+                </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li if-not-user>

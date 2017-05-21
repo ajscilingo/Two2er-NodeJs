@@ -141,8 +141,12 @@ app.get('/apiauth/stormpathusers', stormpath.groupsRequired(['Two2er Admins']), 
 
 app.get('/apiauth/stormpathusers/:email', stormpath.groupsRequired(['Two2er Admins']), function (req, res) {
   var email = req.params.email;
-  console.log(email);
   res.send(getAccount(email));
+});
+
+app.delete('/apiauth/stormpathusers/:email', stormpath.groupsRequired(['Two2er Admins']), function (req, res) {
+  var email = req.params.email;
+  res.send(deleteAccount(email));
 });
 
 app.post('/apiauth/stormpathusers', stormpath.groupsRequired(['Two2er Admins']), function (req, res) {

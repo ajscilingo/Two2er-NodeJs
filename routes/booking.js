@@ -450,6 +450,15 @@ router.get('/', (req, res) => {
   }
 });
 
+router.get('/all', (req, res) => {
+  Booking.find((err, bookings) => {
+        if (err)
+            res.status(404).send(err);
+
+        res.json(bookings);
+    });
+});
+
 /**
  * Get availabilty for logged in student user and tutor(pass in as param)
  * from timekit.io calendar

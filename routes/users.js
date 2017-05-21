@@ -323,7 +323,7 @@ router.delete('/deleteById/:id', (req, res) => {
             res.status(404).send(err);
 
         // If a Stormpath profile exists, delete Stormpath account
-        if (req.user && req.body.isTest != true) {
+        if (req.user && req.body.isTest != true && user_id == req.user.customData.user_id) {
             req.user.delete();
         }
 

@@ -28,6 +28,19 @@ angular.module('exampleApp')
       $location.path('/stormpath-users-edit/' + userId);
     };
 
+    // callback for ng-click 'deleteUser':
+    $scope.deleteUser = function (userId) {
+      $http({
+        method: 'DELETE',
+        url: 'apiauth/stormpathusers/' + userId
+      }).then(function successCallback(response) {
+        $location.path('/stormpath-users');
+      }, function errorCallback(response) {
+        // called asynchronously if an error occurs
+        // or server returns response with an error status.
+      });
+    };
+
     $http({
       method: 'GET',
       url: 'apiauth/stormpathusers/'

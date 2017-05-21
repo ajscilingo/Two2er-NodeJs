@@ -131,3 +131,14 @@ saveAccount = function (user) {
         }
     }
 }
+
+deleteAccount = function (email) {
+    for (var x=0; this.accounts && x < this.accounts.length; x++) {
+        var account = this.accounts[x];
+        
+        if (account.email == email) {
+            console.log('Delete account:' + email);
+            account.delete();
+        }
+    }
+}

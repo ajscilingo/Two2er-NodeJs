@@ -3,10 +3,10 @@
 angular.module('exampleApp')
   .config(function ($stateProvider) {
     $stateProvider
-      .state('users', {
-        url: '/users',
-        templateUrl: 'users/users.html',
-        controller: 'UsersCtrl',
+      .state('users-edit', {
+        url: '/users-edit/:id',
+        templateUrl: 'users/users-edit.html',
+        controller: 'UsersEditCtrl',
         /**
          * The Stormpath Angular SDK provides a configuration block that informs
          * UI router about protected routes.  When we use `authenticate: true`,
@@ -18,21 +18,20 @@ angular.module('exampleApp')
         }
       });
   })
-  .controller('UsersCtrl', function ($scope, $http, $timeout, $user, $location) {
+  .controller('UsersEditCtrl', function ($scope, $http, $timeout, $user, $stateParams, $location) {
     $scope.saving = false;
     $scope.saved = false;
     $scope.error = null;
 
-    // callback for ng-click 'editUser':
-    $scope.editUser = function (userId) {
-      $location.path('/users-edit/' + userId);
-    };
+    // callback for ng-click 'updateUser':
+    $scope.updateUser = function () {
+      var data = $scope.user;
+      data.user_id = $stateParams.id;
 
-    // callback for ng-click 'deleteUser':
-    $scope.deleteUser = function (userId) {
       $http({
-        method: 'DELETE',
-        url: 'apiauth/users/deleteById/' + userId
+        method: 'POST',
+        url: 'apiauth/users/update/',
+        data: data
       }).then(function successCallback(response) {
         $location.path('/users');
       }, function errorCallback(response) {
@@ -41,11 +40,16 @@ angular.module('exampleApp')
       });
     };
 
+    // callback for ng-click 'cancel':
+    $scope.cancel = function () {
+      $location.path('/users');
+    };
+
     $http({
       method: 'GET',
-      url: 'apiauth/users/'
+      url: 'apiauth/users/getUserById/' + $stateParams.id
     }).then(function successCallback(response) {
-      $scope.users = response.data;
+      $scope.user = response.data;
     }, function errorCallback(response) {
       // called asynchronously if an error occurs
       // or server returns response with an error status.
