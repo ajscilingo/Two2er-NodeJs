@@ -3,42 +3,41 @@
 
     <form novalidate="novalidate" class="form-horizontal">
         <div class="control-group">
+            <label class="control-label" for="inputStudentName">Student Name:</label>
             <div class="controls">
-                <img ng-src="{{user.image_url}}" width=200px/>
+                <input type="text" id="inputStudentName" ng-model="booking.student_name"/>
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label" for="inputName">Name:</label>
-
+            <label class="control-label" for="inputTutorName">Tutor Name:</label>
             <div class="controls">
-                <input type="text" id="inputName" ng-model="user.name"/>
+                <input type="text" id="inputTutorName" ng-model="booking.tutor_name"/>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="inputScheduledMeetingDate">Scheduled Meeting Date:</label>
+            <div class="controls">
+                <input type="text" id="inputScheduledMeetingDate" ng-model="booking.scheduledmeetingdate"/>
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label" for="inputEmail">Email:</label>
-
+            <label class="control-label" for="inputScheduledEndingDate">Scheduled Ending Date:</label>
             <div class="controls">
-                <input type="text" id="inputEmail" ng-model="user.email"/>
+                <input type="text" id="inputScheduledEndingDate" ng-model="booking.scheduledendingdate"/>
             </div>
         </div>
         <div class="control-group">
-            <label class="control-label" for="age">Age:</label>
-
+            <label class="control-label" for="inputStatus">Status:</label>
             <div class="controls">
-                <input type="text" id="inputAge" ng-model="user.age"/>
+                <input type="text" id="inputStatus" ng-model="booking.status"/>
             </div>
         </div>
-        <div class="control-group">
-            <label class="control-label" for="userMode">User Mode:</label>
 
-            <div class="controls">
-                <input type="text" id="inputUserMode" ng-model="user.userMode"/>
-            </div>
-        </div>
         <div class="control-group">
             <div class="controls">
                 <a ng-click="cancel()" class="btn btn-small">Cancel</a>
-                <a ng-click="updateUser()" class="btn btn-small btn-primary">Update</a>
+                <a ng-click="updateBooking()" class="btn btn-small btn-primary">Update</a>
             </div>
         </div>
     </form>

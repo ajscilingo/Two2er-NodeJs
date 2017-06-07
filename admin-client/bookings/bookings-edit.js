@@ -3,10 +3,10 @@
 angular.module('exampleApp')
   .config(function ($stateProvider) {
     $stateProvider
-      .state('users-edit', {
-        url: '/users-edit/:id',
-        templateUrl: 'users/users-edit.html',
-        controller: 'UsersEditCtrl',
+      .state('bookings-edit', {
+        url: '/bookings-edit/:id',
+        templateUrl: 'bookings/bookings-edit.html',
+        controller: 'BookingsEditCtrl',
         /**
          * The Stormpath Angular SDK provides a configuration block that informs
          * UI router about protected routes.  When we use `authenticate: true`,
@@ -18,22 +18,22 @@ angular.module('exampleApp')
         }
       });
   })
-  .controller('UsersEditCtrl', function ($scope, $http, $timeout, $user, $stateParams, $location) {
+  .controller('BookingsEditCtrl', function ($scope, $http, $timeout, $user, $stateParams, $location) {
     $scope.saving = false;
     $scope.saved = false;
     $scope.error = null;
 
     // callback for ng-click 'updateUser':
-    $scope.updateUser = function () {
-      var data = $scope.user;
-      data.user_id = $stateParams.id;
+    $scope.updateBooking = function () {
+      var data = $scope.booking;
+      data.booking_id = $stateParams.id;
 
       $http({
         method: 'POST',
-        url: 'apiauth/users/update/',
+        url: 'apiauth/booking/update/',
         data: data
       }).then(function successCallback(response) {
-        $location.path('/users');
+        $location.path('/bookings');
       }, function errorCallback(response) {
         // called asynchronously if an error occurs
         // or server returns response with an error status.
@@ -42,14 +42,14 @@ angular.module('exampleApp')
 
     // callback for ng-click 'cancel':
     $scope.cancel = function () {
-      $location.path('/users');
+      $location.path('/bookings');
     };
 
     $http({
       method: 'GET',
-      url: 'apiauth/users/getUserById/' + $stateParams.id
+      url: 'apiauth/booking/getBookingById/' + $stateParams.id
     }).then(function successCallback(response) {
-      $scope.user = response.data;
+      $scope.booking = response.data;
     }, function errorCallback(response) {
       // called asynchronously if an error occurs
       // or server returns response with an error status.

@@ -459,6 +459,69 @@ router.get('/all', (req, res) => {
     });
 });
 
+//get booking by mongo _id field
+router.get('/getBookingById/:id?', (req, res) => {
+
+    console.log(`${req.ip} is doing a GET via /booking/geBookingById/${req.params.id}`);
+
+    try {
+        var booking_id = mongoose.Types.ObjectId(req.params.id);
+        Booking.findOne({ _id: booking_id }, (err, user) => {
+            if (err)
+                res.status(404).send(err);
+            res.json(user);
+        });
+    }
+    catch (ex) {
+        //console.log(ex);
+        res.json(null);
+    }
+});
+
+// update a booking
+// expects full objects, not meant for appending data
+router.post('/update', function (req, res) {
+    console.log(`${req.ip} is doing a POST via /booking/update`);
+
+    var booking_id = mongoose.Types.ObjectId(req.params.id);
+
+    Booking.findOne({ _id: booking_id }, (err, booking) => {
+        if (err) 
+            res.status(404).send(err);
+
+        if (req.body.name != null)
+            booking.name = req.body.name;
+        if (req.body.age != null)
+            booking.age = req.body.age;
+        if (req.body.location != null)
+            booking.location = req.body.location;
+
+       booking.save((err) => {
+            if (err)
+                response.status(500).send(err);
+            response.json(booking);
+        });
+
+    });
+});
+
+// delete booking from booking collection by mongo _id field 
+router.delete('/deleteById/:id', (req, res) => {
+
+    console.log(`${req.ip} is doing a GET via /booking/deleteById/${req.params.id}`);
+
+    var booking_id = mongoose.Types.ObjectId(req.params.id);
+
+    Booking.remove({ _id: booking_id }, (err, commandResult) => {
+        if (err)
+            res.status(404).send(err);
+
+        // commandResult is a command result, maybe investigate this further later
+        res.json({ message: `Booking ${booking_id} removed` });
+        console.log(`Booking ${booking_id} removed`);
+    });
+});
+
 /**
  * Get availabilty for logged in student user and tutor(pass in as param)
  * from timekit.io calendar
